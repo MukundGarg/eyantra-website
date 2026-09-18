@@ -1,0 +1,10 @@
+# Superdesign internal files
+INIT.md
+SKILL.md
+SUPERDESIGN.md
+references/
+agents/
+.superdesign/
+
+# macOS
+.DS_Store
