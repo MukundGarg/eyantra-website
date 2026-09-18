@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events | e-Yantra MSIT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="selection-red">
+    <div class="min-h-screen bg-[#0B0D10] text-[#F3F2EE] font-inter relative overflow-x-hidden">
+        
+        <!-- Global Background -->
+        <div class="fixed inset-0 z-0 pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#15181C] to-[#0B0D10]"></div>
+            <div class="absolute top-0 left-0 w-[1px] h-[1px] bg-transparent stars-1 animate-[animStar_50s_linear_infinite]"></div>
+            <div class="absolute top-0 left-0 w-[2px] h-[2px] bg-transparent stars-2 animate-[animStar_80s_linear_infinite]"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/5 rounded-full blur-[120px]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(circle_at_center,black_40%,transparent_80%)]"></div>
+        </div>
+
+        <!-- Top Blur Header -->
+        <div class="gradient-blur"></div>
+
+        <!-- Navbar -->
+        <header class="fixed top-0 left-0 w-full z-50 pt-6 px-4">
+            <nav class="max-w-5xl mx-auto flex items-center justify-between bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 shadow-2xl">
+                <div class="flex items-center gap-2">
+                    <iconify-icon icon="lucide:cpu" class="w-5 h-5 text-[#d83a32]"></iconify-icon>
+                    <span class="text-lg font-bold font-mono tracking-tight text-white">e-Yantra MSIT</span>
+                </div>
+                
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="index.html" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Home</a>
+                    <a href="team.html" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Team</a>
+                    <a href="projects.html" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Projects</a>
+                    <a href="events.html" class="text-sm font-medium text-white transition-colors">Events</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <button class="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-white/5 px-6 py-2 transition-transform active:scale-95">
+                        <span class="absolute inset-0 border border-white/10 rounded-full"></span>
+                        <span class="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#d83a32_100%)] opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        <span class="absolute inset-[1px] rounded-full bg-[#15181C]"></span>
+                        <span class="relative z-10 flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
+                            Join Us <iconify-icon icon="lucide:arrow-right" class="w-3 h-3 group-hover:translate-x-0.5 transition-transform"></iconify-icon>
+                        </span>
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <main class="relative z-10 pt-40 pb-20 px-6">
+            <!-- Compact Hero -->
+            <section class="max-w-7xl mx-auto mb-20 animate-fade-up">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded border border-white/10 bg-white/5 backdrop-blur-md mb-6">
+                    <span class="w-2 h-2 rounded-full bg-[#d83a32] animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-[#A6AAAE] uppercase tracking-widest font-mono">Events / Community</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-semibold tracking-tighter font-mono leading-[1.1] mb-6 text-white">
+                    Events
+                </h1>
+                <p class="text-lg text-[#A6AAAE] max-w-2xl leading-relaxed">
+                    Workshops, competitions, showcases, and hands-on sessions from the e-Yantra MSIT community.
+                </p>
+            </section>
+
+            <!-- Upcoming Events -->
+            <section class="max-w-7xl mx-auto mb-32 animate-fade-up" style="animation-delay: 0.2s;">
+                <h2 class="text-2xl font-bold font-mono text-white mb-8 flex items-center gap-3">
+                    <span class="w-8 h-[1px] bg-[#d83a32]"></span>
+                    Upcoming
+                </h2>
+                <div id="upcoming-events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                    <!-- Rendered via JS -->
+                </div>
+            </section>
+
+            <!-- Past Events & Filters -->
+            <section class="max-w-7xl mx-auto mb-20">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                    <h2 class="text-xl font-bold font-mono text-[#A6AAAE] flex items-center gap-3">
+                        <span class="w-8 h-[1px] bg-[#292D32]"></span>
+                        Archival / Past Events
+                    </h2>
+                    
+                    <!-- Filter Tabs -->
+                    <div class="flex flex-wrap gap-2" id="event-filters">
+                        <!-- Filters rendered via JS -->
+                    </div>
+                </div>
+
+                <div id="past-events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Rendered via JS -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-[#0B0D10] border-t border-[#292D32] pt-20 pb-10 relative overflow-hidden z-10">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-24 relative z-10">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <iconify-icon icon="lucide:cpu" class="w-5 h-5 text-[#d83a32]"></iconify-icon>
+                        <span class="text-2xl font-bold font-mono tracking-tight text-white">e-Yantra MSIT</span>
+                    </div>
+                    <p class="text-[#A6AAAE] max-w-xs leading-relaxed">A robotics and embedded systems laboratory fostering innovation, experimentation, and technical excellence among MSIT students.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-xs font-bold font-mono text-[#d83a32] uppercase tracking-widest mb-6">Links</h4>
+                    <ul class="space-y-4 text-[#A6AAAE] text-sm">
+                        <li><a href="index.html" class="hover:text-white transition-colors">Home</a></li>
+                        <li><a href="team.html" class="hover:text-white transition-colors">Team</a></li>
+                        <li><a href="projects.html" class="hover:text-white transition-colors">Projects</a></li>
+                        <li><a href="events.html" class="hover:text-white transition-colors">Events</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-xs font-bold font-mono text-[#d83a32] uppercase tracking-widest mb-6">Contact</h4>
+                    <ul class="space-y-4 text-[#A6AAAE] text-sm">
+                        <li><a href="mailto:contact@eyantramsit.com" class="hover:text-white transition-colors">contact@eyantramsit.com</a></li>
+                        <li>MSIT, C-4 Janakpuri</li>
+                        <li>New Delhi, India</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Huge Footer Text -->
+            <div class="flex justify-center items-center py-10 opacity-5 pointer-events-none">
+                <h1 class="text-[15vw] leading-none font-bold font-mono tracking-tighter text-stroke select-none">E-YANTRA</h1>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 border-t border-[#292D32] pt-8 flex flex-col md:flex-row items-center justify-between text-[#A6AAAE] text-[10px] uppercase font-mono tracking-widest">
+                <p>&copy; 2026 e-Yantra MSIT. Built by engineers.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Instagram</a>
+                    <a href="#" class="hover:text-white">LinkedIn</a>
+                    <a href="#" class="hover:text-white">GitHub</a>
+                    <a href="#" class="hover:text-white">YouTube</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Event Data & Rendering Logic -->
+    <script>
+        const upcomingEvents = [
+            {
+                title: "[Placeholder] ROS 2 Fundamentals Workshop",
+                category: "Workshops",
+                date: "Oct 24, 2026",
+                time: "2:00 PM - 5:00 PM",
+                location: "Lab 214, MSIT",
+                desc: "An intensive hands-on session introducing Robot Operating System 2. Bring your laptops with Ubuntu 22.04 installed.",
+                image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=800&auto=format&fit=crop",
+                link: "#" // Intentionally disabled placeholder
+            },
+            {
+                title: "[Placeholder] Line Follower Hackathon",
+                category: "Competitions",
+                date: "Nov 12, 2026",
+                time: "9:00 AM - 6:00 PM",
+                location: "Main Auditorium, MSIT",
+                desc: "Compete to build the fastest autonomous line-following robot. Kits provided. Cash prizes for the top 3 teams.",
+                image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=800&auto=format&fit=crop",
+                link: "#"
+            }
+        ];
+
+        const pastEvents = [
+            {
+                title: "[Placeholder] Intro to Embedded C",
+                category: "Workshops",
+                date: "Sept 10, 2026",
+                summary: "Covered register-level programming on AVR microcontrollers.",
+                highlight: "150+ Attendees",
+                image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop",
+                link: "#"
+            },
+            {
+                title: "[Placeholder] Robowars Qualifier",
+                category: "Competitions",
+                date: "August 25, 2026",
+                summary: "Internal qualifying rounds for the national Robowars championship.",
+                highlight: "12 Bots Competed",
+                image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=600&auto=format&fit=crop",
+                link: "#"
+            },
+            {
+                title: "[Placeholder] Alumni Tech Talk",
+                category: "Talks",
+                date: "August 05, 2026",
+                summary: "Guest lecture by alumni working at prominent robotics labs.",
+                image: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?q=80&w=600&auto=format&fit=crop",
+                link: "#"
+            },
+            {
+                title: "[Placeholder] PCB Design 101",
+                category: "Workshops",
+                date: "July 18, 2026",
+                summary: "From schematic capture to routing in Altium Designer.",
+                image: "https://images.unsplash.com/photo-1553341640-6b28f1e58f00?q=80&w=600&auto=format&fit=crop",
+                link: "#"
+            }
+        ];
+
+        const eventFilters = ["All", "Workshops", "Competitions", "Talks", "Showcases"];
+        let activeEventFilter = "All";
+
+        // Render Upcoming
+        function createUpcomingCard(event) {
+            return `
+                <div class="group relative overflow-hidden border border-[#292D32] bg-gradient-to-b from-[#15181C] to-[#0B0D10] rounded-2xl flex flex-col md:flex-row hover:border-[#d83a32]/50 transition-all shadow-lg animate-fade-up">
+                    <div class="w-full md:w-2/5 h-48 md:h-auto relative overflow-hidden bg-[#0B0D10]">
+                        <div class="absolute inset-0 bg-[#d83a32]/20 z-10 group-hover:opacity-0 transition-opacity"></div>
+                        <img src="${event.image}" alt="${event.title}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-all duration-700 group-hover:scale-105" />
+                        <div class="absolute top-4 left-4 z-20">
+                            <span class="px-2.5 py-1 bg-black/80 backdrop-blur border border-white/10 rounded text-[10px] text-white uppercase font-mono tracking-wider">${event.category}</span>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-3/5 p-6 md:p-8 flex flex-col">
+                        <h3 class="text-2xl font-bold font-mono text-white mb-4 tracking-tight leading-tight">${event.title}</h3>
+                        
+                        <div class="flex flex-col gap-2 mb-4">
+                            <div class="flex items-center gap-2 text-sm text-[#A6AAAE] font-mono">
+                                <iconify-icon icon="lucide:calendar" class="w-4 h-4 text-[#d83a32]"></iconify-icon>
+                                <span>${event.date} &bull; ${event.time}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-[#A6AAAE] font-mono">
+                                <iconify-icon icon="lucide:map-pin" class="w-4 h-4 text-[#d83a32]"></iconify-icon>
+                                <span>${event.location}</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[#A6AAAE] text-sm mb-6 flex-1 line-clamp-2 leading-relaxed">${event.desc}</p>
+                        
+                        <a href="${event.link}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#d83a32] hover:bg-[#b02d25] text-white rounded-lg text-sm font-bold uppercase tracking-wider transition-all w-fit disabled-placeholder" onclick="event.preventDefault(); alert('Registration links are placeholders and currently disabled.');">
+                            Register Now <iconify-icon icon="lucide:arrow-right"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Past Event Card
+        function createPastEventCard(event) {
+            return `
+                <div class="group flex flex-col overflow-hidden p-5 border border-[#292D32] bg-[#15181C] hover:border-white/20 transition-all rounded-xl animate-fade-up">
+                    <div class="w-full h-32 bg-[#0B0D10] border border-[#292D32] rounded-lg mb-4 overflow-hidden relative">
+                        <img src="${event.image}" alt="${event.title}" class="w-full h-full object-cover opacity-40 grayscale group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-500" />
+                        <div class="absolute bottom-2 left-2 z-20">
+                            <span class="px-2 py-0.5 bg-black/60 backdrop-blur border border-white/10 rounded text-[10px] text-white font-mono">${event.date}</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start mb-2 gap-2">
+                        <h3 class="text-md font-bold font-mono text-white tracking-tight">${event.title}</h3>
+                        ${event.highlight ? `<span class="shrink-0 px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] text-[#F3F2EE] uppercase font-mono">${event.highlight}</span>` : ''}
+                    </div>
+                    <p class="text-[#d83a32] font-mono text-[10px] mb-2 uppercase tracking-widest">${event.category}</p>
+                    <p class="text-[#A6AAAE] text-xs mb-4 flex-1 line-clamp-2">${event.summary}</p>
+                    
+                    <a href="${event.link}" class="w-full py-2 px-4 bg-transparent border border-[#292D32] group-hover:border-white/20 text-[#A6AAAE] group-hover:text-white rounded-lg text-xs font-bold uppercase tracking-widest transition-all text-center" onclick="event.preventDefault(); alert('View details is a placeholder.');">
+                        View Details
+                    </a>
+                </div>
+            `;
+        }
+
+        function renderEventFilters() {
+            const container = document.getElementById('event-filters');
+            container.innerHTML = eventFilters.map(filter => {
+                const isActive = filter === activeEventFilter;
+                const baseClass = "px-4 py-1.5 text-[10px] font-bold font-mono uppercase tracking-widest rounded border transition-all cursor-pointer";
+                const activeClass = isActive ? "bg-[#292D32] text-white border-[#292D32]" : "bg-transparent text-[#A6AAAE] border-[#292D32] hover:border-white/20 hover:text-white";
+                
+                return `<button class="${baseClass} ${activeClass}" onclick="switchEventFilter('${filter}')">${filter}</button>`;
+            }).join('');
+        }
+
+        function renderEvents() {
+            // Render upcoming (no filters applied for now to keep them visible)
+            const upcomingContainer = document.getElementById('upcoming-events-container');
+            if (upcomingEvents.length === 0) {
+                upcomingContainer.innerHTML = `<div class="col-span-full py-12 text-center border border-dashed border-[#292D32] rounded-xl text-[#A6AAAE] font-mono text-sm">No upcoming events scheduled.</div>`;
+            } else {
+                upcomingContainer.innerHTML = upcomingEvents.map(createUpcomingCard).join('');
+            }
+
+            // Render past (with filters)
+            const pastContainer = document.getElementById('past-events-container');
+            pastContainer.innerHTML = '';
+            
+            setTimeout(() => {
+                const filteredPast = activeEventFilter === "All" 
+                    ? pastEvents 
+                    : pastEvents.filter(e => e.category === activeEventFilter);
+                
+                if (filteredPast.length === 0) {
+                    pastContainer.innerHTML = `<div class="col-span-full py-12 text-center border border-dashed border-[#292D32] rounded-xl text-[#A6AAAE] font-mono text-sm">No past events found in this category.</div>`;
+                } else {
+                    pastContainer.innerHTML = filteredPast.map(createPastEventCard).join('');
+                }
+            }, 50);
+        }
+
+        window.switchEventFilter = function(filter) {
+            activeEventFilter = filter;
+            renderEventFilters();
+            renderEvents();
+        };
+
+        // Initialize
+        renderEventFilters();
+        renderEvents();
+    </script>
+</body>
+</html>
