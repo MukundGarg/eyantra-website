@@ -9,10 +9,14 @@ import { supabase } from "@/utils/supabase";
 export const revalidate = 60;
 
 export default async function ProjectsPage() {
-  const { data: projects = [] } = await supabase
+  const { data: projects = [], error } = await supabase
     .from('projects')
     .select('*')
     .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error("Supabase projects error:", error);
+  }
 
   const safeProjects = projects || [];
   const mappedProjects = safeProjects.map(p => ({

@@ -9,10 +9,14 @@ import { supabase } from "@/utils/supabase";
 export const revalidate = 60;
 
 export default async function EventsPage() {
-  const { data: events = [] } = await supabase
+  const { data: events = [], error } = await supabase
     .from('events')
     .select('*')
     .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error("Supabase events error:", error);
+  }
 
   const safeEvents = events || [];
 

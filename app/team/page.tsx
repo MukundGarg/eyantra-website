@@ -8,10 +8,14 @@ import { supabase } from "@/utils/supabase";
 export const revalidate = 60; // Revalidate every minute to keep it fresh without hammering DB
 
 export default async function TeamPage() {
-  const { data: members = [] } = await supabase
+  const { data: members = [], error } = await supabase
     .from('team_members')
     .select('*')
     .order('display_order', { ascending: true });
+
+  if (error) {
+    console.error("Supabase team members error:", error);
+  }
 
   const safeMembers = members || [];
 

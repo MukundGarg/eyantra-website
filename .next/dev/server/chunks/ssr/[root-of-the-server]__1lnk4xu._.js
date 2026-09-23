@@ -46,9 +46,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b
 ;
 const revalidate = 60; // Revalidate every minute to keep it fresh without hammering DB
 async function TeamPage() {
-    const { data: members = [] } = await __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('team_members').select('*').order('display_order', {
+    const { data: members = [], error } = await __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('team_members').select('*').order('display_order', {
         ascending: true
     });
+    if (error) {
+        console.error("Supabase team members error:", error);
+    }
     const safeMembers = members || [];
     const mentors = safeMembers.filter((m)=>m.category === 'mentors').map((m)=>({
             name: m.name,
@@ -84,7 +87,7 @@ async function TeamPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Navbar$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/team/page.tsx",
-                lineNumber: 55,
+                lineNumber: 59,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -100,7 +103,7 @@ async function TeamPage() {
                                 subtitle: "A multidisciplinary team of engineers, developers, and robotics enthusiasts."
                             }, void 0, false, {
                                 fileName: "[project]/app/team/page.tsx",
-                                lineNumber: 60,
+                                lineNumber: 64,
                                 columnNumber: 13
                             }, this),
                             isEmpty ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -108,7 +111,7 @@ async function TeamPage() {
                                 children: "No team members found at the moment."
                             }, void 0, false, {
                                 fileName: "[project]/app/team/page.tsx",
-                                lineNumber: 67,
+                                lineNumber: 71,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["Fragment"], {
                                 children: [
@@ -120,7 +123,7 @@ async function TeamPage() {
                                                 children: "Faculty Mentors"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 74,
+                                                lineNumber: 78,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -132,23 +135,23 @@ async function TeamPage() {
                                                             variant: "mentor"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/team/page.tsx",
-                                                            lineNumber: 80,
+                                                            lineNumber: 84,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, i, false, {
                                                         fileName: "[project]/app/team/page.tsx",
-                                                        lineNumber: 79,
+                                                        lineNumber: 83,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 77,
+                                                lineNumber: 81,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/team/page.tsx",
-                                        lineNumber: 73,
+                                        lineNumber: 77,
                                         columnNumber: 19
                                     }, this),
                                     core.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -159,7 +162,7 @@ async function TeamPage() {
                                                 children: "Core Leadership"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 89,
+                                                lineNumber: 93,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -171,23 +174,23 @@ async function TeamPage() {
                                                             variant: "core"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/team/page.tsx",
-                                                            lineNumber: 95,
+                                                            lineNumber: 99,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, i, false, {
                                                         fileName: "[project]/app/team/page.tsx",
-                                                        lineNumber: 94,
+                                                        lineNumber: 98,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 92,
+                                                lineNumber: 96,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/team/page.tsx",
-                                        lineNumber: 88,
+                                        lineNumber: 92,
                                         columnNumber: 19
                                     }, this),
                                     technical.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -198,7 +201,7 @@ async function TeamPage() {
                                                 children: "Technical Department"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 104,
+                                                lineNumber: 108,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -210,23 +213,23 @@ async function TeamPage() {
                                                             variant: "dept"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/team/page.tsx",
-                                                            lineNumber: 110,
+                                                            lineNumber: 114,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, i, false, {
                                                         fileName: "[project]/app/team/page.tsx",
-                                                        lineNumber: 109,
+                                                        lineNumber: 113,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 107,
+                                                lineNumber: 111,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/team/page.tsx",
-                                        lineNumber: 103,
+                                        lineNumber: 107,
                                         columnNumber: 19
                                     }, this),
                                     management.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -237,7 +240,7 @@ async function TeamPage() {
                                                 children: "Management Department"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 119,
+                                                lineNumber: 123,
                                                 columnNumber: 21
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -249,56 +252,56 @@ async function TeamPage() {
                                                             variant: "dept"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/team/page.tsx",
-                                                            lineNumber: 125,
+                                                            lineNumber: 129,
                                                             columnNumber: 27
                                                         }, this)
                                                     }, i, false, {
                                                         fileName: "[project]/app/team/page.tsx",
-                                                        lineNumber: 124,
+                                                        lineNumber: 128,
                                                         columnNumber: 25
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/team/page.tsx",
-                                                lineNumber: 122,
+                                                lineNumber: 126,
                                                 columnNumber: 21
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/team/page.tsx",
-                                        lineNumber: 118,
+                                        lineNumber: 122,
                                         columnNumber: 19
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/team/page.tsx",
-                                lineNumber: 71,
+                                lineNumber: 75,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/team/page.tsx",
-                        lineNumber: 59,
+                        lineNumber: 63,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/team/page.tsx",
-                    lineNumber: 58,
+                    lineNumber: 62,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/team/page.tsx",
-                lineNumber: 57,
+                lineNumber: 61,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/team/page.tsx",
-                lineNumber: 137,
+                lineNumber: 141,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/team/page.tsx",
-        lineNumber: 54,
+        lineNumber: 58,
         columnNumber: 5
     }, this);
 }
@@ -1014,8 +1017,10 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [app-rsc] (ecmascript) <locals>");
 ;
-const supabaseUrl = ("TURBOPACK compile-time value", "https://your-project.supabase.co");
-const supabaseAnonKey = ("TURBOPACK compile-time value", "your-anon-key");
+const supabaseUrl = ("TURBOPACK compile-time value", "https://thgbovpcdmnizkmxxfus.supabase.co");
+const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZ2JvdnBjZG1uaXprbXh4ZnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODk2MzMsImV4cCI6MjEwNTc2NTYzM30.v_UHeoPGtMCQ9VldnmYfmAOq6t_7wtKekPz0XWuDI3k");
+console.log("Supabase URL configured:", !!("TURBOPACK compile-time value", "https://thgbovpcdmnizkmxxfus.supabase.co"));
+console.log("Supabase key configured:", !!("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZ2JvdnBjZG1uaXprbXh4ZnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODk2MzMsImV4cCI6MjEwNTc2NTYzM30.v_UHeoPGtMCQ9VldnmYfmAOq6t_7wtKekPz0XWuDI3k"));
 const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
 }),
 ];

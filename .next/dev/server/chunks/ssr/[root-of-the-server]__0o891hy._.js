@@ -30,9 +30,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b
 ;
 const revalidate = 60;
 async function EventsPage() {
-    const { data: events = [] } = await __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('events').select('*').order('display_order', {
+    const { data: events = [], error } = await __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$supabase$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('events').select('*').order('display_order', {
         ascending: true
     });
+    if (error) {
+        console.error("Supabase events error:", error);
+    }
     const safeEvents = events || [];
     const upcomingEvents = safeEvents.filter((e)=>e.status === 'upcoming').map((e)=>({
             image: e.cover_image,
@@ -66,7 +69,7 @@ async function EventsPage() {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Navbar$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/events/page.tsx",
-                lineNumber: 44,
+                lineNumber: 48,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -82,7 +85,7 @@ async function EventsPage() {
                                 subtitle: "Join us for hands-on sessions, expert talks, and hackathons."
                             }, void 0, false, {
                                 fileName: "[project]/app/events/page.tsx",
-                                lineNumber: 49,
+                                lineNumber: 53,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -93,12 +96,12 @@ async function EventsPage() {
                                         children: filter
                                     }, filter, false, {
                                         fileName: "[project]/app/events/page.tsx",
-                                        lineNumber: 57,
+                                        lineNumber: 61,
                                         columnNumber: 17
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/events/page.tsx",
-                                lineNumber: 55,
+                                lineNumber: 59,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -109,7 +112,7 @@ async function EventsPage() {
                                         children: "Upcoming Sessions"
                                     }, void 0, false, {
                                         fileName: "[project]/app/events/page.tsx",
-                                        lineNumber: 71,
+                                        lineNumber: 75,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -120,7 +123,7 @@ async function EventsPage() {
                                             children: "No upcoming events right now."
                                         }, void 0, false, {
                                             fileName: "[project]/app/events/page.tsx",
-                                            lineNumber: 76,
+                                            lineNumber: 80,
                                             columnNumber: 19
                                         }, this) : upcomingEvents.map((event, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: `stagger-${i + 1}`,
@@ -129,23 +132,23 @@ async function EventsPage() {
                                                     variant: "upcoming"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/events/page.tsx",
-                                                    lineNumber: 82,
+                                                    lineNumber: 86,
                                                     columnNumber: 23
                                                 }, this)
                                             }, i, false, {
                                                 fileName: "[project]/app/events/page.tsx",
-                                                lineNumber: 81,
+                                                lineNumber: 85,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/events/page.tsx",
-                                        lineNumber: 74,
+                                        lineNumber: 78,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/events/page.tsx",
-                                lineNumber: 70,
+                                lineNumber: 74,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -156,7 +159,7 @@ async function EventsPage() {
                                         children: "Past Archive"
                                     }, void 0, false, {
                                         fileName: "[project]/app/events/page.tsx",
-                                        lineNumber: 90,
+                                        lineNumber: 94,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -167,7 +170,7 @@ async function EventsPage() {
                                             children: "No past events."
                                         }, void 0, false, {
                                             fileName: "[project]/app/events/page.tsx",
-                                            lineNumber: 95,
+                                            lineNumber: 99,
                                             columnNumber: 19
                                         }, this) : pastEvents.map((event, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: `stagger-${i % 3 + 1}`,
@@ -176,50 +179,50 @@ async function EventsPage() {
                                                     variant: "past"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/events/page.tsx",
-                                                    lineNumber: 101,
+                                                    lineNumber: 105,
                                                     columnNumber: 23
                                                 }, this)
                                             }, i, false, {
                                                 fileName: "[project]/app/events/page.tsx",
-                                                lineNumber: 100,
+                                                lineNumber: 104,
                                                 columnNumber: 21
                                             }, this))
                                     }, void 0, false, {
                                         fileName: "[project]/app/events/page.tsx",
-                                        lineNumber: 93,
+                                        lineNumber: 97,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/events/page.tsx",
-                                lineNumber: 89,
+                                lineNumber: 93,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/events/page.tsx",
-                        lineNumber: 48,
+                        lineNumber: 52,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/events/page.tsx",
-                    lineNumber: 47,
+                    lineNumber: 51,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/events/page.tsx",
-                lineNumber: 46,
+                lineNumber: 50,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/events/page.tsx",
-                lineNumber: 112,
+                lineNumber: 116,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/events/page.tsx",
-        lineNumber: 43,
+        lineNumber: 47,
         columnNumber: 5
     }, this);
 }
@@ -971,8 +974,10 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/@supabase/supabase-js/dist/index.mjs [app-rsc] (ecmascript) <locals>");
 ;
-const supabaseUrl = ("TURBOPACK compile-time value", "https://your-project.supabase.co");
-const supabaseAnonKey = ("TURBOPACK compile-time value", "your-anon-key");
+const supabaseUrl = ("TURBOPACK compile-time value", "https://thgbovpcdmnizkmxxfus.supabase.co");
+const supabaseAnonKey = ("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZ2JvdnBjZG1uaXprbXh4ZnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODk2MzMsImV4cCI6MjEwNTc2NTYzM30.v_UHeoPGtMCQ9VldnmYfmAOq6t_7wtKekPz0XWuDI3k");
+console.log("Supabase URL configured:", !!("TURBOPACK compile-time value", "https://thgbovpcdmnizkmxxfus.supabase.co"));
+console.log("Supabase key configured:", !!("TURBOPACK compile-time value", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoZ2JvdnBjZG1uaXprbXh4ZnVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODk2MzMsImV4cCI6MjEwNTc2NTYzM30.v_UHeoPGtMCQ9VldnmYfmAOq6t_7wtKekPz0XWuDI3k"));
 const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$supabase$2f$supabase$2d$js$2f$dist$2f$index$2e$mjs__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__$3c$locals$3e$__["createClient"])(supabaseUrl, supabaseAnonKey);
 }),
 ];
