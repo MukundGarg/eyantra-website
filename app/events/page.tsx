@@ -3,9 +3,42 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
 import EventCard from "@/components/EventCard";
-import { upcomingEvents, pastEvents, eventFilters } from "@/data/events";
+import { eventFilters } from "@/data/events";
+import { supabase } from "@/utils/supabase";
 
-export default function EventsPage() {
+export const revalidate = 60;
+
+export default async function EventsPage() {
+  const { data: events = [] } = await supabase
+    .from('events')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  const safeEvents = events || [];
+
+  const upcomingEvents = safeEvents.filter(e => e.status === 'upcoming').map(e => ({
+    image: e.cover_image,
+    title: e.title,
+    category: e.event_type,
+    date: e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+    time: e.event_time,
+    location: e.location,
+    desc: e.short_description,
+    link: e.registration_url || '#'
+  }));
+
+  const pastEvents = safeEvents.filter(e => e.status === 'past').map(e => ({
+    image: e.cover_image,
+    title: e.title,
+    category: e.event_type,
+    date: e.event_date ? new Date(e.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+    summary: e.short_description,
+    link: e.registration_url || '#'
+  }));
+
+  const isEmptyUpcoming = upcomingEvents.length === 0;
+  const isEmptyPast = pastEvents.length === 0;
+
   return (
     <>
       <Navbar />
@@ -39,11 +72,17 @@ export default function EventsPage() {
                 Upcoming Sessions
               </h3>
               <div className="flex flex-col gap-6 reveal" id="upcoming-container">
-                {upcomingEvents.map((event, i) => (
-                  <div key={i} className={`stagger-${i + 1}`}>
-                    <EventCard event={event} variant="upcoming" />
+                {isEmptyUpcoming ? (
+                  <div className="text-center text-[#A6AAAE] py-10 font-mono">
+                    No upcoming events right now.
                   </div>
-                ))}
+                ) : (
+                  upcomingEvents.map((event, i) => (
+                    <div key={i} className={`stagger-${i + 1}`}>
+                      <EventCard event={event} variant="upcoming" />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -52,11 +91,17 @@ export default function EventsPage() {
                 Past Archive
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal" id="past-container">
-                {pastEvents.map((event, i) => (
-                  <div key={i} className={`stagger-${(i % 3) + 1}`}>
-                    <EventCard event={event} variant="past" />
+                {isEmptyPast ? (
+                  <div className="col-span-full text-center text-[#A6AAAE] py-10 font-mono">
+                    No past events.
                   </div>
-                ))}
+                ) : (
+                  pastEvents.map((event, i) => (
+                    <div key={i} className={`stagger-${(i % 3) + 1}`}>
+                      <EventCard event={event} variant="past" />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 

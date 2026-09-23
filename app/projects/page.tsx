@@ -3,9 +3,29 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
 import ProjectCard from "@/components/ProjectCard";
-import { projects, projectFilters } from "@/data/projects";
+import { projectFilters } from "@/data/projects";
+import { supabase } from "@/utils/supabase";
 
-export default function ProjectsPage() {
+export const revalidate = 60;
+
+export default async function ProjectsPage() {
+  const { data: projects = [] } = await supabase
+    .from('projects')
+    .select('*')
+    .order('display_order', { ascending: true });
+
+  const safeProjects = projects || [];
+  const mappedProjects = safeProjects.map(p => ({
+    image: p.cover_image,
+    title: p.title,
+    category: p.category,
+    desc: p.short_description,
+    techStack: p.tech_stack,
+    link: p.demo_url || '#'
+  }));
+
+  const isEmpty = mappedProjects.length === 0;
+
   return (
     <>
       <Navbar />
@@ -35,11 +55,17 @@ export default function ProjectsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 reveal" id="projects-container">
-              {projects.map((project, i) => (
-                <div key={i} className={`stagger-${(i % 3) + 1}`}>
-                  <ProjectCard project={project} />
+              {isEmpty ? (
+                <div className="col-span-full text-center text-[#A6AAAE] py-20 font-mono">
+                  No projects found at the moment.
                 </div>
-              ))}
+              ) : (
+                mappedProjects.map((project, i) => (
+                  <div key={i} className={`stagger-${(i % 3) + 1}`}>
+                    <ProjectCard project={project} />
+                  </div>
+                ))
+              )}
             </div>
 
           </div>
