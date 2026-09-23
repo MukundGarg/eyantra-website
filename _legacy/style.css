@@ -1,0 +1,303 @@
+:root {
+    --accent-red: #d83a32;
+    --accent-red-glow: rgba(216, 58, 50, 0.5);
+    --bg-primary: #0B0D10;
+    --bg-surface: #15181C;
+    --text-primary: #F3F2EE;
+    --text-secondary: #A6AAAE;
+    --border: #292D32;
+}
+
+/* ─── Base ─── */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Animations */
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-entrance {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes border-spin {
+    from { --gradient-angle: 0deg; }
+    to { --gradient-angle: 360deg; }
+}
+
+@keyframes shimmer {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes animStar {
+    from { transform: translateY(0px); }
+    to { transform: translateY(-2000px); }
+}
+
+@keyframes subtle-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@property --gradient-angle { 
+    syntax: "<angle>"; 
+    initial-value: 0deg; 
+    inherits: false; 
+}
+
+/* ─── Hero Entrance System ─── */
+.hero-stagger {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    animation: hero-entrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-stagger-1 { animation-delay: 0.05s; }
+.hero-stagger-2 { animation-delay: 0.15s; }
+.hero-stagger-3 { animation-delay: 0.3s; }
+.hero-stagger-4 { animation-delay: 0.45s; }
+.hero-stagger-5 { animation-delay: 0.6s; }
+.hero-stagger-6 { animation-delay: 0.8s; }
+
+.animate-fade-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+}
+
+/* ─── Scroll Reveal System ─── */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger children inside a reveal container */
+.reveal .stagger-1 { transition-delay: 0.05s; }
+.reveal .stagger-2 { transition-delay: 0.12s; }
+.reveal .stagger-3 { transition-delay: 0.2s; }
+.reveal .stagger-4 { transition-delay: 0.28s; }
+.reveal .stagger-5 { transition-delay: 0.36s; }
+.reveal .stagger-6 { transition-delay: 0.44s; }
+
+/* Reveal from left */
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Reveal scale */
+.reveal-scale {
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.revealed {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ─── Card Hover System ─── */
+.card-hover {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-6px);
+    border-color: rgba(216, 58, 50, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(216, 58, 50, 0.06);
+}
+
+/* Card image zoom on hover */
+.card-hover .card-img {
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.7s ease,
+                opacity 0.5s ease;
+}
+
+.card-hover:hover .card-img {
+    transform: scale(1.06);
+    filter: grayscale(0);
+    opacity: 1;
+}
+
+/* Social icons reveal on card hover */
+.card-hover .social-reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+}
+.card-hover:hover .social-reveal {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ─── Navbar Scroll Compaction ─── */
+#main-nav {
+    transition: padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease;
+}
+
+#main-nav.nav-scrolled {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Section Transitions ─── */
+.section-fade-top {
+    position: relative;
+}
+.section-fade-top::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, var(--bg-primary), transparent);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.section-fade-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to top, var(--bg-primary), transparent);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ─── CTA Enhancements ─── */
+.cta-press {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cta-press:active {
+    transform: scale(0.95);
+}
+.cta-press:hover .cta-arrow {
+    transform: translateX(4px);
+}
+.cta-arrow {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Typography & Fonts ─── */
+.font-mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+.font-inter { font-family: 'Inter', sans-serif; }
+
+/* ─── Shiny CTA Button ─── */
+.shiny-cta {
+    --gradient-angle: 0deg;
+    position: relative;
+    overflow: hidden;
+    border-radius: 9999px;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(#000000, #000000) padding-box,
+    conic-gradient(from var(--gradient-angle), transparent 0%, #d83a32 5%, #d83a32 15%, #d83a32 30%, transparent 40%, transparent 100%) border-box;
+    border: 2px solid transparent;
+    cursor: pointer;
+    isolation: isolate;
+    animation: border-spin 2.5s linear infinite;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shiny-cta:active {
+    transform: scale(0.95);
+}
+
+.shiny-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, white 0.5px, transparent 0);
+    background-size: 4px 4px;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+/* ─── Parallax Stars / Grid Motifs ─── */
+.stars-1 { box-shadow: 234px 124px #fff, 654px 345px #fff, 876px 12px #fff, 1200px 800px #fff, 400px 1500px #fff, 1800px 200px #fff, 100px 1000px #fff, 900px 1900px #fff, 500px 600px #fff, 1400px 100px #fff, 300px 400px #fff, 1600px 1200px #fff; }
+.stars-2 { box-shadow: 123px 456px #fff, 789px 234px #fff, 456px 890px #fff, 1100px 300px #fff, 200px 1200px #fff, 1500px 500px #fff, 600px 1700px #fff, 1300px 900px #fff; }
+
+.gradient-blur {
+    position: fixed;
+    z-index: 40;
+    inset: 0 0 auto 0;
+    height: 120px;
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    backdrop-filter: blur(8px);
+    mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+.selection-red::selection {
+    background: #d83a32;
+    color: white;
+}
+
+.text-stroke {
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+    color: transparent;
+}
+
+/* ─── Image Reveal ─── */
+.img-reveal {
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s ease,
+                opacity 0.6s ease;
+}
+
+/* ─── Filter Transition ─── */
+.filter-fade {
+    animation: filter-in 0.35s ease forwards;
+}
+@keyframes filter-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .reveal, .reveal-left, .reveal-scale {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+    .hero-stagger {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
