@@ -6,6 +6,20 @@ import { supabase } from "@/utils/supabase";
 
 export const revalidate = 60; // Revalidate every minute to keep it fresh without hammering DB
 
+// Department name formatter
+const formatDeptName = (dept: string) => {
+  const mapping: Record<string, string> = {
+    'software': 'Software Department',
+    'hardware': 'Hardware Department',
+    'media-design': 'Media & Design Department',
+    'pr-sponsorship': 'PR & Sponsorship Department',
+    'events-marketing': 'Events & Marketing Department',
+    'technical': 'Technical Department',
+    'management': 'Management Department',
+  };
+  return mapping[dept] || `${dept.charAt(0).toUpperCase() + dept.slice(1)} Department`;
+};
+
 export default async function TeamPage() {
   const { data: members = [], error } = await supabase
     .from('team_members')
@@ -35,21 +49,24 @@ export default async function TeamPage() {
     github: m.github_url
   }));
 
-  const technical = safeMembers.filter(m => m.category === 'departments' && m.department === 'technical').map(m => ({
-    name: m.name,
-    photo: m.image_url,
-    role: m.role,
-    linkedin: m.linkedin_url,
-    github: m.github_url
-  }));
-
-  const management = safeMembers.filter(m => m.category === 'departments' && m.department === 'management').map(m => ({
-    name: m.name,
-    photo: m.image_url,
-    role: m.role,
-    linkedin: m.linkedin_url,
-    github: m.github_url
-  }));
+  // Dynamically group departments
+  const departmentGroups: Record<string, Array<{ name: string, photo: string, role: string, linkedin: string, github: string }>> = {};
+  
+  safeMembers
+    .filter(m => m.category === 'departments' && m.department)
+    .forEach(m => {
+      const dept = m.department.toLowerCase().trim();
+      if (!departmentGroups[dept]) {
+        departmentGroups[dept] = [];
+      }
+      departmentGroups[dept].push({
+        name: m.name,
+        photo: m.image_url,
+        role: m.role,
+        linkedin: m.linkedin_url,
+        github: m.github_url
+      });
+    });
 
   const isEmpty = safeMembers.length === 0;
 
@@ -102,35 +119,20 @@ export default async function TeamPage() {
                   </div>
                 )}
 
-                {technical.length > 0 && (
-                  <div className="mb-24">
+                {Object.entries(departmentGroups).map(([deptKey, deptMembers]) => (
+                  <div className="mb-24" key={deptKey}>
                     <h3 className="text-xl font-bold font-mono text-white mb-8 border-b border-[#292D32] pb-4 reveal">
-                      Technical Department
+                      {formatDeptName(deptKey)}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 reveal">
-                      {technical.map((member, i) => (
+                      {deptMembers.map((member, i) => (
                         <div key={i} className={`stagger-${(i % 3) + 1}`}>
                           <TeamMemberCard member={member} variant="dept" />
                         </div>
                       ))}
                     </div>
                   </div>
-                )}
-
-                {management.length > 0 && (
-                  <div className="mb-24">
-                    <h3 className="text-xl font-bold font-mono text-white mb-8 border-b border-[#292D32] pb-4 reveal">
-                      Management Department
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 reveal">
-                      {management.map((member, i) => (
-                        <div key={i} className={`stagger-${(i % 3) + 1}`}>
-                          <TeamMemberCard member={member} variant="dept" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                ))}
               </>
             )}
           </div>

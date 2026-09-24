@@ -1,34 +1,61 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { useEffect } from 'react'
 
-export default function AdminLogin() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  useEffect(() => {
+    if (searchParams.get('error') === 'unauthorized') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setError('This account is not authorized as an administrator.')
+    }
+  }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
-    if (error) {
-      setError(error.message)
+    if (signInError) {
+      setError(signInError.message)
       setLoading(false)
-    } else {
-      router.push('/admin')
-      router.refresh()
+      return
     }
+
+    // Verify admin allowlist
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: adminRecord } = await supabase
+        .from('admin_users')
+        .select('user_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!adminRecord) {
+        await supabase.auth.signOut()
+        setError('This account is not authorized as an administrator.')
+        setLoading(false)
+        return
+      }
+    }
+
+    router.push('/admin')
+    router.refresh()
   }
 
   return (
@@ -73,5 +100,13 @@ export default function AdminLogin() {
         </form>
       </div>
     </div>
+  )
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#101010] text-white">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

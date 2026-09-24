@@ -45,10 +45,10 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 border-t border-[#292D32] pt-8 flex flex-col md:flex-row items-center justify-between text-[#A6AAAE] text-[10px] uppercase font-mono tracking-widest">
         <p>&copy; 2026 e-Yantra MSIT. Built by engineers.</p>
         <div className="flex gap-6 mt-4 md:mt-0">
-          <Link href="https://instagram.com" className="hover:text-white transition-colors">Instagram</Link>
-          <Link href="https://linkedin.com" className="hover:text-white transition-colors">LinkedIn</Link>
-          <Link href="https://github.com" className="hover:text-white transition-colors">GitHub</Link>
-          <Link href="https://youtube.com" className="hover:text-white transition-colors">YouTube</Link>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+          <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">YouTube</a>
         </div>
       </div>
     </footer>

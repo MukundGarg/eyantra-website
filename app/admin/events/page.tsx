@@ -1,13 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import AdminImageUpload from '@/components/AdminImageUpload'
+import { Event } from '@/types/index'
+import { deleteManagedStorageImage } from '@/utils/storage'
+import { isValidHttpUrl } from '@/utils/validation'
 
 export default function EventsAdminPage() {
-  const [events, setEvents] = useState<any[]>([])
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   
   const initialForm = {
     title: '',
@@ -30,18 +35,22 @@ export default function EventsAdminPage() {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchEvents()
-  }, [])
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('events').select('*').order('display_order', { ascending: true })
+    const { data, error } = await supabase.from('events').select('*').order('display_order', { ascending: true })
+    if (error) {
+      setErrorMsg(`Failed to fetch: ${error.message}`)
+    }
     setEvents(data || [])
     setLoading(false)
-  }
+  }, [supabase])
 
-  const handleEdit = (event: any) => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchEvents()
+  }, [fetchEvents])
+
+  const handleEdit = (event: Event) => {
     setEditingId(event.id)
     setFormData({
       title: event.title || '',
@@ -59,34 +68,99 @@ export default function EventsAdminPage() {
       display_order: event.display_order || 0,
       published: event.published
     })
+    setErrorMsg(null)
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (!editingId && formData.cover_image) {
+      await deleteManagedStorageImage(supabase, 'events', formData.cover_image)
+    } else if (editingId) {
+      const event = events.find(e => e.id === editingId)
+      if (event && event.cover_image !== formData.cover_image && formData.cover_image) {
+        await deleteManagedStorageImage(supabase, 'events', formData.cover_image)
+      }
+    }
     setEditingId(null)
     setFormData(initialForm)
+    setErrorMsg(null)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return
-    await supabase.from('events').delete().eq('id', id)
-    fetchEvents()
+    setErrorMsg(null)
+    
+    const event = events.find(e => e.id === id)
+    
+    const { error } = await supabase.from('events').delete().eq('id', id)
+    if (error) {
+      setErrorMsg(`Failed to delete: ${error.message}`)
+    } else {
+      if (event && event.cover_image) {
+        await deleteManagedStorageImage(supabase, 'events', event.cover_image)
+      }
+      fetchEvents()
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
     
+    setSaving(true)
+    setErrorMsg(null)
+    
+    const slugToUse = (formData.slug || formData.title)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+
     const submitData = {
       ...formData,
-      slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-      event_date: formData.event_date ? formData.event_date : null
+      title: formData.title.trim(),
+      slug: slugToUse,
+      event_date: formData.event_date ? formData.event_date : null,
+      registration_url: formData.registration_url.trim()
     }
 
-    if (editingId) {
-      await supabase.from('events').update(submitData).eq('id', editingId)
-    } else {
-      await supabase.from('events').insert([submitData])
+    if (submitData.registration_url && !isValidHttpUrl(submitData.registration_url)) {
+      setErrorMsg("Registration URL must be a valid http(s) link");
+      setSaving(false);
+      return;
     }
-    handleCancel()
+
+    let opError = null;
+    let oldImageUrl = null;
+
+    if (editingId) {
+      const existingEvent = events.find(e => e.id === editingId);
+      if (existingEvent) oldImageUrl = existingEvent.cover_image;
+      const { error } = await supabase.from('events').update(submitData).eq('id', editingId)
+      opError = error;
+    } else {
+      const { error } = await supabase.from('events').insert([submitData])
+      opError = error;
+    }
+
+    setSaving(false)
+    
+    if (opError) {
+      if (opError.code === '23505') { // unique violation
+        setErrorMsg('Failed to save: An event with this slug already exists.');
+      } else {
+        setErrorMsg(`Failed to save: ${opError.message}`)
+      }
+      return
+    }
+    
+    if (editingId && oldImageUrl && oldImageUrl !== submitData.cover_image) {
+      await deleteManagedStorageImage(supabase, 'events', oldImageUrl);
+    }
+    
+    setEditingId(null)
+    setFormData(initialForm)
+    setErrorMsg(null)
     fetchEvents()
   }
 
@@ -94,6 +168,12 @@ export default function EventsAdminPage() {
     <div>
       <h1 className="text-2xl font-bold font-mono text-white mb-6">Manage Events</h1>
       
+      {errorMsg && (
+        <div className="bg-red-500/10 border border-red-500 text-red-500 p-4 rounded-xl mb-6 font-mono text-sm">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#292D32] mb-8">
         <h2 className="text-lg font-bold font-mono text-white mb-4">
           {editingId ? 'Edit Event' : 'Add New Event'}
@@ -102,47 +182,47 @@ export default function EventsAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Title *</label>
-              <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Slug (auto-generated if empty)</label>
-              <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Short Description</label>
-              <textarea value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono h-20" />
+              <textarea value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono h-20" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Event Type (Category)</label>
-              <input type="text" value={formData.event_type} onChange={e => setFormData({...formData, event_type: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.event_type} onChange={e => setFormData({...formData, event_type: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Registration URL (External)</label>
-              <input type="text" value={formData.registration_url} onChange={e => setFormData({...formData, registration_url: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="url" value={formData.registration_url} onChange={e => setFormData({...formData, registration_url: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Date</label>
-              <input type="date" value={formData.event_date} onChange={e => setFormData({...formData, event_date: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" style={{ colorScheme: 'dark' }} />
+              <input type="date" value={formData.event_date} onChange={e => setFormData({...formData, event_date: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" style={{ colorScheme: 'dark' }} />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Time</label>
-              <input type="text" value={formData.event_time} onChange={e => setFormData({...formData, event_time: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.event_time} onChange={e => setFormData({...formData, event_time: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Location</label>
-              <input type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Status</label>
-              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono">
+              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono">
                 <option value="upcoming">Upcoming</option>
-                <option value="past">Past</option>
                 <option value="ongoing">Ongoing</option>
+                <option value="past">Past</option>
               </select>
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Display Order</label>
-              <input type="number" value={formData.display_order} onChange={e => setFormData({...formData, display_order: parseInt(e.target.value) || 0})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="number" value={formData.display_order} onChange={e => setFormData({...formData, display_order: parseInt(e.target.value) || 0})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             
             <div className="md:col-span-2 flex gap-6 mt-2">
@@ -162,19 +242,27 @@ export default function EventsAdminPage() {
             <AdminImageUpload 
               bucket="events" 
               currentImageUrl={formData.cover_image} 
-              onUploadSuccess={(url) => setFormData({...formData, cover_image: url})} 
+              onUploadSuccess={async (url) => {
+                if (formData.cover_image) {
+                  const isPersisted = editingId && events.find(e => e.id === editingId)?.cover_image === formData.cover_image;
+                  if (!isPersisted) {
+                    await deleteManagedStorageImage(supabase, 'events', formData.cover_image);
+                  }
+                }
+                setFormData({...formData, cover_image: url})
+              }} 
             />
           </div>
 
           <div className="flex gap-2 pt-4">
-            <button type="submit" className="bg-[#d83a32] hover:bg-[#b02c25] text-white font-bold font-mono py-2 px-4 rounded transition-colors">
-              {editingId ? 'Update Event' : 'Add Event'}
+            <button type="submit" disabled={saving} className="bg-[#d83a32] hover:bg-[#b02c25] text-white font-bold font-mono py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving ? 'Saving...' : (editingId ? 'Update Event' : 'Add Event')}
             </button>
-            {editingId && (
-              <button type="button" onClick={handleCancel} className="bg-[#292D32] hover:bg-[#3a3f45] text-white font-bold font-mono py-2 px-4 rounded transition-colors">
+            {editingId || (!editingId && (formData.title || formData.cover_image)) ? (
+              <button type="button" onClick={handleCancel} disabled={saving} className="bg-[#292D32] hover:bg-[#3a3f45] text-white font-bold font-mono py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Cancel
               </button>
-            )}
+            ) : null}
           </div>
         </form>
       </div>

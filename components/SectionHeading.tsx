@@ -1,4 +1,4 @@
-import Iconify from "@/components/Iconify";
+
 export default function SectionHeading({ title, highlight, subtitle }: { title: string, highlight?: string, subtitle: string }) {
   return (
     <div className="reveal text-center mb-20">

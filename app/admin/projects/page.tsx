@@ -1,13 +1,18 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import AdminImageUpload from '@/components/AdminImageUpload'
+import { Project } from '@/types/index'
+import { deleteManagedStorageImage } from '@/utils/storage'
+import { isValidHttpUrl } from '@/utils/validation'
 
 export default function ProjectsAdminPage() {
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
   
   const initialForm = {
     title: '',
@@ -20,7 +25,7 @@ export default function ProjectsAdminPage() {
     github_url: '',
     demo_url: '',
     year: new Date().getFullYear(),
-    status: '',
+    status: 'completed',
     featured: false,
     display_order: 0,
     published: true
@@ -30,18 +35,22 @@ export default function ProjectsAdminPage() {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchProjects()
-  }, [])
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     setLoading(true)
-    const { data } = await supabase.from('projects').select('*').order('display_order', { ascending: true })
+    const { data, error } = await supabase.from('projects').select('*').order('display_order', { ascending: true })
+    if (error) {
+      setErrorMsg(`Failed to fetch: ${error.message}`)
+    }
     setProjects(data || [])
     setLoading(false)
-  }
+  }, [supabase])
 
-  const handleEdit = (project: any) => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchProjects()
+  }, [fetchProjects])
+
+  const handleEdit = (project: Project) => {
     setEditingId(project.id)
     setFormData({
       title: project.title || '',
@@ -54,42 +63,115 @@ export default function ProjectsAdminPage() {
       github_url: project.github_url || '',
       demo_url: project.demo_url || '',
       year: project.year || new Date().getFullYear(),
-      status: project.status || '',
+      status: project.status || 'completed',
       featured: project.featured,
       display_order: project.display_order || 0,
       published: project.published
     })
+    setErrorMsg(null)
   }
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
+    if (!editingId && formData.cover_image) {
+      await deleteManagedStorageImage(supabase, 'projects', formData.cover_image)
+    } else if (editingId) {
+      const project = projects.find(p => p.id === editingId)
+      if (project && project.cover_image !== formData.cover_image && formData.cover_image) {
+        await deleteManagedStorageImage(supabase, 'projects', formData.cover_image)
+      }
+    }
     setEditingId(null)
     setFormData(initialForm)
+    setErrorMsg(null)
   }
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this project?')) return
-    await supabase.from('projects').delete().eq('id', id)
-    fetchProjects()
+    setErrorMsg(null)
+    
+    const project = projects.find(p => p.id === id)
+    
+    const { error } = await supabase.from('projects').delete().eq('id', id)
+    if (error) {
+      setErrorMsg(`Failed to delete: ${error.message}`)
+    } else {
+      if (project && project.cover_image) {
+        await deleteManagedStorageImage(supabase, 'projects', project.cover_image)
+      }
+      fetchProjects()
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (saving) return
     
-    // Convert tech_stack string to array
-    const techArray = formData.tech_stack.split(',').map(s => s.trim()).filter(s => s.length > 0)
+    setSaving(true)
+    setErrorMsg(null)
     
+    // Convert tech_stack string to array, trim, remove empty, deduplicate
+    const rawTechArray = formData.tech_stack.split(',').map(s => s.trim()).filter(s => s.length > 0)
+    const techArray = Array.from(new Set(rawTechArray))
+    
+    const slugToUse = (formData.slug || formData.title)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+
     const submitData = {
       ...formData,
+      title: formData.title.trim(),
       tech_stack: techArray,
-      slug: formData.slug || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      slug: slugToUse,
+      github_url: formData.github_url.trim(),
+      demo_url: formData.demo_url.trim()
     }
 
-    if (editingId) {
-      await supabase.from('projects').update(submitData).eq('id', editingId)
-    } else {
-      await supabase.from('projects').insert([submitData])
+    // URL Validation
+    if (submitData.github_url && !isValidHttpUrl(submitData.github_url)) {
+      setErrorMsg("GitHub URL must be a valid http(s) link");
+      setSaving(false);
+      return;
     }
-    handleCancel()
+    if (submitData.demo_url && !isValidHttpUrl(submitData.demo_url)) {
+      setErrorMsg("Demo URL must be a valid http(s) link");
+      setSaving(false);
+      return;
+    }
+
+    let opError = null;
+    let oldImageUrl = null;
+
+    if (editingId) {
+      const existingProject = projects.find(p => p.id === editingId);
+      if (existingProject) oldImageUrl = existingProject.cover_image;
+      const { error } = await supabase.from('projects').update(submitData).eq('id', editingId)
+      opError = error;
+    } else {
+      const { error } = await supabase.from('projects').insert([submitData])
+      opError = error;
+    }
+
+    setSaving(false)
+    
+    if (opError) {
+      if (opError.code === '23505') { // unique violation
+        setErrorMsg('Failed to save: A project with this slug already exists.');
+      } else {
+        setErrorMsg(`Failed to save: ${opError.message}`)
+      }
+      return
+    }
+    
+    if (editingId && oldImageUrl && oldImageUrl !== submitData.cover_image) {
+      await deleteManagedStorageImage(supabase, 'projects', oldImageUrl);
+    }
+    
+    setEditingId(null)
+    setFormData(initialForm)
+    setErrorMsg(null)
     fetchProjects()
   }
 
@@ -97,6 +179,12 @@ export default function ProjectsAdminPage() {
     <div>
       <h1 className="text-2xl font-bold font-mono text-white mb-6">Manage Projects</h1>
       
+      {errorMsg && (
+        <div className="bg-red-500/10 border border-red-500 text-red-500 p-4 rounded-xl mb-6 font-mono text-sm">
+          {errorMsg}
+        </div>
+      )}
+
       <div className="bg-[#1a1a1a] p-6 rounded-xl border border-[#292D32] mb-8">
         <h2 className="text-lg font-bold font-mono text-white mb-4">
           {editingId ? 'Edit Project' : 'Add New Project'}
@@ -105,39 +193,48 @@ export default function ProjectsAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Title *</label>
-              <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Slug (auto-generated if empty)</label>
-              <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.slug} onChange={e => setFormData({...formData, slug: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div className="md:col-span-2">
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Short Description</label>
-              <textarea value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono h-20" />
+              <textarea value={formData.short_description} onChange={e => setFormData({...formData, short_description: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono h-20" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Category</label>
-              <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Tech Stack (comma separated)</label>
-              <input type="text" value={formData.tech_stack} onChange={e => setFormData({...formData, tech_stack: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="text" value={formData.tech_stack} onChange={e => setFormData({...formData, tech_stack: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">GitHub URL</label>
-              <input type="text" value={formData.github_url} onChange={e => setFormData({...formData, github_url: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="url" value={formData.github_url} onChange={e => setFormData({...formData, github_url: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Demo URL</label>
-              <input type="text" value={formData.demo_url} onChange={e => setFormData({...formData, demo_url: e.target.value})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="url" value={formData.demo_url} onChange={e => setFormData({...formData, demo_url: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Year</label>
-              <input type="number" value={formData.year} onChange={e => setFormData({...formData, year: parseInt(e.target.value) || 0})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="number" value={formData.year} onChange={e => setFormData({...formData, year: parseInt(e.target.value) || 0})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+            </div>
+            <div>
+              <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Status</label>
+              <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono">
+                <option value="completed">Completed</option>
+                <option value="in-progress">In Progress</option>
+                <option value="planned">Planned</option>
+                <option value="archived">Archived</option>
+              </select>
             </div>
             <div>
               <label className="block text-[#A6AAAE] text-sm font-mono mb-1">Display Order</label>
-              <input type="number" value={formData.display_order} onChange={e => setFormData({...formData, display_order: parseInt(e.target.value) || 0})} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
+              <input type="number" value={formData.display_order} onChange={e => setFormData({...formData, display_order: parseInt(e.target.value) || 0})} disabled={saving} className="w-full bg-[#101010] border border-[#292D32] rounded p-2 text-white font-mono" />
             </div>
             
             <div className="md:col-span-2 flex gap-6 mt-2">
@@ -157,19 +254,27 @@ export default function ProjectsAdminPage() {
             <AdminImageUpload 
               bucket="projects" 
               currentImageUrl={formData.cover_image} 
-              onUploadSuccess={(url) => setFormData({...formData, cover_image: url})} 
+              onUploadSuccess={async (url) => {
+                if (formData.cover_image) {
+                  const isPersisted = editingId && projects.find(p => p.id === editingId)?.cover_image === formData.cover_image;
+                  if (!isPersisted) {
+                    await deleteManagedStorageImage(supabase, 'projects', formData.cover_image);
+                  }
+                }
+                setFormData({...formData, cover_image: url})
+              }} 
             />
           </div>
 
           <div className="flex gap-2 pt-4">
-            <button type="submit" className="bg-[#d83a32] hover:bg-[#b02c25] text-white font-bold font-mono py-2 px-4 rounded transition-colors">
-              {editingId ? 'Update Project' : 'Add Project'}
+            <button type="submit" disabled={saving} className="bg-[#d83a32] hover:bg-[#b02c25] text-white font-bold font-mono py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving ? 'Saving...' : (editingId ? 'Update Project' : 'Add Project')}
             </button>
-            {editingId && (
-              <button type="button" onClick={handleCancel} className="bg-[#292D32] hover:bg-[#3a3f45] text-white font-bold font-mono py-2 px-4 rounded transition-colors">
+            {editingId || (!editingId && (formData.title || formData.cover_image)) ? (
+              <button type="button" onClick={handleCancel} disabled={saving} className="bg-[#292D32] hover:bg-[#3a3f45] text-white font-bold font-mono py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 Cancel
               </button>
-            )}
+            ) : null}
           </div>
         </form>
       </div>

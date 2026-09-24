@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
-import ProjectCard from "@/components/ProjectCard";
-import { projectFilters } from "@/data/projects";
+import ProjectsList from "@/components/ProjectsList";
 import { supabase } from "@/utils/supabase";
 
 export const revalidate = 60;
@@ -11,6 +10,7 @@ export default async function ProjectsPage() {
   const { data: projects = [], error } = await supabase
     .from('projects')
     .select('*')
+    .eq('published', true) // PUBLIC PAGE: Only show published projects
     .order('display_order', { ascending: true });
 
   if (error) {
@@ -24,10 +24,9 @@ export default async function ProjectsPage() {
     category: p.category,
     desc: p.short_description,
     techStack: p.tech_stack,
-    link: p.demo_url || '#'
+    link: p.demo_url,
+    githubUrl: p.github_url
   }));
-
-  const isEmpty = mappedProjects.length === 0;
 
   return (
     <>
@@ -42,34 +41,7 @@ export default async function ProjectsPage() {
               subtitle="Showcasing our journey from concept to deployment."
             />
 
-            <div className="reveal flex flex-wrap justify-center gap-2 mb-12" id="project-filters">
-              {projectFilters.map((filter, i) => (
-                <button
-                  key={filter}
-                  className={`px-4 py-1.5 text-[10px] font-bold font-mono uppercase tracking-widest rounded border transition-all cursor-pointer ${
-                    i === 0
-                      ? "bg-[#d83a32] text-white border-[#d83a32]"
-                      : "bg-transparent text-[#A6AAAE] border-[#292D32] hover:border-white/20 hover:text-white"
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 reveal" id="projects-container">
-              {isEmpty ? (
-                <div className="col-span-full text-center text-[#A6AAAE] py-20 font-mono">
-                  No projects found at the moment.
-                </div>
-              ) : (
-                mappedProjects.map((project, i) => (
-                  <div key={i} className={`stagger-${(i % 3) + 1}`}>
-                    <ProjectCard project={project} />
-                  </div>
-                ))
-              )}
-            </div>
+            <ProjectsList projects={mappedProjects} />
 
           </div>
         </section>

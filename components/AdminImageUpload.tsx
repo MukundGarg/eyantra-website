@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import Image from 'next/image'
 
 interface AdminImageUploadProps {
   bucket: 'team' | 'projects' | 'events'
@@ -16,6 +15,21 @@ export default function AdminImageUpload({ bucket, currentImageUrl, onUploadSucc
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+
+  // Sync preview url if the parent changes the current image
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreviewUrl(currentImageUrl || null)
+  }, [currentImageUrl])
+
+  // Cleanup object URLs on unmount or preview URL change
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
@@ -31,6 +45,9 @@ export default function AdminImageUpload({ bucket, currentImageUrl, onUploadSucc
       // Basic validation
       if (!file.type.startsWith('image/')) {
         throw new Error('File must be an image.')
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        throw new Error('Only JPEG, PNG, and WebP images are supported.')
       }
       if (file.size > 5 * 1024 * 1024) {
         throw new Error('File size must be less than 5MB.')
@@ -60,11 +77,18 @@ export default function AdminImageUpload({ bucket, currentImageUrl, onUploadSucc
         onUploadSuccess(data.publicUrl)
         setPreviewUrl(data.publicUrl)
       }
-    } catch (error: any) {
-      setError(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError(String(error))
+      }
       setPreviewUrl(currentImageUrl || null)
     } finally {
       setUploading(false)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     }
   }
 
@@ -84,7 +108,7 @@ export default function AdminImageUpload({ bucket, currentImageUrl, onUploadSucc
       <div>
         <input
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           onChange={handleUpload}
           disabled={uploading}
           ref={fileInputRef}

@@ -1,5 +1,4 @@
 "use client";
-import Iconify from "@/components/Iconify";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -65,13 +64,14 @@ export default function AnimationProvider({ children }: { children: React.ReactN
     }
 
     // Wrap initialization in a small delay to ensure DOM is ready after navigation
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       initScrollReveals();
     }, 50);
     
     const cleanupNav = initNavbarScroll();
 
     return () => {
+      clearTimeout(timeoutId);
       if (observer) observer.disconnect();
       if (cleanupNav) cleanupNav();
     };

@@ -2,10 +2,30 @@ import Iconify from "@/components/Iconify";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProjectCard from "@/components/ProjectCard";
-import { projects } from "@/data/projects";
 import Link from "next/link";
+import { supabase } from "@/utils/supabase";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const { data: featuredProjects = [] } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('published', true)
+    .eq('featured', true)
+    .order('display_order', { ascending: true })
+    .limit(3);
+
+  const mappedProjects = (featuredProjects || []).map(p => ({
+    image: p.cover_image,
+    title: p.title,
+    category: p.category,
+    desc: p.short_description,
+    techStack: p.tech_stack,
+    link: p.demo_url,
+    githubUrl: p.github_url
+  }));
+
   return (
     <>
       <Navbar />
@@ -137,7 +157,7 @@ export default function Home() {
             </div>
 
             <div className="reveal grid grid-cols-1 md:grid-cols-3 gap-8">
-              {projects.slice(0, 3).map((project, i) => (
+              {mappedProjects.map((project, i) => (
                 <div key={i} className={`stagger-${i + 1}`}>
                   <ProjectCard project={project} />
                 </div>
