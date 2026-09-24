@@ -1,11 +1,14 @@
 "use client";
 import Iconify from "@/components/Iconify";
-
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AnimationProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let observer: IntersectionObserver | null = null;
 
     function initScrollReveals() {
       if (prefersReducedMotion) {
@@ -15,12 +18,12 @@ export default function AnimationProvider({ children }: { children: React.ReactN
         return;
       }
 
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
               entry.target.classList.add("revealed");
-              observer.unobserve(entry.target);
+              if (observer) observer.unobserve(entry.target);
             }
           });
         },
@@ -30,7 +33,9 @@ export default function AnimationProvider({ children }: { children: React.ReactN
         }
       );
 
-      document.querySelectorAll(".reveal, .reveal-left, .reveal-scale").forEach((el) => observer.observe(el));
+      document.querySelectorAll(".reveal, .reveal-left, .reveal-scale").forEach((el) => {
+        if (observer) observer.observe(el);
+      });
     }
 
     function initNavbarScroll() {
@@ -59,13 +64,18 @@ export default function AnimationProvider({ children }: { children: React.ReactN
       return () => window.removeEventListener("scroll", onScroll);
     }
 
-    initScrollReveals();
+    // Wrap initialization in a small delay to ensure DOM is ready after navigation
+    setTimeout(() => {
+      initScrollReveals();
+    }, 50);
+    
     const cleanupNav = initNavbarScroll();
 
     return () => {
+      if (observer) observer.disconnect();
       if (cleanupNav) cleanupNav();
     };
-  }, []);
+  }, [pathname]);
 
   return <>{children}</>;
 }
