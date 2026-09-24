@@ -29,7 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ]
 
   return (
-    <div className="min-h-screen bg-[#101010] text-white font-sans flex flex-col md:flex-row">
+    <div className="relative z-10 min-h-screen bg-[#101010] text-white font-sans flex flex-col md:flex-row">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 bg-[#1a1a1a] border-r border-[#292D32] p-6 flex flex-col">
         <div className="mb-8">
