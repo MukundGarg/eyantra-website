@@ -27,7 +27,7 @@ export default function TeamAdminPage() {
     active: true
   })
 
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   const fetchMembers = useCallback(async () => {
     setLoading(true)

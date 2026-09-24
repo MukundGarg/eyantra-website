@@ -33,7 +33,7 @@ export default function EventsAdminPage() {
 
   const [formData, setFormData] = useState(initialForm)
 
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   const fetchEvents = useCallback(async () => {
     setLoading(true)
