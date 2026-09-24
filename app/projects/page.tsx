@@ -1,4 +1,3 @@
-import Iconify from "@/components/Iconify";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
