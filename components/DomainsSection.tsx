@@ -1,7 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import Iconify from "@/components/Iconify";
+import DomainVisualizer from "@/components/DomainVisualizer";
+
+const subscribeReducedMotion = (notify: () => void) => {
+  if (typeof window === "undefined") return () => {};
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  query.addEventListener("change", notify);
+  return () => query.removeEventListener("change", notify);
+};
+
+const getReducedMotionSnapshot = () => {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+};
 
 const DOMAINS = [
   {
@@ -39,14 +52,96 @@ const DOMAINS = [
 ];
 
 export default function DomainsSection() {
-  const [activeDomain, setActiveDomain] = useState<number | null>(null);
+  const [activeDomain, setActiveDomain] = useState<number>(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const backgroundRef = useRef<HTMLDivElement>(null);
+
+  const reducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    getReducedMotionSnapshot,
+    () => false
+  );
+
+  // Scroll Spy to automatically activate domain closest to viewport center
+  useEffect(() => {
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const windowCenter = window.innerHeight * 0.48;
+          let closestIndex = 0;
+          let minDistance = Infinity;
+
+          rowRefs.current.forEach((el, index) => {
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const elCenter = rect.top + rect.height / 2;
+            const dist = Math.abs(elCenter - windowCenter);
+
+            if (dist < minDistance) {
+              minDistance = dist;
+              closestIndex = index;
+            }
+          });
+
+          // Only trigger state update if domain index changed
+          setActiveDomain((prev) => (prev !== closestIndex ? closestIndex : prev));
+
+          // Parallax background drift
+          if (backgroundRef.current && sectionRef.current && !reducedMotion) {
+            const secRect = sectionRef.current.getBoundingClientRect();
+            const bgY = (secRect.top / window.innerHeight) * -25;
+            backgroundRef.current.style.transform = `translate3d(0, ${bgY.toFixed(1)}px, 0)`;
+          }
+
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [reducedMotion]);
 
   return (
-    <section className="py-32 px-6 md:px-12 relative overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#d83a32]/[0.03] blur-[150px] rounded-full pointer-events-none" />
+    <section
+      ref={sectionRef}
+      className="py-36 md:py-48 px-6 md:px-12 relative overflow-hidden bg-[#0B0D10] select-none border-b border-[#292D32]/60"
+    >
+      {/* Layer 1: Background Parallax Coordinate Grid & Rings */}
+      <div
+        ref={backgroundRef}
+        className="absolute inset-0 pointer-events-none overflow-hidden will-change-transform"
+      >
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="reveal mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[#292D32] pb-8">
+        {/* Layer 2: Subtle radial geometry */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#d83a32]/[0.035] blur-[160px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/[0.02] pointer-events-none" />
+
+        {/* Layer 3: Technical coordinate marks */}
+        <div className="hidden lg:block absolute top-20 right-16 font-mono text-[10px] text-zinc-600 tracking-widest uppercase">
+          SEC.03 // DOMAIN_ARCHITECTURE // STICKY_HUD_ACTIVE
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Section Header */}
+        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[#292D32] pb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
@@ -54,70 +149,104 @@ export default function DomainsSection() {
                 Disciplines {"//"} Laboratory Domains
               </span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-bold font-mono tracking-tighter text-white">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tighter text-white">
               Engineering <span className="text-[#d83a32]">Disciplines</span>
             </h2>
           </div>
           <p className="text-sm font-mono text-[#A6AAAE] max-w-sm mt-4 md:mt-0 font-light leading-relaxed">
-            Four specialized technical tracks converging to form robust autonomous hardware systems.
+            Scroll to inspect each track. Four specialized technical domains converging into unified autonomous robotics.
           </p>
         </div>
 
-        <div className="divide-y divide-[#292D32]/80">
-          {DOMAINS.map((domain, index) => {
-            const isHovered = activeDomain === index;
+        {/* Mobile Visualizer Presentation (clean card above domains on mobile) */}
+        <div className="lg:hidden mb-12">
+          <DomainVisualizer activeDomain={activeDomain} />
+        </div>
 
-            return (
-              <div
-                key={domain.num}
-                className="group py-10 md:py-14 transition-all duration-300 cursor-pointer"
-                onMouseEnter={() => setActiveDomain(index)}
-                onMouseLeave={() => setActiveDomain(null)}
-              >
-                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-                  <div className="flex items-baseline gap-6 md:gap-10">
+        {/* Desktop Two-Column Layout (LEFT: Interactive Rows, RIGHT: Sticky Visualizer) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          {/* LEFT: Scroll-Spied Domain Rows */}
+          <div
+            className="lg:col-span-7 divide-y divide-[#292D32]/80"
+            style={{ perspective: "1000px" }}
+          >
+            {DOMAINS.map((domain, index) => {
+              const isActive = activeDomain === index;
+
+              return (
+                <div
+                  key={domain.num}
+                  ref={(el) => {
+                    rowRefs.current[index] = el;
+                  }}
+                  onClick={() => setActiveDomain(index)}
+                  onMouseEnter={() => setActiveDomain(index)}
+                  className={`py-10 md:py-14 transition-all duration-500 cursor-pointer will-change-transform ${
+                    isActive
+                      ? "opacity-100 scale-[1.02] translate-x-2"
+                      : "opacity-45 scale-[0.98] hover:opacity-75"
+                  }`}
+                  style={{
+                    transform: isActive
+                      ? "translate3d(8px, 0, 15px)"
+                      : "translate3d(0, 0, -8px)",
+                  }}
+                >
+                  <div className="flex items-baseline gap-6 md:gap-8 mb-3">
                     <span
-                      className={`text-sm md:text-base font-mono transition-colors ${
-                        isHovered ? "text-[#d83a32]" : "text-[#A6AAAE]/50"
+                      className={`text-sm md:text-base font-mono font-bold transition-colors ${
+                        isActive ? "text-[#d83a32]" : "text-[#A6AAAE]/50"
                       }`}
                     >
                       {domain.num}
                     </span>
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <h3
-                          className={`text-3xl md:text-5xl font-mono font-bold tracking-tight transition-transform duration-300 ${
-                            isHovered ? "text-white translate-x-2" : "text-zinc-300"
-                          }`}
-                        >
-                          {domain.title}
-                        </h3>
-                        <Iconify
-                          icon={domain.icon}
-                          className={`w-5 h-5 transition-all ${
-                            isHovered ? "text-[#d83a32] opacity-100" : "text-zinc-600 opacity-40"
-                          }`}
-                        />
+
+                    <div className="flex items-center gap-3">
+                      <h3
+                        className={`text-2xl sm:text-3xl md:text-4xl font-mono font-bold tracking-tight transition-colors ${
+                          isActive ? "text-white" : "text-zinc-400"
+                        }`}
+                      >
+                        {domain.title}
+                      </h3>
+                      <div
+                        className={`p-1.5 rounded-lg transition-all ${
+                          isActive
+                            ? "bg-[#d83a32]/20 text-[#d83a32] border border-[#d83a32]/40"
+                            : "bg-transparent text-zinc-600"
+                        }`}
+                      >
+                        <Iconify icon={domain.icon} className="w-5 h-5" />
                       </div>
-                      <p className="text-xs font-mono uppercase tracking-widest text-[#A6AAAE] mt-2">
-                        {domain.subtitle}
-                      </p>
                     </div>
                   </div>
 
-                  <div className="lg:max-w-md xl:max-w-lg lg:pl-6">
-                    <p className="text-sm text-[#A6AAAE] leading-relaxed font-light mb-4">
+                  <p className="text-xs font-mono uppercase tracking-widest text-[#d83a32]/90 mb-3 pl-10 md:pl-12 font-medium">
+                    {domain.subtitle}
+                  </p>
+
+                  <div className="pl-10 md:pl-12">
+                    <p
+                      className={`text-sm leading-relaxed font-light mb-4 transition-colors ${
+                        isActive ? "text-[#F3F2EE]" : "text-[#A6AAAE]"
+                      }`}
+                    >
                       {domain.desc}
                     </p>
+
+                    {/* Staggered Tag Illumination */}
                     <div className="flex flex-wrap gap-2">
-                      {domain.tags.map((tag) => (
+                      {domain.tags.map((tag, tagIdx) => (
                         <span
                           key={tag}
-                          className={`text-[10px] font-mono px-2.5 py-1 rounded transition-colors ${
-                            isHovered
-                              ? "bg-white/10 text-white border border-white/20"
-                              : "bg-white/[0.03] text-[#A6AAAE] border border-white/5"
+                          className={`text-[10px] font-mono px-2.5 py-1 rounded transition-all duration-300 ${
+                            isActive
+                              ? "bg-white/[0.08] text-white border border-[#d83a32]/50 shadow-[0_0_10px_rgba(216,58,50,0.15)]"
+                              : "bg-white/[0.02] text-[#A6AAAE]/60 border border-white/5"
                           }`}
+                          style={{
+                            transitionDelay: isActive ? `${tagIdx * 60}ms` : "0ms",
+                          }}
                         >
                           {tag}
                         </span>
@@ -125,9 +254,14 @@ export default function DomainsSection() {
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* RIGHT: Sticky Persistent Domain Visualizer (Desktop only) */}
+          <div className="hidden lg:block lg:col-span-5 sticky top-32 self-start">
+            <DomainVisualizer activeDomain={activeDomain} />
+          </div>
         </div>
       </div>
     </section>
