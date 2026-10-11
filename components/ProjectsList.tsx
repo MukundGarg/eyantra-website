@@ -1,28 +1,32 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import ProjectCard, { ProjectProps } from './ProjectCard'
+import { useState } from "react";
+import ProjectCard, { ProjectProps } from "./ProjectCard";
 
 export default function ProjectsList({ projects }: { projects: ProjectProps[] }) {
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [activeFilter, setActiveFilter] = useState("All");
 
-  const categories = ['All', ...Array.from(new Set(projects.map(p => p.category).filter(Boolean)))]
+  const categories = [
+    "All",
+    ...Array.from(new Set(projects.map((p) => p.category).filter(Boolean))),
+  ];
 
-  const filteredProjects = activeFilter === 'All' 
-    ? projects 
-    : projects.filter(p => p.category === activeFilter)
+  const filteredProjects =
+    activeFilter === "All"
+      ? projects
+      : projects.filter((p) => p.category === activeFilter);
 
   return (
     <>
-      <div className="reveal flex flex-wrap justify-center gap-2 mb-12" id="project-filters">
+      <div className="reveal flex flex-wrap justify-center gap-2 mb-16" id="project-filters">
         {categories.map((filter) => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter as string)}
-            className={`px-4 py-1.5 text-[10px] font-bold font-mono uppercase tracking-widest rounded border transition-all cursor-pointer ${
+            className={`px-4 py-2 text-[10px] font-bold font-mono uppercase tracking-widest rounded-full border transition-all cursor-pointer ${
               activeFilter === filter
-                ? "bg-[#d83a32] text-white border-[#d83a32]"
-                : "bg-transparent text-[#A6AAAE] border-[#292D32] hover:border-white/20 hover:text-white"
+                ? "bg-[#d83a32] text-white border-[#d83a32] shadow-[0_0_15px_rgba(216,58,50,0.4)]"
+                : "bg-white/[0.03] text-[#A6AAAE] border-[#292D32] hover:border-white/30 hover:text-white"
             }`}
           >
             {filter}
@@ -30,10 +34,13 @@ export default function ProjectsList({ projects }: { projects: ProjectProps[] })
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 reveal" id="projects-container">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 reveal"
+        id="projects-container"
+      >
         {filteredProjects.length === 0 ? (
-          <div className="col-span-full text-center text-[#A6AAAE] py-20 font-mono">
-            No projects found in this category.
+          <div className="col-span-full text-center text-[#A6AAAE] py-24 font-mono text-sm border border-dashed border-[#292D32] rounded-2xl">
+            {"// NO REPOSITORIES FOUND IN THIS DISCIPLINE"}
           </div>
         ) : (
           filteredProjects.map((project, i) => (
@@ -44,5 +51,5 @@ export default function ProjectsList({ projects }: { projects: ProjectProps[] })
         )}
       </div>
     </>
-  )
+  );
 }
