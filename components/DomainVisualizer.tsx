@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import Iconify from "@/components/Iconify";
 
 const subscribeReducedMotion = (notify: () => void) => {
   if (typeof window === "undefined") return () => {};
@@ -188,17 +187,16 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
         {/* Top HUD Telemetry Bar */}
         <div className="relative z-10 flex items-center justify-between pb-3 border-b border-[#D9D9D5] font-mono text-[10px]">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#d83a32] animate-ping" />
-            <span className="text-[#111214] font-bold tracking-wider uppercase">
-              {activeDomain === 0 && "DISCIPLINE 01 // ROBOTICS & KINEMATICS"}
-              {activeDomain === 1 && "DISCIPLINE 02 // SILICON & FIRMWARE"}
-              {activeDomain === 2 && "DISCIPLINE 03 // CLOSED-LOOP CONTROL"}
-              {activeDomain === 3 && "DISCIPLINE 04 // EDGE AI & IOT"}
+            <span className="w-2 h-2 rounded-full bg-[#d83a32]" />
+            <span className="text-[#111214] font-semibold tracking-wider uppercase font-mono">
+              {activeDomain === 0 && "01 • ROBOTICS & KINEMATICS"}
+              {activeDomain === 1 && "02 • EMBEDDED & HARDWARE"}
+              {activeDomain === 2 && "03 • AUTOMATION & CONTROL"}
+              {activeDomain === 3 && "04 • AI & CONNECTED DEVICES"}
             </span>
           </div>
-          <div className="text-[#5F6368] uppercase tracking-widest flex items-center gap-1.5 font-medium">
-            <Iconify icon="lucide:radio" className="w-3.5 h-3.5 text-[#d83a32]" />
-            <span>LIVE TELEMETRY</span>
+          <div className="text-[#5F6368] font-mono tracking-wider text-[9px] uppercase">
+            <span>INTERACTIVE MODEL</span>
           </div>
         </div>
 
@@ -259,9 +257,9 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 </g>
               </g>
 
-              {/* Kinematics Telemetry Overlay (Updated directly via text refs) */}
+              {/* Kinematics Overlay (Updated directly via text refs) */}
               <text x="210" y="35" fill="#5F6368" fontSize="9" fontFamily="monospace">
-                IK.SOLVER: ACTIVE
+                ARM KINEMATICS
               </text>
               <text ref={theta1TextRef} x="210" y="50" fill="#d83a32" fontSize="9" fontFamily="monospace">
                 THETA_1: -15.0°
@@ -270,7 +268,7 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 THETA_2: 40.0°
               </text>
               <text x="210" y="80" fill="#5F6368" fontSize="9" fontFamily="monospace">
-                KINEMATICS // 6-DOF
+                2-LINK ARM
               </text>
             </svg>
           </div>
@@ -408,9 +406,9 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               </g>
 
               {/* Loop Status Metrics */}
-              <text x="25" y="35" fill="#5F6368" fontSize="8" fontFamily="monospace">CONTROL LOOP: ACTIVE</text>
-              <text x="25" y="48" fill="#10b981" fontSize="8" fontFamily="monospace">FEEDBACK: CALIBRATED</text>
-              <text x="25" y="61" fill="#d83a32" fontSize="8" fontFamily="monospace">OUTPUT: REGULATED</text>
+              <text x="25" y="35" fill="#5F6368" fontSize="8" fontFamily="monospace">CLOSED LOOP</text>
+              <text x="25" y="48" fill="#10b981" fontSize="8" fontFamily="monospace">PID FEEDBACK</text>
+              <text x="25" y="61" fill="#d83a32" fontSize="8" fontFamily="monospace">ENCODER CONTROL</text>
             </svg>
           </div>
 
@@ -499,12 +497,12 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 </g>
               ))}
 
-              {/* Telemetry Header Tags */}
+              {/* Tags */}
               <text x="65" y="30" fill="#5F6368" fontSize="8" fontFamily="monospace" textAnchor="middle">
                 INPUT_SENSORS
               </text>
               <text x="160" y="25" fill="#111214" fontSize="8" fontFamily="monospace" textAnchor="middle">
-                TINYML_INT8
+                NEURAL_NET
               </text>
               <text x="255" y="30" fill="#10b981" fontSize="8" fontFamily="monospace" textAnchor="middle">
                 DECISION_OUT
@@ -513,18 +511,18 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
           </div>
         </div>
 
-        {/* Bottom Inspection Stats Strip */}
+        {/* Bottom Strip */}
         <div className="relative z-10 pt-3 border-t border-[#D9D9D5] flex items-center justify-between font-mono text-[10px] text-[#5F6368]">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
             <span className="text-[#111214] font-medium">
-              {activeDomain === 0 && "KINEMATIC TRACE // READY"}
-              {activeDomain === 1 && "FIRMWARE STATUS // EXECUTING"}
-              {activeDomain === 2 && "CONTROL LOOP // ONLINE"}
-              {activeDomain === 3 && "INFERENCE ENGINE // ACTIVE"}
+              {activeDomain === 0 && "Robotics Simulation"}
+              {activeDomain === 1 && "Hardware Bus Schematic"}
+              {activeDomain === 2 && "PID Motion Control"}
+              {activeDomain === 3 && "Neural Network Graph"}
             </span>
           </div>
-          <span className="text-[#d83a32] font-bold">STATE LOCKED</span>
+          <span className="text-[#5F6368]">e-Yantra MSIT</span>
         </div>
       </div>
     </div>

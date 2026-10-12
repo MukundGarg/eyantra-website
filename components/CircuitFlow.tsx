@@ -17,49 +17,44 @@ const getReducedMotionSnapshot = () => {
 
 const NODES = [
   {
-    id: "code",
+    id: "idea",
     stage: "01",
-    title: "CODE",
-    tech: "Firmware Flash",
-    detail: "C/C++ firmware compiles to AVR binary bytecode stream.",
-    icon: "lucide:binary",
-    metric: "32KB FLASH",
+    title: "IDEA",
+    subtitle: "Concept & Planning",
+    detail: "Brainstorming project goals, system architecture, and mechanism design.",
+    icon: "lucide:lightbulb",
   },
   {
-    id: "signal",
+    id: "code",
     stage: "02",
-    title: "SIGNAL",
-    tech: "TTL Logic Pulse",
-    detail: "16MHz oscillator generates synchronized square wave pulses.",
-    icon: "lucide:activity",
-    metric: "5V TTL LEVEL",
+    title: "CODE",
+    subtitle: "Firmware & Algorithms",
+    detail: "Writing microcontroller firmware, motor control algorithms, and sensor logic.",
+    icon: "lucide:code-2",
   },
   {
-    id: "mcu",
+    id: "electronics",
     stage: "03",
-    title: "MCU CORE",
-    tech: "RISC Dispatch",
-    detail: "Hardware timers compute PID differential calculations.",
+    title: "ELECTRONICS",
+    subtitle: "Circuits & Power",
+    detail: "Designing schematic circuits, interfacing sensors, and assembling breadboards or PCBs.",
     icon: "lucide:cpu",
-    metric: "16 MIPS @ 16MHz",
   },
   {
-    id: "driver",
+    id: "build",
     stage: "04",
-    title: "ACTUATOR",
-    tech: "Power Switching",
-    detail: "Gate drivers amplify low-voltage logic to drive coils.",
-    icon: "lucide:zap",
-    metric: "12V 2.5A COILS",
+    title: "BUILD",
+    subtitle: "Fabrication & Assembly",
+    detail: "Mounting chassis components, wiring actuators, and 3D printing custom brackets.",
+    icon: "lucide:wrench",
   },
   {
-    id: "motion",
+    id: "test",
     stage: "05",
-    title: "MOTION",
-    tech: "Kinetic Torque",
-    detail: "Rotor electromagnets step precisely into mechanical rotation.",
-    icon: "lucide:rotate-cw",
-    metric: "1.8° STEP ANGLE",
+    title: "TEST",
+    subtitle: "Calibration & Trials",
+    detail: "Calibrating sensor inputs, tuning control loops, and field-testing under arena conditions.",
+    icon: "lucide:check-circle-2",
   },
 ];
 
@@ -96,7 +91,7 @@ export default function CircuitFlow() {
     return () => observer.disconnect();
   }, []);
 
-  // Sequential node advancement loop (breathe through CODE -> MOTION)
+  // Sequential node advancement loop
   useEffect(() => {
     if (!inView) return;
 
@@ -161,15 +156,15 @@ export default function CircuitFlow() {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* 3D Tilted Glass Motherboard Card */}
+      {/* 3D Tilted Card */}
       <div
         ref={cardRef}
         className="relative w-full rounded-2xl border border-[#D9D9D5] bg-white/95 backdrop-blur-xl p-6 sm:p-8 shadow-xl transition-transform will-change-transform overflow-hidden"
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Subtle background PCB copper trace texture */}
+        {/* Subtle background grid texture */}
         <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          className="absolute inset-0 opacity-[0.03] pointer-events-none"
           style={{
             backgroundImage:
               "radial-gradient(#111214 0.8px, transparent 0.8px), linear-gradient(to right, #111214 1px, transparent 1px)",
@@ -178,20 +173,19 @@ export default function CircuitFlow() {
         />
 
         {/* Ambient red trace glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-24 bg-[#d83a32]/[0.04] blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-24 bg-[#d83a32]/[0.03] blur-[80px] rounded-full pointer-events-none" />
 
-        {/* Top Telemetry Header */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-[#D9D9D5] font-mono text-[11px]">
+        {/* Top Header */}
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-[#D9D9D5] text-[11px]">
           <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-[#d83a32] animate-pulse" />
-            <span className="text-[#111214] font-bold tracking-wider uppercase">
-              FLOW.CIRCUIT {"//"} SIGNAL PIPELINE
+            <span className="w-2 h-2 rounded-full bg-[#d83a32]" />
+            <span className="text-[#111214] font-semibold tracking-wider uppercase font-mono">
+              ENGINEERING WORKFLOW
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[#5F6368] tracking-widest uppercase text-[10px]">
-            <span>BUS: 16.000 MHZ</span>
-            <span className="hidden sm:inline">CYCLE: ACTIVE</span>
-            <span className="text-[#d83a32] font-bold">STATE: 0{activeNode + 1}</span>
+          <div className="flex items-center gap-4 text-[#5F6368] font-mono tracking-wider uppercase text-[10px]">
+            <span>From concept to prototype</span>
+            <span className="text-[#d83a32] font-semibold">STAGE 0{activeNode + 1} / 05</span>
           </div>
         </div>
 
@@ -206,14 +200,14 @@ export default function CircuitFlow() {
                 onMouseEnter={() => setActiveNode(i)}
                 className={`group relative p-4 rounded-xl border transition-all duration-400 cursor-pointer flex flex-col justify-between ${
                   isActive
-                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.15)] -translate-y-1"
+                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.12)] -translate-y-1"
                     : "bg-[#F3F3F0]/80 border-[#D9D9D5] hover:border-[#111214]/30 hover:bg-white"
                 }`}
               >
-                {/* Node stage badge & active LED */}
+                {/* Node stage badge & active indicator */}
                 <div className="flex items-center justify-between mb-3">
                   <span
-                    className={`text-[10px] font-mono tracking-widest font-bold ${
+                    className={`text-[10px] font-mono tracking-wider font-semibold ${
                       isActive ? "text-[#d83a32]" : "text-[#5F6368]"
                     }`}
                   >
@@ -222,7 +216,7 @@ export default function CircuitFlow() {
                   <span
                     className={`w-1.5 h-1.5 rounded-full transition-all ${
                       isActive
-                        ? "bg-[#d83a32] shadow-[0_0_8px_#d83a32]"
+                        ? "bg-[#d83a32]"
                         : "bg-black/15 group-hover:bg-black/30"
                     }`}
                   />
@@ -240,19 +234,12 @@ export default function CircuitFlow() {
                     <Iconify icon={node.icon} className="w-5 h-5" />
                   </div>
 
-                  <h4 className="text-sm font-bold font-mono text-[#111214] tracking-tight">
+                  <h4 className="text-sm font-bold text-[#111214] tracking-tight">
                     {node.title}
                   </h4>
-                  <p className="text-[11px] font-mono text-[#d83a32] mt-0.5 tracking-wider uppercase font-medium">
-                    {node.tech}
+                  <p className="text-[11px] text-[#5F6368] mt-0.5 leading-tight font-medium">
+                    {node.subtitle}
                   </p>
-                </div>
-
-                {/* Metric pill */}
-                <div className="mt-4 pt-3 border-t border-[#D9D9D5]/70">
-                  <span className="text-[10px] font-mono text-[#5F6368] tracking-widest block truncate">
-                    {node.metric}
-                  </span>
                 </div>
               </div>
             );
@@ -285,19 +272,18 @@ export default function CircuitFlow() {
           </div>
         </div>
 
-        {/* Active Node Deep Telemetry Inspection Panel */}
-        <div className="relative z-10 mt-4 p-4 rounded-xl bg-[#F3F3F0]/90 border border-[#D9D9D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+        {/* Active Node Summary Panel */}
+        <div className="relative z-10 mt-4 p-4 rounded-xl bg-[#F3F3F0]/90 border border-[#D9D9D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-start sm:items-center gap-3">
-            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] uppercase text-[10px] font-bold shadow-xs">
-              NODE 0{activeNode + 1} SPEC
+            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] text-[10px] font-mono font-semibold shadow-xs">
+              STAGE {NODES[activeNode].stage}
             </span>
             <p className="text-[#5F6368] leading-relaxed">
               {NODES[activeNode].detail}
             </p>
           </div>
-          <div className="text-[11px] text-[#d83a32] shrink-0 font-bold uppercase tracking-wider flex items-center gap-1.5">
-            <span>SIGNAL LOCKED</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+          <div className="text-[11px] text-[#d83a32] shrink-0 font-semibold font-mono tracking-wider uppercase">
+            {NODES[activeNode].title}
           </div>
         </div>
       </div>

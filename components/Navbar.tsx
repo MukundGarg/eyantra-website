@@ -52,7 +52,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between w-full md:w-auto">
           <Link href="/" className="flex items-center gap-2.5 group">
             <span className="w-2 h-2 rounded-full bg-[#d83a32] group-hover:scale-125 transition-transform" />
-            <span className="text-sm font-bold font-mono tracking-wider uppercase text-[#111214] group-hover:text-[#d83a32] transition-colors">
+            <span className="text-sm font-semibold tracking-wide uppercase text-[#111214] group-hover:text-[#d83a32] transition-colors">
               e-Yantra MSIT
             </span>
           </Link>
@@ -78,8 +78,8 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className={`relative text-xs font-mono tracking-wider uppercase transition-colors py-1 ${
-                  isActive ? "text-[#111214] font-bold" : "text-[#5F6368] hover:text-[#111214] font-medium"
+                className={`relative text-xs tracking-wider uppercase transition-colors py-1 font-medium ${
+                  isActive ? "text-[#111214] font-semibold" : "text-[#5F6368] hover:text-[#111214]"
                 }`}
               >
                 {link.name}

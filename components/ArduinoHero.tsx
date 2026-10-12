@@ -264,11 +264,11 @@ export default function ArduinoHero() {
 
         <div className="hidden lg:flex justify-between items-center absolute top-36 left-12 right-12 text-[10px] font-mono tracking-widest text-[#5F6368] uppercase pointer-events-none">
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32] animate-pulse" />
-            <span>DEV.SYS {"//"} ATMEGA328P REV3</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+            <span>Arduino Uno R3 Platform</span>
           </div>
-          <div>COORDINATES {"//"} 28.6219° N, 77.0878° E</div>
-          <div>ARCH {"//"} 8-BIT AVR RISC @ 16.000 MHZ</div>
+          <div>MSIT New Delhi • 28.6219° N, 77.0878° E</div>
+          <div>ATmega328P • 16 MHz Clock</div>
         </div>
       </div>
 
@@ -284,7 +284,7 @@ export default function ArduinoHero() {
           </span>
         </div>
 
-        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tighter font-mono leading-[1.02] mb-6">
+        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tighter leading-[1.02] mb-6">
           <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#111214] via-[#2A2D32] to-[#5F6368]">
             Think. Build.
           </span>
@@ -294,8 +294,8 @@ export default function ArduinoHero() {
           </span>
         </h1>
 
-        <p className="text-base sm:text-lg md:text-xl text-[#5F6368] max-w-xl mx-auto leading-relaxed font-light">
-          Where theoretical computation transforms into real-world physical engineering.
+        <p className="text-base sm:text-lg md:text-xl text-[#5F6368] max-w-xl mx-auto leading-relaxed font-normal">
+          The student robotics and embedded systems society of Maharaja Surajmal Institute of Technology.
         </p>
       </div>
 
@@ -396,8 +396,8 @@ export default function ArduinoHero() {
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-mono text-[#d83a32] tracking-widest font-bold">
-                      {anno.number} {"//"} {anno.title}
+                    <span className="text-[10px] font-mono text-[#d83a32] tracking-wider font-semibold">
+                      {anno.number} • {anno.title}
                     </span>
                     <span
                       className={`w-1.5 h-1.5 rounded-full transition-colors ${
@@ -405,8 +405,8 @@ export default function ArduinoHero() {
                       }`}
                     />
                   </div>
-                  <h4 className="text-xs font-bold font-mono text-[#111214] tracking-tight">{anno.spec}</h4>
-                  <p className="text-[11px] text-[#5F6368] mt-0.5 font-mono leading-tight">{anno.detail}</p>
+                  <h4 className="text-xs font-semibold text-[#111214] tracking-tight">{anno.spec}</h4>
+                  <p className="text-[11px] text-[#5F6368] mt-0.5 leading-normal">{anno.detail}</p>
                 </div>
               </div>
             );
@@ -421,10 +421,10 @@ export default function ArduinoHero() {
             key={anno.id}
             className="p-2.5 rounded-lg border border-[#D9D9D5] bg-white/90 backdrop-blur-sm shadow-xs"
           >
-            <span className="text-[9px] font-mono text-[#d83a32] block font-bold tracking-wider">
-              {anno.number} {"//"} {anno.title}
+            <span className="text-[9px] font-mono text-[#d83a32] block font-semibold tracking-wider">
+              {anno.number} • {anno.title}
             </span>
-            <span className="text-[11px] font-mono text-[#111214] block truncate font-medium">{anno.spec}</span>
+            <span className="text-[11px] text-[#111214] block truncate font-medium">{anno.spec}</span>
           </div>
         ))}
       </div>
@@ -433,13 +433,13 @@ export default function ArduinoHero() {
       <div className="relative z-20 flex flex-col items-center gap-6 mt-4 md:mt-8">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link href="/projects" className="shiny-cta group cta-press shadow-md">
-            <span className="relative z-10 flex items-center gap-2 text-white font-medium font-mono text-xs uppercase tracking-wider">
+            <span className="relative z-10 flex items-center gap-2 text-white font-medium text-xs uppercase tracking-wider">
               Explore Projects <Iconify icon="lucide:arrow-right" className="cta-arrow w-4 h-4" />
             </span>
           </Link>
           <Link
             href="/team"
-            className="cta-press group px-6 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] font-medium font-mono text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] shadow-xs transition-all flex items-center gap-2"
+            className="cta-press group px-6 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] font-medium text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] shadow-xs transition-all flex items-center gap-2"
           >
             Engineering Team
             <Iconify
@@ -451,7 +451,7 @@ export default function ArduinoHero() {
 
         <div className="flex flex-col items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity text-[#5F6368]">
           <span className="text-[10px] font-mono uppercase tracking-widest text-[#5F6368]">
-            Scroll to Inspect Architecture
+            Scroll to explore
           </span>
           <Iconify icon="lucide:chevron-down" className="w-4 h-4 animate-bounce text-[#d83a32]" />
         </div>

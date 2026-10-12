@@ -147,31 +147,10 @@ export default function ProjectCard({
           {/* Vignette overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#111214]/50 via-transparent to-transparent pointer-events-none opacity-40 group-hover:opacity-20 transition-opacity" />
 
-          {/* HUD Precision Corner Brackets */}
-          <span className="absolute top-2 left-2 text-[11px] font-mono text-[#d83a32] leading-none pointer-events-none font-bold select-none">
-            ┌
-          </span>
-          <span className="absolute top-2 right-2 text-[11px] font-mono text-[#d83a32] leading-none pointer-events-none font-bold select-none">
-            ┐
-          </span>
-          <span className="absolute bottom-2 left-2 text-[11px] font-mono text-[#d83a32] leading-none pointer-events-none font-bold select-none">
-            └
-          </span>
-          <span className="absolute bottom-2 right-2 text-[11px] font-mono text-[#d83a32] leading-none pointer-events-none font-bold select-none">
-            ┘
-          </span>
-
-          {/* Subtle animated scanline beam */}
-          <div
-            className={`absolute inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#d83a32]/50 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-              reducedMotion ? "hidden" : "animate-[subtle-float_3s_ease-in-out_infinite]"
-            }`}
-          />
-
-          {/* HUD Index / Telemetry Tag */}
-          <div className="absolute bottom-2.5 right-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-sm border border-[#D9D9D5] text-[9px] font-mono text-[#111214] tracking-widest uppercase flex items-center gap-1.5 pointer-events-none shadow-sm">
-            <span className="w-1 h-1 rounded-full bg-[#d83a32]" />
-            <span className="font-semibold">SYS.0{index + 1}</span>
+          {/* Index Tag */}
+          <div className="absolute bottom-2.5 right-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-sm border border-[#D9D9D5] text-[9px] font-mono text-[#111214] tracking-wider uppercase flex items-center gap-1.5 pointer-events-none shadow-sm font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+            <span>0{index + 1}</span>
           </div>
         </div>
 
@@ -181,7 +160,7 @@ export default function ProjectCard({
             className="will-change-transform mb-2"
             style={{ transform: "translateZ(20px)" }}
           >
-            <span className="text-[#d83a32] font-mono text-[10px] uppercase tracking-widest font-bold">
+            <span className="text-[#d83a32] font-mono text-[10px] uppercase tracking-wider font-semibold">
               {project.category}
             </span>
           </div>
@@ -189,7 +168,7 @@ export default function ProjectCard({
 
         {/* Title (Depth Layer 24px) */}
         <h3
-          className="text-lg font-bold font-mono text-[#111214] tracking-tight mb-2 group-hover:text-[#d83a32] transition-colors will-change-transform"
+          className="text-lg font-bold text-[#111214] tracking-tight mb-2 group-hover:text-[#d83a32] transition-colors will-change-transform"
           style={{ transform: "translateZ(24px)" }}
         >
           {project.title}
@@ -232,9 +211,9 @@ export default function ProjectCard({
               href={linkToUse}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 bg-[#F3F3F0] hover:bg-[#d83a32] text-[#111214] hover:text-white border border-[#D9D9D5] hover:border-[#d83a32] rounded-lg text-xs font-mono font-bold uppercase tracking-widest transition-all duration-300 text-center flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-2.5 px-4 bg-[#F3F3F0] hover:bg-[#d83a32] text-[#111214] hover:text-white border border-[#D9D9D5] hover:border-[#d83a32] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-300 text-center flex items-center justify-center gap-2 shadow-sm"
             >
-              Inspect Project{" "}
+              <span>View Project</span>
               <Iconify
                 icon="lucide:arrow-right"
                 className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1"

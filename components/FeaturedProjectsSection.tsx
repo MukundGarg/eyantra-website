@@ -160,24 +160,21 @@ export default function FeaturedProjectsSection({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d83a32]" />
-                </span>
-                <span className="text-xs font-mono text-[#d83a32] uppercase tracking-widest font-bold">
-                  PORTFOLIO {"//"} SELECTED WORK [03 REPOSITORIES ACTIVE]
+                <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+                <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+                  Selected Work • Student Engineering
                 </span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#111214] font-mono tracking-tight">
-                Featured <span className="text-[#d83a32]">Engineering</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[#111214] tracking-tight">
+                Featured <span className="text-[#d83a32]">Projects</span>
               </h2>
             </div>
 
             <Link
               href="/projects"
-              className="text-xs font-mono text-[#5F6368] hover:text-[#111214] uppercase tracking-widest flex items-center gap-2 group transition-colors self-start md:self-end"
+              className="text-xs text-[#5F6368] hover:text-[#111214] uppercase tracking-wider flex items-center gap-2 group transition-colors self-start md:self-end font-semibold"
             >
-              All Repositories
+              <span>View All Projects</span>
               <Iconify
                 icon="lucide:arrow-right"
                 className="w-4 h-4 transition-transform group-hover:translate-x-1 text-[#d83a32]"

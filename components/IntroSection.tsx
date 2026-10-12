@@ -15,55 +15,15 @@ const getReducedMotionSnapshot = () => {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 };
 
-interface StatItem {
-  value: string;
-  numValue?: number;
-  suffix?: string;
-  label: string;
-  spec: string;
-}
-
-const STATS_DATA: StatItem[] = [
-  {
-    value: "50+",
-    numValue: 50,
-    suffix: "+",
-    label: "Prototypes Built",
-    spec: "Autonomous & Embedded Builds",
-  },
-  {
-    value: "100%",
-    numValue: 100,
-    suffix: "%",
-    label: "Hardware Driven",
-    spec: "Bare-Metal to Mechanical",
-  },
-  {
-    value: "04",
-    numValue: 4,
-    suffix: "",
-    label: "Lab Disciplines",
-    spec: "Converging Technical Tracks",
-  },
-  {
-    value: "16 MHz",
-    label: "Clock Precision",
-    spec: "Hardware Cycle Synchronized",
-  },
-];
-
 export default function IntroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineLine1Ref = useRef<HTMLSpanElement>(null);
   const headlineLine2Ref = useRef<HTMLSpanElement>(null);
   const bodyTextRef = useRef<HTMLDivElement>(null);
-  const statsContainerRef = useRef<HTMLDivElement>(null);
   const backgroundLayerRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);
 
   const [inView, setInView] = useState<boolean>(true);
-  const [statsRevealed, setStatsRevealed] = useState<boolean>(false);
-  const [hoveredStat, setHoveredStat] = useState<number | null>(null);
 
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -79,16 +39,13 @@ export default function IntroSection() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setInView(entry.isIntersecting);
-        if (entry.isIntersecting && !statsRevealed) {
-          setStatsRevealed(true);
-        }
       },
       { threshold: 0.08 }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [statsRevealed]);
+  }, []);
 
   // Continuous 60fps Scroll Parallax & Typography Depth Loop
   useEffect(() => {
@@ -147,12 +104,6 @@ export default function IntroSection() {
           const bodyY = (progress - 1) * -18;
           bodyTextRef.current.style.transform = `translate3d(0, ${bodyY.toFixed(1)}px, 0)`;
         }
-
-        // Stats: faster parallax (speed 0.12)
-        if (statsContainerRef.current) {
-          const statsY = (progress - 1) * -28;
-          statsContainerRef.current.style.transform = `translate3d(0, ${statsY.toFixed(1)}px, 0)`;
-        }
       }
 
       rafId.current = requestAnimationFrame(updateScrollParallax);
@@ -168,14 +119,14 @@ export default function IntroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-36 md:py-48 px-6 md:px-12 overflow-hidden bg-[#F3F3F0]/60 border-t border-b border-[#D9D9D5] select-none"
+      className="relative py-28 md:py-36 px-6 md:px-12 overflow-hidden bg-[#F3F3F0]/60 border-t border-b border-[#D9D9D5] select-none"
     >
       {/* ── Section Handoff: Vertical Red Signal Pulse from Hero ── */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-20 bg-gradient-to-b from-[#d83a32] via-[#d83a32]/40 to-transparent pointer-events-none z-20">
-        <span className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#d83a32] shadow-[0_0_8px_#d83a32] animate-ping" />
+        <span className="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
       </div>
 
-      {/* Layer 1: Background Parallax Coordinate Grid & Technical Atmosphere */}
+      {/* Layer 1: Background Parallax Grid */}
       <div
         ref={backgroundLayerRef}
         className="absolute inset-0 pointer-events-none overflow-hidden will-change-transform"
@@ -189,32 +140,20 @@ export default function IntroSection() {
           }}
         />
 
-        {/* Layer 2: Large faint radial circular geometry */}
+        {/* Layer 2: Faint radial geometry */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-black/[0.015] via-[#d83a32]/[0.015] to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full border border-black/[0.03] pointer-events-none" />
-
-        {/* Layer 3: Moving technical markers */}
-        <div className="absolute top-16 left-8 md:left-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
-          SEC.02 {"//"} ARCHITECTURE_INSPECTION {"//"} TRACE_BUS: 0x4F
-        </div>
-        <div className="hidden lg:block absolute bottom-12 right-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
-          FEEDBACK {"//"} REAL-TIME SYNCHRONIZATION
-        </div>
       </div>
 
-      {/* Layer 4: Main Content Container */}
+      {/* Layer 3: Main Content Container */}
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Parallax Header Label with scanline pulse */}
+        {/* Header Label */}
         <div className="flex items-center gap-3 mb-8">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d83a32]" />
+          <span className="w-2 h-2 rounded-full bg-[#d83a32]" />
+          <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+            About e-Yantra MSIT
           </span>
-          <span className="text-xs font-mono text-[#d83a32] uppercase tracking-widest font-bold">
-            CREED {"//"} THE LAB PHILOSOPHY
-          </span>
-          <span className="hidden sm:inline text-[10px] font-mono text-[#5F6368] tracking-wider">
-            [MSIT.ROBOTICS.LAB]
+          <span className="hidden sm:inline text-xs text-[#5F6368]">
+            • Student Robotics Society
           </span>
         </div>
 
@@ -223,7 +162,7 @@ export default function IntroSection() {
           className="mb-14"
           style={{ perspective: "1000px" }}
         >
-          <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-mono tracking-tighter leading-[1.05]">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[1.05]">
             <span
               ref={headlineLine1Ref}
               className="block text-[#5F6368] font-light will-change-transform"
@@ -245,26 +184,26 @@ export default function IntroSection() {
           className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-8 border-t border-[#D9D9D5] will-change-transform"
         >
           <div className="md:col-span-7 space-y-4">
-            <p className="text-lg md:text-xl text-[#111214] leading-relaxed font-light">
-              We believe real understanding only begins when code meets copper, circuits close, and machines begin to move under their own autonomy.
+            <p className="text-lg md:text-xl text-[#111214] leading-relaxed font-normal">
+              We are MSIT&apos;s student robotics society. We bring together engineering students to design, prototype, and build autonomous robots and embedded systems.
             </p>
-            <p className="text-sm text-[#5F6368] font-mono leading-relaxed">
-              Every resistor, capacitor, and clock cycle is a deliberate decision in the pursuit of mechanical and computational harmony.
+            <p className="text-sm text-[#5F6368] leading-relaxed">
+              From circuit design and microcontroller programming to mechanical fabrication and algorithmic control, our members learn engineering by building real hardware.
             </p>
           </div>
 
-          <div className="md:col-span-5 flex flex-col justify-center md:pl-8 border-l border-[#D9D9D5] text-xs font-mono text-[#5F6368] space-y-2">
-            <div className="flex items-center gap-2">
+          <div className="md:col-span-5 flex flex-col justify-center md:pl-8 border-l border-[#D9D9D5] text-xs text-[#5F6368] space-y-3 font-medium">
+            <div className="flex items-center gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-              <span>SUBSYSTEM DISPATCH: 100% IN-HOUSE</span>
+              <span className="text-[#111214]">Hands-on hardware & embedded workshops</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/30" />
-              <span>FIRMWARE COMPILATION: BARE-METAL C/C++</span>
+            <div className="flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/40" />
+              <span>Collaborative robotics & automation projects</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/30" />
-              <span>ROBOTICS SIMULATION: ROS 2 & GAZEBO</span>
+            <div className="flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/40" />
+              <span>National competition & hackathon teams</span>
             </div>
           </div>
         </div>
@@ -272,57 +211,6 @@ export default function IntroSection() {
         {/* C. INTERACTIVE CIRCUIT FLOW VISUALIZATION */}
         <div className="mt-12">
           <CircuitFlow />
-        </div>
-
-        {/* D. ANIMATED STATS WITH DEPTH & UNDERLINES */}
-        <div
-          ref={statsContainerRef}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-12 pt-8 border-t border-[#D9D9D5] will-change-transform"
-        >
-          {STATS_DATA.map((stat, idx) => {
-            const isHovered = hoveredStat === idx;
-            return (
-              <div
-                key={stat.label}
-                onMouseEnter={() => setHoveredStat(idx)}
-                onMouseLeave={() => setHoveredStat(null)}
-                className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer ${
-                  isHovered
-                    ? "bg-white border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.12)] -translate-y-1"
-                    : "bg-white/80 border-[#D9D9D5] hover:border-[#111214]/30 shadow-xs"
-                }`}
-              >
-                <div className="flex items-baseline justify-between mb-1">
-                  <span
-                    className={`text-3xl sm:text-4xl font-mono font-bold tracking-tight transition-colors ${
-                      isHovered ? "text-[#d83a32]" : "text-[#111214]"
-                    }`}
-                  >
-                    {stat.value}
-                  </span>
-                  <span className="text-[10px] font-mono text-[#5F6368]">
-                    0{idx + 1}
-                  </span>
-                </div>
-
-                {/* Animated technical underline with pulse dot */}
-                <div className="relative h-[2px] w-full bg-[#D9D9D5] my-2 overflow-hidden rounded-full">
-                  <div
-                    className={`absolute top-0 bottom-0 bg-gradient-to-r from-transparent via-[#d83a32] to-[#111214] rounded-full transition-all duration-500 ${
-                      statsRevealed || isHovered ? "w-full" : "w-0"
-                    }`}
-                  />
-                </div>
-
-                <h4 className="text-xs font-mono font-bold text-[#111214] uppercase tracking-wider mt-2">
-                  {stat.label}
-                </h4>
-                <p className="text-[10px] font-mono text-[#5F6368] mt-0.5 leading-tight">
-                  {stat.spec}
-                </p>
-              </div>
-            );
-          })}
         </div>
       </div>
     </section>

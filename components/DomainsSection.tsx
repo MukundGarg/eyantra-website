@@ -20,33 +20,33 @@ const DOMAINS = [
   {
     num: "01",
     title: "Robotics",
-    subtitle: "Autonomous Navigation & Kinematics",
-    desc: "Designing and engineering autonomous ground vehicles, robotic arms, and mechanical chassis built to overcome complex physical terrain.",
-    tags: ["Inverse Kinematics", "ROS 2", "Motor Controllers", "LiDAR SLAM"],
+    subtitle: "Autonomous Navigation & Mechanics",
+    desc: "Designing and engineering mobile robots, robotic arms, and mechanical chassis built for competitive arenas and practical tasks.",
+    tags: ["Autonomous Navigation", "ROS", "Motor Drivers", "Kinematics"],
     icon: "lucide:bot",
   },
   {
     num: "02",
     title: "Embedded Systems",
-    subtitle: "Silicon, Firmware & Custom PCBs",
-    desc: "Low-level bare-metal firmware, custom multi-layer PCB design, hardware timers, and real-time sensor communication protocols.",
-    tags: ["ARM Cortex & AVR", "SPI / I2C / UART", "KiCad Schematics", "FreeRTOS"],
+    subtitle: "Microcontrollers & Hardware",
+    desc: "Developing firmware, designing custom PCBs, and interfacing sensors with microcontrollers like Arduino, STM32, and ESP32.",
+    tags: ["C / C++", "Arduino & STM32", "PCB Design", "I2C / SPI / UART"],
     icon: "lucide:cpu",
   },
   {
     num: "03",
     title: "Automation",
-    subtitle: "Closed-Loop Control & Mechatronics",
-    desc: "Precise industrial feedback loops, PID motion tuning, sensor telemetry fusion, and automated electromechanical pipelines.",
-    tags: ["PID Algorithms", "Encoder Feedback", "Actuator Arrays", "Power Electronics"],
+    subtitle: "Closed-Loop Control & Sensors",
+    desc: "Building motorized systems, PID feedback loops, and automated mechanisms for reliable electromechanical actuation.",
+    tags: ["PID Control", "Sensors", "Actuators", "Encoder Feedback"],
     icon: "lucide:zap",
   },
   {
     num: "04",
-    title: "AI & Edge IoT",
-    subtitle: "Intelligent Edge Computing & Vision",
-    desc: "Deploying quantized machine learning models directly on microcontroller silicon for low-latency computer vision and sensor telemetry.",
-    tags: ["TinyML Inference", "Edge Vision", "Sensor Fusion", "Wireless Telemetry"],
+    title: "AI & IoT",
+    subtitle: "Computer Vision & Connected Systems",
+    desc: "Integrating camera feeds, sensor telemetry, and connected devices to give robots visual perception and remote monitoring capabilities.",
+    tags: ["Computer Vision", "Python", "IoT Protocols", "Edge Inference"],
     icon: "lucide:brain-circuit",
   },
 ];
@@ -113,7 +113,7 @@ export default function DomainsSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-36 md:py-48 px-6 md:px-12 relative overflow-hidden bg-[#FAFAF8] select-none border-b border-[#D9D9D5]"
+      className="py-28 md:py-36 px-6 md:px-12 relative overflow-hidden bg-[#FAFAF8] select-none border-b border-[#D9D9D5]"
     >
       {/* Layer 1: Background Parallax Coordinate Grid & Rings */}
       <div
@@ -131,12 +131,6 @@ export default function DomainsSection() {
 
         {/* Layer 2: Subtle radial geometry */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#d83a32]/[0.02] blur-[160px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-black/[0.03] pointer-events-none" />
-
-        {/* Layer 3: Technical coordinate marks */}
-        <div className="hidden lg:block absolute top-20 right-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
-          SEC.03 {"//"} DOMAIN_ARCHITECTURE {"//"} STICKY_HUD_ACTIVE
-        </div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -145,20 +139,20 @@ export default function DomainsSection() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-              <span className="text-xs font-mono text-[#d83a32] uppercase tracking-widest font-bold">
-                Disciplines {"//"} Laboratory Domains
+              <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+                Disciplines • Technical Domains
               </span>
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tighter text-[#111214]">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#111214]">
               Engineering <span className="text-[#d83a32]">Disciplines</span>
             </h2>
           </div>
-          <p className="text-sm font-mono text-[#5F6368] max-w-sm mt-4 md:mt-0 font-light leading-relaxed">
-            Scroll to inspect each track. Four specialized technical domains converging into unified autonomous robotics.
+          <p className="text-sm text-[#5F6368] max-w-sm mt-4 md:mt-0 font-normal leading-relaxed">
+            Four specialized technical tracks that collaborate to build autonomous robotics systems at e-Yantra MSIT.
           </p>
         </div>
 
-        {/* Mobile Visualizer Presentation (clean card above domains on mobile) */}
+        {/* Mobile Visualizer Presentation */}
         <div className="lg:hidden mb-12">
           <DomainVisualizer activeDomain={activeDomain} />
         </div>
@@ -194,7 +188,7 @@ export default function DomainsSection() {
                 >
                   <div className="flex items-baseline gap-6 md:gap-8 mb-3">
                     <span
-                      className={`text-sm md:text-base font-mono font-bold transition-colors ${
+                      className={`text-sm md:text-base font-mono font-semibold transition-colors ${
                         isActive ? "text-[#d83a32]" : "text-[#5F6368]"
                       }`}
                     >
@@ -203,7 +197,7 @@ export default function DomainsSection() {
 
                     <div className="flex items-center gap-3">
                       <h3
-                        className={`text-2xl sm:text-3xl md:text-4xl font-mono font-bold tracking-tight transition-colors ${
+                        className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight transition-colors ${
                           isActive ? "text-[#111214]" : "text-[#5F6368]"
                         }`}
                       >
@@ -221,25 +215,25 @@ export default function DomainsSection() {
                     </div>
                   </div>
 
-                  <p className="text-xs font-mono uppercase tracking-widest text-[#d83a32] mb-3 pl-10 md:pl-12 font-medium">
+                  <p className="text-xs uppercase tracking-wider text-[#d83a32] mb-3 pl-10 md:pl-12 font-medium">
                     {domain.subtitle}
                   </p>
 
                   <div className="pl-10 md:pl-12">
                     <p
-                      className={`text-sm leading-relaxed font-light mb-4 transition-colors ${
+                      className={`text-sm leading-relaxed mb-4 transition-colors font-normal ${
                         isActive ? "text-[#111214]" : "text-[#5F6368]"
                       }`}
                     >
                       {domain.desc}
                     </p>
 
-                    {/* Staggered Tag Illumination */}
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-2">
                       {domain.tags.map((tag, tagIdx) => (
                         <span
                           key={tag}
-                          className={`text-[10px] font-mono px-2.5 py-1 rounded transition-all duration-300 ${
+                          className={`text-xs px-2.5 py-1 rounded transition-all duration-300 ${
                             isActive
                               ? "bg-white text-[#111214] border border-[#d83a32]/40 shadow-xs font-medium"
                               : "bg-[#F3F3F0] text-[#5F6368] border border-[#D9D9D5]"

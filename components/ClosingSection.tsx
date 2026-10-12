@@ -26,12 +26,10 @@ export default function ClosingSection() {
   return (
     <section
       ref={containerRef}
-      className="py-36 md:py-44 px-6 text-center relative overflow-hidden bg-[#FAFAF8] border-t border-[#D9D9D5]"
+      className="py-28 md:py-36 px-6 text-center relative overflow-hidden bg-[#FAFAF8] border-t border-[#D9D9D5]"
     >
-      {/* ─── Animated Signal Line Divider ─── */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d83a32]/60 to-transparent">
-        <div className="w-24 h-[2px] bg-[#d83a32] shadow-[0_0_12px_#d83a32] animate-[scanline_4s_linear_infinite]" />
-      </div>
+      {/* ─── Top Line Divider ─── */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d83a32]/40 to-transparent" />
 
       {/* ─── Background Subtle Grid ─── */}
       <div
@@ -61,46 +59,44 @@ export default function ClosingSection() {
         className="reveal max-w-4xl mx-auto relative z-10 transition-transform duration-300 ease-out"
         style={{ transformStyle: "preserve-3d" }}
       >
-        {/* Lab Architecture Badge */}
+        {/* Lab Badge */}
         <div className="stagger-1 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#D9D9D5] mb-8 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32] animate-pulse" />
-          <span className="text-[10px] font-mono text-[#111214] uppercase tracking-widest font-semibold">
-            LABORATORY ARCHITECTURE // MSIT ROBOTICS
+          <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+          <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+            Robotics Society • MSIT New Delhi
           </span>
-          <span className="text-[#5F6368] font-mono text-[10px]">{"//"}</span>
-          <span className="text-[10px] font-mono text-[#d83a32] font-semibold">SYSTEM // VERIFIED</span>
         </div>
 
-        {/* Scroll-Linked Scale / Headline with Depth */}
-        <h2 className="stagger-2 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-mono mb-8 tracking-tighter text-[#111214]">
+        {/* Headline */}
+        <h2 className="stagger-2 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-tighter text-[#111214]">
           Built on{" "}
           <span className="text-[#d83a32] inline-block hover:scale-[1.02] transition-transform">
             First Principles
           </span>
         </h2>
 
-        {/* Technical Subtext */}
+        {/* Subtext */}
         <p className="stagger-3 text-base sm:text-lg md:text-xl text-[#5F6368] max-w-2xl mx-auto mb-12 font-normal leading-relaxed">
-          Explore the autonomous robots, custom embedded circuits, and technical documentation produced inside our robotics laboratory.
+          Explore the autonomous robots, embedded hardware, and technical documentation produced by student engineers at e-Yantra MSIT.
         </p>
 
-        {/* Depth Buttons / Verified Real Links Only */}
+        {/* Buttons */}
         <div className="stagger-4 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/projects"
             className="shiny-cta group cta-press w-full sm:w-auto shadow-md"
           >
-            <span className="relative z-10 flex items-center justify-center gap-2 text-white font-mono text-xs uppercase tracking-wider font-semibold">
-              <span>View Repository</span>
+            <span className="relative z-10 flex items-center justify-center gap-2 text-white text-xs uppercase tracking-wider font-semibold">
+              <span>View Projects</span>
               <Iconify icon="lucide:arrow-right" className="cta-arrow w-4 h-4 text-[#d83a32]" />
             </span>
           </Link>
 
           <Link
             href="/team"
-            className="cta-press group px-7 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] font-mono text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] hover:bg-[#FAFAF8] transition-all flex items-center justify-center gap-2 w-full sm:w-auto shadow-sm font-semibold"
+            className="cta-press group px-7 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] hover:bg-[#FAFAF8] transition-all flex items-center justify-center gap-2 w-full sm:w-auto shadow-sm font-semibold"
           >
-            <span>Meet The Engineers</span>
+            <span>Meet The Team</span>
             <Iconify
               icon="lucide:arrow-right"
               className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[#d83a32]"
@@ -108,13 +104,13 @@ export default function ClosingSection() {
           </Link>
         </div>
 
-        {/* Telemetry Coordinate Metadata */}
-        <div className="stagger-5 mt-16 pt-8 border-t border-[#D9D9D5] flex items-center justify-center gap-6 font-mono text-[10px] text-[#5F6368] uppercase tracking-widest font-medium">
-          <span>LAT 28.6219° N</span>
+        {/* Metadata */}
+        <div className="stagger-5 mt-16 pt-8 border-t border-[#D9D9D5] flex items-center justify-center gap-4 font-mono text-xs text-[#5F6368]">
+          <span>MSIT Janakpuri</span>
           <span>•</span>
-          <span>LON 77.0878° E</span>
+          <span>New Delhi, India</span>
           <span>•</span>
-          <span>E-YANTRA ROBOTICS LAB // MSIT</span>
+          <span>e-Yantra Robotics</span>
         </div>
       </div>
     </section>
