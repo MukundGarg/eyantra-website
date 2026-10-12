@@ -60,10 +60,8 @@ const NODES = [
 
 export default function CircuitFlow() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
   const [activeNode, setActiveNode] = useState<number>(0);
   const [inView, setInView] = useState<boolean>(true);
-  const rafId = useRef<number | null>(null);
 
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -71,11 +69,7 @@ export default function CircuitFlow() {
     () => false
   );
 
-  // Mouse tilt refs
-  const mouseTarget = useRef({ x: 0, y: 0 });
-  const currentRot = useRef({ x: 0, y: 0 });
-
-  // IntersectionObserver to pause RAF when offscreen
+  // IntersectionObserver to pause progression when offscreen
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -91,202 +85,121 @@ export default function CircuitFlow() {
     return () => observer.disconnect();
   }, []);
 
-  // Sequential node advancement loop
-  useEffect(() => {
-    if (!inView) return;
-
-    const interval = setInterval(() => {
-      setActiveNode((prev) => (prev + 1) % NODES.length);
-    }, 2800);
-
-    return () => clearInterval(interval);
-  }, [inView]);
-
-  // Pointer move handler (desktop tilt)
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (reducedMotion || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
-    mouseTarget.current = { x: nx, y: ny };
-  };
-
-  const handleMouseLeave = () => {
-    mouseTarget.current = { x: 0, y: 0 };
-  };
-
-  // 60FPS interpolation loop
+  // Subtle auto-advance progression (calm cadence, pauses when offscreen or reduced-motion)
   useEffect(() => {
     if (!inView || reducedMotion) return;
 
-    const loop = () => {
-      if (!cardRef.current) {
-        rafId.current = requestAnimationFrame(loop);
-        return;
-      }
+    const interval = setInterval(() => {
+      setActiveNode((prev) => (prev + 1) % NODES.length);
+    }, 4000);
 
-      // Max tilt: 3.5° pitch, 4.5° yaw
-      const targetRotX = -mouseTarget.current.y * 3.5;
-      const targetRotY = mouseTarget.current.x * 4.5;
-
-      const lerp = 0.08;
-      currentRot.current.x += (targetRotX - currentRot.current.x) * lerp;
-      currentRot.current.y += (targetRotY - currentRot.current.y) * lerp;
-
-      cardRef.current.style.transform = `
-        rotateX(${currentRot.current.x.toFixed(2)}deg)
-        rotateY(${currentRot.current.y.toFixed(2)}deg)
-      `;
-
-      rafId.current = requestAnimationFrame(loop);
-    };
-
-    rafId.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-    };
+    return () => clearInterval(interval);
   }, [inView, reducedMotion]);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full my-8 select-none"
-      style={{ perspective: "1200px" }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      className="w-full my-8 select-none"
     >
-      {/* 3D Tilted Card */}
-      <div
-        ref={cardRef}
-        className="relative w-full rounded-2xl border border-[#D9D9D5] bg-white/95 backdrop-blur-xl p-6 sm:p-8 shadow-xl transition-transform will-change-transform overflow-hidden"
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* Subtle background grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage:
-              "radial-gradient(#111214 0.8px, transparent 0.8px), linear-gradient(to right, #111214 1px, transparent 1px)",
-            backgroundSize: "24px 24px, 48px 48px",
-          }}
-        />
-
-        {/* Ambient red trace glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-24 bg-[#d83a32]/[0.03] blur-[80px] rounded-full pointer-events-none" />
-
-        {/* Top Header */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-[#D9D9D5] text-[11px]">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2 h-2 rounded-full bg-[#d83a32]" />
-            <span className="text-[#111214] font-semibold tracking-wider uppercase font-mono">
-              ENGINEERING WORKFLOW
+      <div className="w-full rounded-2xl border border-[#D9D9D5] bg-white p-6 sm:p-8 md:p-10 shadow-2xs">
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 mb-8 border-b border-[#D9D9D5]/80">
+          <div>
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#5F6368] font-medium block">
+              The Engineering Process
             </span>
+            <h3 className="text-xl sm:text-2xl font-semibold text-[#111214] tracking-tight mt-1">
+              From concept to working prototype
+            </h3>
           </div>
-          <div className="flex items-center gap-4 text-[#5F6368] font-mono tracking-wider uppercase text-[10px]">
-            <span>From concept to prototype</span>
-            <span className="text-[#d83a32] font-semibold">STAGE 0{activeNode + 1} / 05</span>
+          <div className="text-xs font-mono text-[#5F6368]">
+            <span className="text-[#d83a32] font-semibold">0{activeNode + 1}</span> / 05
           </div>
         </div>
 
-        {/* Main Interactive Flow Pipeline */}
-        <div className="relative z-10 grid grid-cols-1 md:grid-cols-5 gap-3 lg:gap-4 items-stretch">
+        {/* 5-Step Progress Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 lg:gap-4 items-stretch">
           {NODES.map((node, i) => {
             const isActive = activeNode === i;
             return (
-              <div
+              <button
                 key={node.id}
+                type="button"
                 onClick={() => setActiveNode(i)}
                 onMouseEnter={() => setActiveNode(i)}
-                className={`group relative p-4 rounded-xl border transition-all duration-400 cursor-pointer flex flex-col justify-between ${
+                className={`group relative text-left p-4 sm:p-4 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col justify-between focus:outline-hidden ${
                   isActive
-                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.12)] -translate-y-1"
-                    : "bg-[#F3F3F0]/80 border-[#D9D9D5] hover:border-[#111214]/30 hover:bg-white"
+                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-xs"
+                    : "bg-white border-[#D9D9D5]/70 hover:border-[#111214]/30 hover:bg-[#FAFAF8]/50"
                 }`}
               >
-                {/* Node stage badge & active indicator */}
-                <div className="flex items-center justify-between mb-3">
+                {/* Step indicator */}
+                <div className="flex items-center justify-between mb-4">
                   <span
-                    className={`text-[10px] font-mono tracking-wider font-semibold ${
+                    className={`text-[11px] font-mono font-medium ${
                       isActive ? "text-[#d83a32]" : "text-[#5F6368]"
                     }`}
                   >
-                    STAGE {node.stage}
+                    {node.stage}
                   </span>
                   <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all ${
-                      isActive
-                        ? "bg-[#d83a32]"
-                        : "bg-black/15 group-hover:bg-black/30"
+                    className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                      isActive ? "bg-[#d83a32]" : "bg-black/10 group-hover:bg-black/20"
                     }`}
                   />
                 </div>
 
-                {/* Node Icon & Titles */}
+                {/* Step icon & titles */}
                 <div>
                   <div
-                    className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 transition-colors ${
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 transition-colors ${
                       isActive
-                        ? "bg-[#d83a32]/10 text-[#d83a32] border border-[#d83a32]/30"
-                        : "bg-white text-[#5F6368] border border-[#D9D9D5] group-hover:text-[#111214]"
+                        ? "bg-[#d83a32]/10 text-[#d83a32]"
+                        : "bg-[#F3F3F0] text-[#5F6368] group-hover:text-[#111214]"
                     }`}
                   >
-                    <Iconify icon={node.icon} className="w-5 h-5" />
+                    <Iconify icon={node.icon} className="w-4 h-4" />
                   </div>
-
-                  <h4 className="text-sm font-bold text-[#111214] tracking-tight">
+                  <h4 className="text-sm font-semibold text-[#111214] tracking-tight">
                     {node.title}
                   </h4>
-                  <p className="text-[11px] text-[#5F6368] mt-0.5 leading-tight font-medium">
+                  <p className="text-xs text-[#5F6368] mt-0.5 leading-tight">
                     {node.subtitle}
                   </p>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
 
-        {/* Animated Vector Signal Trace Line (Connecting desktop pipeline) */}
-        <div className="hidden md:block relative z-10 my-5 px-4">
-          <div className="relative h-2 w-full bg-[#F3F3F0] border border-[#D9D9D5] rounded-full overflow-hidden">
-            {/* The traveling electrical pulse */}
+        {/* Subtle Progress Bar */}
+        <div className="hidden sm:block relative my-6">
+          <div className="relative h-1 w-full bg-[#F3F3F0] rounded-full overflow-hidden">
             <div
-              className={`absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-[#d83a32] to-[#111214] rounded-full transition-all duration-700 ${
-                reducedMotion ? "hidden" : "block"
-              }`}
+              className="absolute top-0 bottom-0 bg-[#d83a32] rounded-full transition-all duration-500 ease-out"
               style={{
-                left: `${(activeNode / (NODES.length - 1)) * 80}%`,
+                width: `${((activeNode + 1) / NODES.length) * 100}%`,
               }}
             />
-            {/* 5 junction ticks */}
-            <div className="absolute inset-0 flex justify-between items-center px-1 pointer-events-none">
-              {NODES.map((_, i) => (
-                <span
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    activeNode >= i ? "bg-[#d83a32]" : "bg-black/20"
-                  }`}
-                />
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* Active Node Summary Panel */}
-        <div className="relative z-10 mt-4 p-4 rounded-xl bg-[#F3F3F0]/90 border border-[#D9D9D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-start sm:items-center gap-3">
-            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] text-[10px] font-mono font-semibold shadow-xs">
+        {/* Active Stage Detail Panel */}
+        <div className="mt-6 sm:mt-4 p-4 sm:p-5 rounded-xl bg-[#FAFAF8] border border-[#D9D9D5]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-3">
+            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] text-[10px] font-mono font-semibold">
               STAGE {NODES[activeNode].stage}
             </span>
-            <p className="text-[#5F6368] leading-relaxed">
+            <p className="text-[#5F6368] leading-relaxed font-normal">
               {NODES[activeNode].detail}
             </p>
           </div>
-          <div className="text-[11px] text-[#d83a32] shrink-0 font-semibold font-mono tracking-wider uppercase">
+          <span className="text-xs text-[#d83a32] shrink-0 font-medium font-mono uppercase tracking-wider">
             {NODES[activeNode].title}
-          </div>
+          </span>
         </div>
       </div>
     </div>
   );
 }
+

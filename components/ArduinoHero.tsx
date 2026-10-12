@@ -12,65 +12,53 @@ interface Annotation {
   detail: string;
   pointX: number;
   pointY: number;
-  side: "left" | "right";
-  labelY: number;
 }
 
 const ANNOTATIONS: Annotation[] = [
   {
     id: "mcu",
     number: "01",
-    title: "MICROCONTROLLER",
+    title: "Microcontroller",
     spec: "ATmega328P • 8-bit AVR",
-    detail: "32KB Flash • 2KB SRAM • 16MHz clock",
+    detail: "32KB Flash memory, 2KB SRAM, running at 16 MHz.",
     pointX: 68,
     pointY: 52,
-    side: "right",
-    labelY: 38,
   },
   {
     id: "digital-io",
     number: "02",
-    title: "DIGITAL I/O & PWM",
-    spec: "14 Digital GPIO pins",
-    detail: "6 Hardware PWM channels for motor control",
+    title: "Digital I/O & PWM",
+    spec: "14 Digital Pins (6 PWM)",
+    detail: "Configurable GPIO lines for sensor triggers and motor speed modulation.",
     pointX: 52,
     pointY: 18,
-    side: "right",
-    labelY: 12,
   },
   {
     id: "analog",
     number: "03",
-    title: "ANALOG INPUT",
+    title: "Analog Inputs",
     spec: "6 Channels • 10-bit ADC",
-    detail: "Successive approximation sensor interface",
+    detail: "Direct voltage sampling for potentiometers, line sensors, and analog transceivers.",
     pointX: 74,
     pointY: 66,
-    side: "right",
-    labelY: 68,
   },
   {
     id: "usb",
     number: "04",
-    title: "USB CONTROLLER",
-    spec: "ATmega16U2 Serial",
-    detail: "High-speed UART bridge & ISP flashing",
+    title: "USB Interface",
+    spec: "ATmega16U2 Serial Bridge",
+    detail: "Hardware UART-to-USB communication for firmware flashing and telemetry debugging.",
     pointX: 22,
     pointY: 42,
-    side: "left",
-    labelY: 28,
   },
   {
     id: "power",
     number: "05",
-    title: "POWER REGULATION",
-    spec: "Dual LDO Architecture",
-    detail: "7-12V Barrel input • 5V / 3.3V isolated rails",
+    title: "Power Regulation",
+    spec: "Dual LDO Regulators",
+    detail: "7–12V DC input regulated down to clean 5V and 3.3V power rails.",
     pointX: 35,
     pointY: 74,
-    side: "left",
-    labelY: 62,
   },
 ];
 
@@ -94,7 +82,7 @@ const subscribeMobile = (notify: () => void) => {
 
 const getMobileSnapshot = () => {
   if (typeof window === "undefined") return false;
-  return window.innerWidth < 768 || "ontouchstart" in window;
+  return window.innerWidth < 1024;
 };
 
 export default function ArduinoHero() {
@@ -114,24 +102,17 @@ export default function ArduinoHero() {
     () => false
   );
 
-  // Target mouse coordinates (-1 to 1)
+  // Normalized mouse target coordinates (-1 to 1)
   const mouseTarget = useRef({ x: 0, y: 0 });
-  // Interpolated smooth values
-  const currentRot = useRef({ x: 12, y: -18, z: 2 });
-  const currentPos = useRef({ x: 0, y: 0, z: 0 });
+  // Interpolated rotation & translation
+  const currentRot = useRef({ x: 8, y: -12, z: 0 });
+  const currentPos = useRef({ y: 0 });
   const scrollProgress = useRef(0);
 
-  const [activeAnnotation, setActiveAnnotation] = useState<string | null>(null);
-  const [annotationsVisible, setAnnotationsVisible] = useState(false);
+  const [activeId, setActiveId] = useState<string>("mcu");
   const [inView, setInView] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAnnotationsVisible(true);
-    }, 700);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const activeAnnotation = ANNOTATIONS.find((a) => a.id === activeId) || ANNOTATIONS[0];
 
   // IntersectionObserver to pause loop when scrolled out of view
   useEffect(() => {
@@ -149,21 +130,24 @@ export default function ArduinoHero() {
     return () => observer.disconnect();
   }, []);
 
-  // Mouse move handler (smooth normalized coordinate update)
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (reducedMotion || isMobile) return;
-    const { innerWidth, innerHeight } = window;
-    const nx = (e.clientX / innerWidth) * 2 - 1;
-    const ny = (e.clientY / innerHeight) * 2 - 1;
-    mouseTarget.current = { x: nx, y: ny };
-  }, [reducedMotion, isMobile]);
+  // Mouse move handler (restrained range)
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (reducedMotion || isMobile) return;
+      const { innerWidth, innerHeight } = window;
+      const nx = (e.clientX / innerWidth) * 2 - 1;
+      const ny = (e.clientY / innerHeight) * 2 - 1;
+      mouseTarget.current = { x: nx, y: ny };
+    },
+    [reducedMotion, isMobile]
+  );
 
   // Scroll listener
   useEffect(() => {
     const handleScroll = () => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1.5);
+      const progress = Math.min(Math.max(-rect.top / (rect.height || 1), 0), 1.2);
       scrollProgress.current = progress;
     };
 
@@ -176,18 +160,14 @@ export default function ArduinoHero() {
     };
   }, [handleMouseMove]);
 
-  // 60FPS damped render loop
+  // Gentle, settled RAF render loop (restrained angles, smooth easing)
   useEffect(() => {
     if (!inView) {
       if (rafId.current) cancelAnimationFrame(rafId.current);
       return;
     }
 
-    const startTime = performance.now();
-
-    const loop = (now: number) => {
-      const elapsed = (now - startTime) * 0.001;
-
+    const loop = () => {
       if (!boardWrapperRef.current) {
         rafId.current = requestAnimationFrame(loop);
         return;
@@ -195,37 +175,31 @@ export default function ArduinoHero() {
 
       if (reducedMotion) {
         boardWrapperRef.current.style.transform =
-          "rotateX(10deg) rotateY(-12deg) rotateZ(0deg) translateY(0px) scale(1)";
+          "rotateX(6deg) rotateY(-8deg) rotateZ(0deg) translateY(0px) scale(1)";
         return;
       }
 
       const p = scrollProgress.current;
 
-      const maxMouseRotX = isMobile ? 0 : 10;
-      const maxMouseRotY = isMobile ? 0 : 16;
+      // Restrained max tilt angles: max ~3.5° pitch, 4.5° yaw
+      const maxRotX = isMobile ? 0 : 3.5;
+      const maxRotY = isMobile ? 0 : 4.5;
 
-      const targetRotX = 14 - mouseTarget.current.y * maxMouseRotX + p * 15;
-      const targetRotY = -16 + mouseTarget.current.x * maxMouseRotY + p * 25;
-      const targetRotZ = 1 + mouseTarget.current.x * 2 - p * 8;
+      const targetRotX = 8 - mouseTarget.current.y * maxRotX + p * 5;
+      const targetRotY = -12 + mouseTarget.current.x * maxRotY + p * 6;
+      const targetRotZ = mouseTarget.current.x * 0.8;
 
-      const idleY = Math.sin(elapsed * 1.4) * 6;
-      const idleRotX = Math.sin(elapsed * 0.9) * 1.5;
-      const idleRotY = Math.cos(elapsed * 1.1) * 1.5;
-
-      const lerpFactor = 0.075;
-      currentRot.current.x += (targetRotX + idleRotX - currentRot.current.x) * lerpFactor;
-      currentRot.current.y += (targetRotY + idleRotY - currentRot.current.y) * lerpFactor;
+      const lerpFactor = 0.045; // Slow, intentional easing
+      currentRot.current.x += (targetRotX - currentRot.current.x) * lerpFactor;
+      currentRot.current.y += (targetRotY - currentRot.current.y) * lerpFactor;
       currentRot.current.z += (targetRotZ - currentRot.current.z) * lerpFactor;
 
-      const targetTransY = idleY + p * 80;
-      const targetTransX = p * (isMobile ? 0 : 60);
-      const targetScale = Math.max(1 - p * 0.22, 0.78);
-
-      currentPos.current.x += (targetTransX - currentPos.current.x) * lerpFactor;
+      const targetTransY = p * 24;
       currentPos.current.y += (targetTransY - currentPos.current.y) * lerpFactor;
+      const targetScale = Math.max(1 - p * 0.08, 0.92);
 
       boardWrapperRef.current.style.transform = `
-        translate3d(${currentPos.current.x.toFixed(2)}px, ${currentPos.current.y.toFixed(2)}px, 0px)
+        translate3d(0px, ${currentPos.current.y.toFixed(2)}px, 0px)
         rotateX(${currentRot.current.x.toFixed(2)}deg)
         rotateY(${currentRot.current.y.toFixed(2)}deg)
         rotateZ(${currentRot.current.z.toFixed(2)}deg)
@@ -243,219 +217,165 @@ export default function ArduinoHero() {
   }, [inView, reducedMotion, isMobile]);
 
   return (
-    <div
+    <section
       ref={containerRef}
-      className="relative w-full min-h-screen flex flex-col items-center justify-between pt-28 pb-16 px-4 md:px-8 overflow-hidden select-none"
+      className="relative w-full min-h-[calc(100vh-5rem)] flex items-center pt-24 pb-16 md:py-28 px-6 sm:px-8 lg:px-16 overflow-hidden"
     >
-      {/* Background Precision Tech Grid & Ambience */}
+      {/* Subtle warm backdrop wash (no harsh HUD circles or grids) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-[0.8]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,18,20,0.035) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
+        <div className="absolute top-1/3 right-1/4 w-[420px] md:w-[600px] h-[420px] md:h-[600px] bg-[#d83a32]/[0.025] blur-[140px] rounded-full" />
+      </div>
 
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] md:w-[1000px] h-[700px] md:h-[1000px] rounded-full border border-black/[0.03] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] md:w-[650px] h-[450px] md:h-[650px] rounded-full border border-[#d83a32]/[0.08] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] md:w-[580px] h-[320px] md:h-[580px] bg-[#d83a32]/[0.03] blur-[130px] rounded-full pointer-events-none" />
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Identity + Editorial Headline + Copy + CTAs */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+            {/* Small Label */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111214]/[0.03] border border-[#111214]/[0.08] mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+              <span className="text-xs font-mono tracking-wider uppercase text-[#111214] font-medium">
+                e-Yantra MSIT
+              </span>
+            </div>
 
-        <div className="hidden lg:flex justify-between items-center absolute top-36 left-12 right-12 text-[10px] font-mono tracking-widest text-[#5F6368] uppercase pointer-events-none">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-            <span>Arduino Uno R3 Platform</span>
+            {/* Headline */}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight text-[#111214] leading-[1.08] mb-6">
+              Build. Experiment. Engineer.
+            </h1>
+
+            {/* Body */}
+            <p className="text-base sm:text-lg text-[#5F6368] leading-relaxed max-w-xl font-normal mb-8">
+              The student robotics society of Maharaja Surajmal Institute of Technology,
+              where ideas become working systems through hands-on engineering, projects and
+              competitions.
+            </p>
+
+            {/* Restrained CTAs */}
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <Link
+                href="/projects"
+                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#111214] text-white text-xs uppercase tracking-wider font-medium hover:bg-[#d83a32] transition-colors shadow-xs"
+              >
+                <span>Explore Projects</span>
+                <Iconify icon="lucide:arrow-right" className="w-4 h-4" />
+              </Link>
+              <Link
+                href="/team"
+                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-[#D9D9D5] text-[#111214] text-xs uppercase tracking-wider font-medium hover:border-[#111214] hover:bg-[#111214]/[0.02] transition-colors shadow-2xs"
+              >
+                <span>Meet the Team</span>
+                <Iconify icon="lucide:arrow-right" className="w-4 h-4 opacity-70" />
+              </Link>
+            </div>
           </div>
-          <div>MSIT New Delhi • 28.6219° N, 77.0878° E</div>
-          <div>ATmega328P • 16 MHz Clock</div>
-        </div>
-      </div>
 
-      {/* Hero Header Typography */}
-      <div className="relative z-20 text-center max-w-4xl mx-auto mt-4 md:mt-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/80 border border-[#D9D9D5] shadow-xs backdrop-blur-md mb-6">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d83a32]" />
-          </span>
-          <span className="text-[11px] font-medium text-[#111214] font-mono tracking-wider uppercase">
-            e-Yantra MSIT • Robotics & Embedded Systems
-          </span>
-        </div>
-
-        <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tighter leading-[1.02] mb-6">
-          <span className="block text-transparent bg-clip-text bg-gradient-to-b from-[#111214] via-[#2A2D32] to-[#5F6368]">
-            Think. Build.
-          </span>
-          <span className="block text-[#d83a32] relative inline-block">
-            Innovate.
-            <span className="absolute -bottom-2 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-[#d83a32] to-transparent opacity-80" />
-          </span>
-        </h1>
-
-        <p className="text-base sm:text-lg md:text-xl text-[#5F6368] max-w-xl mx-auto leading-relaxed font-normal">
-          The student robotics and embedded systems society of Maharaja Surajmal Institute of Technology.
-        </p>
-      </div>
-
-      {/* Central 3D Interactive Arduino Stage */}
-      <div
-        className="relative z-10 w-full max-w-6xl flex items-center justify-center my-6 md:my-10"
-        style={{ perspective: "1400px" }}
-      >
-        <div
-          ref={boardWrapperRef}
-          className="relative w-full max-w-[560px] md:max-w-[720px] aspect-[16/10] flex items-center justify-center transition-transform will-change-transform"
-          style={{
-            transformStyle: "preserve-3d",
-            transform: "rotateX(14deg) rotateY(-16deg) rotateZ(1deg)",
-          }}
-        >
-          <div
-            className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[75%] h-16 rounded-[100%] bg-black/15 blur-2xl pointer-events-none"
-            style={{ transform: "translateZ(-80px)" }}
-          />
-          <div
-            className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[60%] h-12 rounded-[100%] bg-[#d83a32]/10 blur-xl pointer-events-none"
-            style={{ transform: "translateZ(-60px)" }}
-          />
-
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/arduino-3d-transparent.webp"
-            alt="Arduino Uno 3D Hardware Microcontroller Board"
-            className="w-full h-auto object-contain filter drop-shadow-[0_20px_35px_rgba(17,18,20,0.22)] relative z-10"
-            draggable={false}
-          />
-
-          <div
-            className="absolute inset-0 rounded-2xl pointer-events-none opacity-20 mix-blend-overlay transition-opacity duration-300"
-            style={{
-              background:
-                "radial-gradient(circle at 45% 35%, rgba(255,255,255,0.4) 0%, rgba(216,58,50,0.1) 40%, transparent 70%)",
-            }}
-          />
-
-          {ANNOTATIONS.map((anno) => {
-            const isTargeted = activeAnnotation === anno.id;
-            return (
+          {/* Right Column: Arduino Board as Hero Visual + Focused Component Inspector */}
+          <div className="lg:col-span-6 flex flex-col items-center justify-center">
+            {/* 3D Board Stage */}
+            <div
+              className="relative w-full max-w-[500px] sm:max-w-[560px] aspect-[16/11] flex items-center justify-center"
+              style={{ perspective: "1200px" }}
+            >
               <div
-                key={anno.id}
-                className="absolute z-20 cursor-pointer"
+                ref={boardWrapperRef}
+                className="relative w-full h-full flex items-center justify-center transition-transform will-change-transform"
                 style={{
-                  left: `${anno.pointX}%`,
-                  top: `${anno.pointY}%`,
-                  transform: "translate(-50%, -50%) translateZ(30px)",
+                  transformStyle: "preserve-3d",
+                  transform: "rotateX(8deg) rotateY(-12deg) rotateZ(0deg)",
                 }}
-                onMouseEnter={() => setActiveAnnotation(anno.id)}
-                onMouseLeave={() => setActiveAnnotation(null)}
-                onClick={() => setActiveAnnotation(activeAnnotation === anno.id ? null : anno.id)}
               >
-                <span className="relative flex h-5 w-5 items-center justify-center">
-                  <span
-                    className={`animate-ping absolute inline-flex h-full w-full rounded-full transition-opacity ${
-                      isTargeted ? "bg-[#d83a32] opacity-80" : "bg-black/20 opacity-40"
-                    }`}
-                  />
-                  <span
-                    className={`relative inline-flex rounded-full h-2 w-2 border border-white transition-colors ${
-                      isTargeted ? "bg-[#d83a32] scale-125" : "bg-[#111214] group-hover:bg-[#d83a32]"
-                    }`}
-                  />
-                </span>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="hidden lg:block absolute inset-0 pointer-events-none">
-          {ANNOTATIONS.map((anno, index) => {
-            const isLeft = anno.side === "left";
-            const isHovered = activeAnnotation === anno.id;
-
-            return (
-              <div
-                key={anno.id}
-                className={`absolute z-30 pointer-events-auto transition-all duration-700 ${
-                  annotationsVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
-                style={{
-                  [isLeft ? "left" : "right"]: "2%",
-                  top: `${anno.labelY}%`,
-                  transitionDelay: `${index * 120}ms`,
-                }}
-                onMouseEnter={() => setActiveAnnotation(anno.id)}
-                onMouseLeave={() => setActiveAnnotation(null)}
-              >
+                {/* Soft ground shadow */}
                 <div
-                  className={`group relative p-3 rounded-lg border backdrop-blur-md transition-all duration-300 w-64 ${
-                    isHovered
-                      ? "bg-white border-[#d83a32] shadow-[0_4px_24px_rgba(216,58,50,0.15)] translate-x-1"
-                      : "bg-white/90 border-[#D9D9D5] hover:border-[#111214]/40 shadow-sm"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-mono text-[#d83a32] tracking-wider font-semibold">
-                      {anno.number} • {anno.title}
-                    </span>
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                        isHovered ? "bg-[#d83a32]" : "bg-zinc-400"
-                      }`}
-                    />
-                  </div>
-                  <h4 className="text-xs font-semibold text-[#111214] tracking-tight">{anno.spec}</h4>
-                  <p className="text-[11px] text-[#5F6368] mt-0.5 leading-normal">{anno.detail}</p>
-                </div>
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%] h-10 rounded-[100%] bg-black/[0.08] blur-xl pointer-events-none"
+                  style={{ transform: "translateZ(-40px)" }}
+                />
+
+                {/* Arduino Uno Board Image */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/arduino-3d-transparent.webp"
+                  alt="Arduino Uno R3 Microcontroller Board"
+                  className="w-full h-auto object-contain filter drop-shadow-[0_16px_28px_rgba(17,18,20,0.12)] relative z-10"
+                  draggable={false}
+                />
+
+                {/* Hotspot Indicators (Subtle, accessible pins) */}
+                {ANNOTATIONS.map((anno) => {
+                  const isSelected = activeId === anno.id;
+                  return (
+                    <button
+                      key={anno.id}
+                      type="button"
+                      aria-label={`Inspect ${anno.title}`}
+                      className="absolute z-20 -translate-x-1/2 -translate-y-1/2 cursor-pointer p-1.5 focus:outline-hidden"
+                      style={{
+                        left: `${anno.pointX}%`,
+                        top: `${anno.pointY}%`,
+                        transform: "translate(-50%, -50%) translateZ(24px)",
+                      }}
+                      onClick={() => setActiveId(anno.id)}
+                      onMouseEnter={() => setActiveId(anno.id)}
+                      onFocus={() => setActiveId(anno.id)}
+                    >
+                      <span className="relative flex items-center justify-center">
+                        <span
+                          className={`w-3 h-3 rounded-full border border-white transition-all duration-200 ${
+                            isSelected
+                              ? "bg-[#d83a32] ring-3 ring-[#d83a32]/25 scale-125"
+                              : "bg-[#111214] ring-2 ring-black/10 hover:bg-[#d83a32] hover:scale-110"
+                          }`}
+                        />
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </div>
+            </div>
 
-      {/* Mobile Telemetry Spec Pills */}
-      <div className="lg:hidden w-full max-w-md mx-auto my-4 grid grid-cols-2 gap-2 text-left z-20">
-        {ANNOTATIONS.slice(0, 4).map((anno) => (
-          <div
-            key={anno.id}
-            className="p-2.5 rounded-lg border border-[#D9D9D5] bg-white/90 backdrop-blur-sm shadow-xs"
-          >
-            <span className="text-[9px] font-mono text-[#d83a32] block font-semibold tracking-wider">
-              {anno.number} • {anno.title}
-            </span>
-            <span className="text-[11px] text-[#111214] block truncate font-medium">{anno.spec}</span>
+            {/* Focused Component Inspector (Generous negative space, single focal point) */}
+            <div className="w-full max-w-lg mt-6">
+              {/* Quick Tab Selector */}
+              <div className="flex items-center justify-between gap-1 p-1 bg-[#F3F3F0] rounded-lg border border-[#D9D9D5]/70 mb-3 overflow-x-auto no-scrollbar">
+                {ANNOTATIONS.map((anno) => {
+                  const isSelected = activeId === anno.id;
+                  return (
+                    <button
+                      key={anno.id}
+                      type="button"
+                      onClick={() => setActiveId(anno.id)}
+                      className={`px-2.5 py-1 text-[11px] font-mono tracking-tight rounded-md whitespace-nowrap transition-colors ${
+                        isSelected
+                          ? "bg-white text-[#111214] font-medium shadow-2xs border border-[#D9D9D5]"
+                          : "text-[#5F6368] hover:text-[#111214]"
+                      }`}
+                    >
+                      {anno.number} {anno.title}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active Callout Details */}
+              <div className="p-3.5 rounded-xl border border-[#D9D9D5] bg-white shadow-2xs">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-semibold text-[#d83a32] tracking-wider uppercase">
+                      {activeAnnotation.number} • {activeAnnotation.title}
+                    </span>
+                  </div>
+                  <span className="text-xs font-semibold text-[#111214] tracking-tight">
+                    {activeAnnotation.spec}
+                  </span>
+                </div>
+                <p className="text-xs text-[#5F6368] leading-relaxed">
+                  {activeAnnotation.detail}
+                </p>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Hero Bottom CTAs & Scroll Cue */}
-      <div className="relative z-20 flex flex-col items-center gap-6 mt-4 md:mt-8">
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/projects" className="shiny-cta group cta-press shadow-md">
-            <span className="relative z-10 flex items-center gap-2 text-white font-medium text-xs uppercase tracking-wider">
-              Explore Projects <Iconify icon="lucide:arrow-right" className="cta-arrow w-4 h-4" />
-            </span>
-          </Link>
-          <Link
-            href="/team"
-            className="cta-press group px-6 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] font-medium text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] shadow-xs transition-all flex items-center gap-2"
-          >
-            Engineering Team
-            <Iconify
-              icon="lucide:arrow-right"
-              className="cta-arrow opacity-0 group-hover:opacity-100 transition-opacity w-4 h-4"
-            />
-          </Link>
-        </div>
-
-        <div className="flex flex-col items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity text-[#5F6368]">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#5F6368]">
-            Scroll to explore
-          </span>
-          <Iconify icon="lucide:chevron-down" className="w-4 h-4 animate-bounce text-[#d83a32]" />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
+
