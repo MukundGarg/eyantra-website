@@ -122,15 +122,15 @@ export default function ProjectCard({
     >
       <div
         ref={cardRef}
-        className="group relative flex flex-col h-full overflow-hidden p-6 border border-[#D9D9D5] bg-white hover:border-[#111214]/30 transition-all duration-400 rounded-xl shadow-[0_4px_20px_rgba(17,18,20,0.04)] hover:shadow-[0_16px_36px_rgba(17,18,20,0.08)] will-change-transform"
+        className="group relative flex flex-col h-full overflow-hidden p-6 border border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--text-primary)]/30 transition-all duration-400 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_16px_36px_rgba(0,0,0,0.4)] will-change-transform"
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Subtle card ambient red backlighting on hover */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[#d83a32]/0 group-hover:bg-[#d83a32]/[0.04] blur-[80px] rounded-full pointer-events-none transition-colors duration-500" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-[var(--accent-red)]/0 group-hover:bg-[var(--accent-red)]/[0.04] blur-[80px] rounded-full pointer-events-none transition-colors duration-500" />
 
         {/* ── Image Display Area with Corner HUD Brackets & Parallax Depth ── */}
         <div
-          className="w-full h-52 bg-[#F3F3F0] border border-[#D9D9D5] rounded-lg mb-6 overflow-hidden relative flex items-center justify-center will-change-transform"
+          className="w-full h-52 bg-[var(--bg-surface-alt)] border border-[var(--border)] rounded-lg mb-6 overflow-hidden relative flex items-center justify-center will-change-transform"
           style={{ transform: "translateZ(12px)" }}
         >
           {project.image ? (
@@ -141,15 +141,15 @@ export default function ProjectCard({
               className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
             />
           ) : (
-            <Iconify icon="lucide:cpu" className="w-10 h-10 text-[#D9D9D5]" />
+            <Iconify icon="lucide:cpu" className="w-10 h-10 text-[var(--border)]" />
           )}
 
           {/* Vignette overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#111214]/50 via-transparent to-transparent pointer-events-none opacity-40 group-hover:opacity-20 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--text-primary)]/40 via-transparent to-transparent pointer-events-none opacity-40 group-hover:opacity-20 transition-opacity" />
 
           {/* Index Tag */}
-          <div className="absolute bottom-2.5 right-3 px-2 py-0.5 rounded bg-white/90 backdrop-blur-sm border border-[#D9D9D5] text-[9px] font-mono text-[#111214] tracking-wider uppercase flex items-center gap-1.5 pointer-events-none shadow-sm font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
+          <div className="absolute bottom-2.5 right-3 px-2 py-0.5 rounded bg-[var(--bg-surface)]/90 backdrop-blur-sm border border-[var(--border)] text-[9px] font-mono text-[var(--text-primary)] tracking-wider uppercase flex items-center gap-1.5 pointer-events-none shadow-sm font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
             <span>0{index + 1}</span>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function ProjectCard({
             className="will-change-transform mb-2"
             style={{ transform: "translateZ(20px)" }}
           >
-            <span className="text-[#d83a32] font-mono text-[10px] uppercase tracking-wider font-semibold">
+            <span className="text-[var(--accent-red)] font-mono text-[10px] uppercase tracking-wider font-semibold">
               {project.category}
             </span>
           </div>
@@ -168,7 +168,7 @@ export default function ProjectCard({
 
         {/* Title (Depth Layer 24px) */}
         <h3
-          className="text-lg font-bold text-[#111214] tracking-tight mb-2 group-hover:text-[#d83a32] transition-colors will-change-transform"
+          className="text-lg font-bold text-[var(--text-primary)] tracking-tight mb-2 group-hover:text-[var(--accent-red)] transition-colors will-change-transform"
           style={{ transform: "translateZ(24px)" }}
         >
           {project.title}
@@ -177,7 +177,7 @@ export default function ProjectCard({
         {/* Description (Depth Layer 16px) */}
         {project.desc && (
           <p
-            className="text-[#5F6368] text-sm mb-6 flex-1 line-clamp-3 font-normal leading-relaxed will-change-transform"
+            className="text-[var(--text-secondary)] text-sm mb-6 flex-1 line-clamp-3 font-normal leading-relaxed will-change-transform"
             style={{ transform: "translateZ(16px)" }}
           >
             {project.desc}
@@ -193,7 +193,7 @@ export default function ProjectCard({
             {safeTechStack.map((tech) => (
               <span
                 key={tech}
-                className="px-2.5 py-0.5 bg-[#F3F3F0] group-hover:bg-[#FAFAF8] border border-[#D9D9D5] rounded text-[10px] text-[#111214] font-mono tracking-wider transition-colors"
+                className="px-2.5 py-0.5 bg-[var(--bg-surface-alt)] group-hover:bg-[var(--bg-primary)] border border-[var(--border)] rounded text-[10px] text-[var(--text-primary)] font-mono tracking-wider transition-colors"
               >
                 {tech}
               </span>
@@ -211,7 +211,7 @@ export default function ProjectCard({
               href={linkToUse}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-4 bg-[#F3F3F0] hover:bg-[#d83a32] text-[#111214] hover:text-white border border-[#D9D9D5] hover:border-[#d83a32] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-300 text-center flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-2.5 px-4 bg-[var(--bg-surface-alt)] hover:bg-[var(--accent-red)] text-[var(--text-primary)] hover:text-white border border-[var(--border)] hover:border-[var(--accent-red)] rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-300 text-center flex items-center justify-center gap-2 shadow-sm cursor-pointer"
             >
               <span>View Project</span>
               <Iconify

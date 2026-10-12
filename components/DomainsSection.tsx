@@ -113,7 +113,7 @@ export default function DomainsSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-28 md:py-36 px-6 md:px-12 relative overflow-hidden bg-[#FAFAF8] select-none border-b border-[#D9D9D5]"
+      className="py-28 md:py-36 px-6 md:px-12 relative bg-[var(--bg-primary)] select-none border-b border-[var(--border)]"
     >
       {/* Layer 1: Background Parallax Coordinate Grid & Rings */}
       <div
@@ -124,30 +124,30 @@ export default function DomainsSection() {
           className="absolute inset-0 opacity-[0.8]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,18,20,0.035) 1px, transparent 1px)",
+              "linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
 
         {/* Layer 2: Subtle radial geometry */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#d83a32]/[0.02] blur-[160px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[var(--accent-red)]/[0.02] dark:bg-[var(--accent-red)]/[0.035] blur-[160px] rounded-full pointer-events-none" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[#D9D9D5] pb-8">
+        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[var(--border)] pb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-              <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
+              <span className="text-xs font-mono text-[var(--accent-red)] uppercase tracking-wider font-semibold">
                 Disciplines • Technical Domains
               </span>
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#111214]">
-              Engineering <span className="text-[#d83a32]">Disciplines</span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[var(--text-primary)]">
+              Engineering <span className="text-[var(--accent-red)]">Disciplines</span>
             </h2>
           </div>
-          <p className="text-sm text-[#5F6368] max-w-sm mt-4 md:mt-0 font-normal leading-relaxed">
+          <p className="text-sm text-[var(--text-secondary)] max-w-sm mt-4 md:mt-0 font-normal leading-relaxed">
             Four specialized technical tracks that collaborate to build autonomous robotics systems at e-Yantra MSIT.
           </p>
         </div>
@@ -158,10 +158,10 @@ export default function DomainsSection() {
         </div>
 
         {/* Desktop Two-Column Layout (LEFT: Interactive Rows, RIGHT: Sticky Visualizer) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14">
           {/* LEFT: Scroll-Spied Domain Rows */}
           <div
-            className="lg:col-span-7 divide-y divide-[#D9D9D5]"
+            className="lg:col-span-7 divide-y divide-[var(--border)]"
             style={{ perspective: "1000px" }}
           >
             {DOMAINS.map((domain, index) => {
@@ -189,7 +189,7 @@ export default function DomainsSection() {
                   <div className="flex items-baseline gap-6 md:gap-8 mb-3">
                     <span
                       className={`text-sm md:text-base font-mono font-semibold transition-colors ${
-                        isActive ? "text-[#d83a32]" : "text-[#5F6368]"
+                        isActive ? "text-[var(--accent-red)]" : "text-[var(--text-secondary)]"
                       }`}
                     >
                       {domain.num}
@@ -198,7 +198,7 @@ export default function DomainsSection() {
                     <div className="flex items-center gap-3">
                       <h3
                         className={`text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight transition-colors ${
-                          isActive ? "text-[#111214]" : "text-[#5F6368]"
+                          isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                         }`}
                       >
                         {domain.title}
@@ -206,8 +206,8 @@ export default function DomainsSection() {
                       <div
                         className={`p-1.5 rounded-lg transition-all ${
                           isActive
-                            ? "bg-[#d83a32]/10 text-[#d83a32] border border-[#d83a32]/30"
-                            : "bg-transparent text-zinc-400"
+                            ? "bg-[var(--accent-red)]/10 text-[var(--accent-red)] border border-[var(--accent-red)]/30"
+                            : "bg-transparent text-[var(--text-secondary)]/50"
                         }`}
                       >
                         <Iconify icon={domain.icon} className="w-5 h-5" />
@@ -215,14 +215,14 @@ export default function DomainsSection() {
                     </div>
                   </div>
 
-                  <p className="text-xs uppercase tracking-wider text-[#d83a32] mb-3 pl-10 md:pl-12 font-medium">
+                  <p className="text-xs uppercase tracking-wider text-[var(--accent-red)] mb-3 pl-10 md:pl-12 font-medium">
                     {domain.subtitle}
                   </p>
 
                   <div className="pl-10 md:pl-12">
                     <p
                       className={`text-sm leading-relaxed mb-4 transition-colors font-normal ${
-                        isActive ? "text-[#111214]" : "text-[#5F6368]"
+                        isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                       }`}
                     >
                       {domain.desc}
@@ -235,8 +235,8 @@ export default function DomainsSection() {
                           key={tag}
                           className={`text-xs px-2.5 py-1 rounded transition-all duration-300 ${
                             isActive
-                              ? "bg-white text-[#111214] border border-[#d83a32]/40 shadow-xs font-medium"
-                              : "bg-[#F3F3F0] text-[#5F6368] border border-[#D9D9D5]"
+                              ? "bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--accent-red)]/40 shadow-xs font-medium"
+                              : "bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] border border-[var(--border)]"
                           }`}
                           style={{
                             transitionDelay: isActive ? `${tagIdx * 60}ms` : "0ms",
@@ -253,8 +253,10 @@ export default function DomainsSection() {
           </div>
 
           {/* RIGHT: Sticky Persistent Domain Visualizer (Desktop only) */}
-          <div className="hidden lg:block lg:col-span-5 sticky top-32 self-start">
-            <DomainVisualizer activeDomain={activeDomain} />
+          <div className="hidden lg:block lg:col-span-5 relative">
+            <div className="sticky top-32">
+              <DomainVisualizer activeDomain={activeDomain} />
+            </div>
           </div>
         </div>
       </div>

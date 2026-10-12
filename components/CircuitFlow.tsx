@@ -101,19 +101,19 @@ export default function CircuitFlow() {
       ref={containerRef}
       className="w-full my-8 select-none"
     >
-      <div className="w-full rounded-2xl border border-[#D9D9D5] bg-white p-6 sm:p-8 md:p-10 shadow-2xs">
+      <div className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 sm:p-8 md:p-10 shadow-2xs">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 mb-8 border-b border-[#D9D9D5]/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 mb-8 border-b border-[var(--border)]">
           <div>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#5F6368] font-medium block">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[var(--text-secondary)] font-medium block">
               The Engineering Process
             </span>
-            <h3 className="text-xl sm:text-2xl font-semibold text-[#111214] tracking-tight mt-1">
+            <h3 className="text-xl sm:text-2xl font-semibold text-[var(--text-primary)] tracking-tight mt-1">
               From concept to working prototype
             </h3>
           </div>
-          <div className="text-xs font-mono text-[#5F6368]">
-            <span className="text-[#d83a32] font-semibold">0{activeNode + 1}</span> / 05
+          <div className="text-xs font-mono text-[var(--text-secondary)]">
+            <span className="text-[var(--accent-red)] font-semibold">0{activeNode + 1}</span> / 05
           </div>
         </div>
 
@@ -129,22 +129,22 @@ export default function CircuitFlow() {
                 onMouseEnter={() => setActiveNode(i)}
                 className={`group relative text-left p-4 sm:p-4 rounded-xl border transition-all duration-300 cursor-pointer flex flex-col justify-between focus:outline-hidden ${
                   isActive
-                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-xs"
-                    : "bg-white border-[#D9D9D5]/70 hover:border-[#111214]/30 hover:bg-[#FAFAF8]/50"
+                    ? "bg-[var(--bg-surface-alt)] border-[var(--accent-red)] shadow-xs"
+                    : "bg-[var(--bg-surface)] border-[var(--border)] hover:border-[var(--text-primary)]/30 hover:bg-[var(--bg-surface-alt)]/50"
                 }`}
               >
                 {/* Step indicator */}
                 <div className="flex items-center justify-between mb-4">
                   <span
                     className={`text-[11px] font-mono font-medium ${
-                      isActive ? "text-[#d83a32]" : "text-[#5F6368]"
+                      isActive ? "text-[var(--accent-red)]" : "text-[var(--text-secondary)]"
                     }`}
                   >
                     {node.stage}
                   </span>
                   <span
                     className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                      isActive ? "bg-[#d83a32]" : "bg-black/10 group-hover:bg-black/20"
+                      isActive ? "bg-[var(--accent-red)]" : "bg-[var(--text-primary)]/15 group-hover:bg-[var(--text-primary)]/30"
                     }`}
                   />
                 </div>
@@ -154,16 +154,16 @@ export default function CircuitFlow() {
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 transition-colors ${
                       isActive
-                        ? "bg-[#d83a32]/10 text-[#d83a32]"
-                        : "bg-[#F3F3F0] text-[#5F6368] group-hover:text-[#111214]"
+                        ? "bg-[var(--accent-red)]/10 text-[var(--accent-red)]"
+                        : "bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
                     }`}
                   >
                     <Iconify icon={node.icon} className="w-4 h-4" />
                   </div>
-                  <h4 className="text-sm font-semibold text-[#111214] tracking-tight">
+                  <h4 className="text-sm font-semibold text-[var(--text-primary)] tracking-tight">
                     {node.title}
                   </h4>
-                  <p className="text-xs text-[#5F6368] mt-0.5 leading-tight">
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5 leading-tight">
                     {node.subtitle}
                   </p>
                 </div>
@@ -174,9 +174,9 @@ export default function CircuitFlow() {
 
         {/* Subtle Progress Bar */}
         <div className="hidden sm:block relative my-6">
-          <div className="relative h-1 w-full bg-[#F3F3F0] rounded-full overflow-hidden">
+          <div className="relative h-1 w-full bg-[var(--bg-surface-alt)] rounded-full overflow-hidden">
             <div
-              className="absolute top-0 bottom-0 bg-[#d83a32] rounded-full transition-all duration-500 ease-out"
+              className="absolute top-0 bottom-0 bg-[var(--accent-red)] rounded-full transition-all duration-500 ease-out"
               style={{
                 width: `${((activeNode + 1) / NODES.length) * 100}%`,
               }}
@@ -185,16 +185,16 @@ export default function CircuitFlow() {
         </div>
 
         {/* Active Stage Detail Panel */}
-        <div className="mt-6 sm:mt-4 p-4 sm:p-5 rounded-xl bg-[#FAFAF8] border border-[#D9D9D5]/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+        <div className="mt-6 sm:mt-4 p-4 sm:p-5 rounded-xl bg-[var(--bg-surface-alt)] border border-[var(--border)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
           <div className="flex items-center gap-3">
-            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] text-[10px] font-mono font-semibold">
+            <span className="px-2 py-0.5 rounded bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] text-[10px] font-mono font-semibold">
               STAGE {NODES[activeNode].stage}
             </span>
-            <p className="text-[#5F6368] leading-relaxed font-normal">
+            <p className="text-[var(--text-secondary)] leading-relaxed font-normal">
               {NODES[activeNode].detail}
             </p>
           </div>
-          <span className="text-xs text-[#d83a32] shrink-0 font-medium font-mono uppercase tracking-wider">
+          <span className="text-xs text-[var(--accent-red)] shrink-0 font-medium font-mono uppercase tracking-wider">
             {NODES[activeNode].title}
           </span>
         </div>

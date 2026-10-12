@@ -26,17 +26,17 @@ export default function ClosingSection() {
   return (
     <section
       ref={containerRef}
-      className="py-28 md:py-36 px-6 text-center relative overflow-hidden bg-[#FAFAF8] border-t border-[#D9D9D5]"
+      className="py-28 md:py-36 px-6 text-center relative overflow-hidden bg-[var(--bg-primary)] border-t border-[var(--border)]"
     >
       {/* ─── Top Line Divider ─── */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#d83a32]/40 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--accent-red)]/40 to-transparent" />
 
       {/* ─── Background Subtle Grid ─── */}
       <div
         className="absolute inset-0 pointer-events-none opacity-100"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(17,18,20,0.035) 1px, transparent 1px)",
+            "linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
           backgroundPosition: "center center",
         }}
@@ -44,9 +44,9 @@ export default function ClosingSection() {
 
       {/* ─── Subtle Radial Geometry Behind Headline ─── */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none">
-        <div className="w-full h-full rounded-full border border-[#D9D9D5] flex items-center justify-center">
-          <div className="w-3/4 h-3/4 rounded-full border border-dashed border-[#d83a32]/20 flex items-center justify-center">
-            <div className="w-1/2 h-1/2 rounded-full border border-[#D9D9D5] bg-radial from-[#d83a32]/[0.03] to-transparent" />
+        <div className="w-full h-full rounded-full border border-[var(--border)] flex items-center justify-center">
+          <div className="w-3/4 h-3/4 rounded-full border border-dashed border-[var(--accent-red)]/20 flex items-center justify-center">
+            <div className="w-1/2 h-1/2 rounded-full border border-[var(--border)] bg-radial from-[var(--accent-red)]/[0.03] to-transparent" />
           </div>
         </div>
       </div>
@@ -60,23 +60,23 @@ export default function ClosingSection() {
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Lab Badge */}
-        <div className="stagger-1 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white border border-[#D9D9D5] mb-8 shadow-sm">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-          <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+        <div className="stagger-1 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border)] mb-8 shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
+          <span className="text-xs font-mono text-[var(--accent-red)] uppercase tracking-wider font-semibold">
             Robotics Society • MSIT New Delhi
           </span>
         </div>
 
         {/* Headline */}
-        <h2 className="stagger-2 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-tighter text-[#111214]">
+        <h2 className="stagger-2 text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-8 tracking-tighter text-[var(--text-primary)]">
           Built on{" "}
-          <span className="text-[#d83a32] inline-block hover:scale-[1.02] transition-transform">
+          <span className="text-[var(--accent-red)] inline-block hover:scale-[1.02] transition-transform">
             First Principles
           </span>
         </h2>
 
         {/* Subtext */}
-        <p className="stagger-3 text-base sm:text-lg md:text-xl text-[#5F6368] max-w-2xl mx-auto mb-12 font-normal leading-relaxed">
+        <p className="stagger-3 text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto mb-12 font-normal leading-relaxed">
           Explore the autonomous robots, embedded hardware, and technical documentation produced by student engineers at e-Yantra MSIT.
         </p>
 
@@ -88,24 +88,24 @@ export default function ClosingSection() {
           >
             <span className="relative z-10 flex items-center justify-center gap-2 text-white text-xs uppercase tracking-wider font-semibold">
               <span>View Projects</span>
-              <Iconify icon="lucide:arrow-right" className="cta-arrow w-4 h-4 text-[#d83a32]" />
+              <Iconify icon="lucide:arrow-right" className="cta-arrow w-4 h-4 text-[var(--accent-red)]" />
             </span>
           </Link>
 
           <Link
             href="/team"
-            className="cta-press group px-7 py-3.5 rounded-full bg-white border border-[#D9D9D5] text-[#111214] text-xs tracking-wider uppercase hover:text-[#d83a32] hover:border-[#d83a32] hover:bg-[#FAFAF8] transition-all flex items-center justify-center gap-2 w-full sm:w-auto shadow-sm font-semibold"
+            className="cta-press group px-7 py-3.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] text-xs tracking-wider uppercase hover:text-[var(--accent-red)] hover:border-[var(--accent-red)] hover:bg-[var(--bg-surface-alt)] transition-all flex items-center justify-center gap-2 w-full sm:w-auto shadow-sm font-semibold"
           >
             <span>Meet The Team</span>
             <Iconify
               icon="lucide:arrow-right"
-              className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[#d83a32]"
+              className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-[var(--accent-red)]"
             />
           </Link>
         </div>
 
         {/* Metadata */}
-        <div className="stagger-5 mt-16 pt-8 border-t border-[#D9D9D5] flex items-center justify-center gap-4 font-mono text-xs text-[#5F6368]">
+        <div className="stagger-5 mt-16 pt-8 border-t border-[var(--border)] flex items-center justify-center gap-4 font-mono text-xs text-[var(--text-secondary)]">
           <span>MSIT Janakpuri</span>
           <span>•</span>
           <span>New Delhi, India</span>

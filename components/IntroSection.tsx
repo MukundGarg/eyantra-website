@@ -100,7 +100,7 @@ export default function IntroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 sm:py-24 md:py-28 px-6 sm:px-8 lg:px-16 overflow-hidden bg-[#FAFAF8] border-t border-b border-[#D9D9D5]/80"
+      className="relative py-20 sm:py-24 md:py-28 px-6 sm:px-8 lg:px-16 overflow-hidden bg-[var(--bg-primary)] border-t border-b border-[var(--border)]"
     >
       <div
         ref={contentRef}
@@ -108,38 +108,38 @@ export default function IntroSection() {
       >
         {/* Section Label */}
         <div className="flex items-center gap-2.5 mb-4">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-          <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
+          <span className="text-xs font-mono text-[var(--accent-red)] uppercase tracking-wider font-semibold">
             About e-Yantra MSIT
           </span>
         </div>
 
         {/* Medium Editorial Heading */}
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#111214] max-w-3xl leading-[1.15] mb-6">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-primary)] max-w-3xl leading-[1.15] mb-6">
           Where theoretical concepts turn into working hardware.
         </h2>
 
         {/* Short Editorial Paragraphs */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[#D9D9D5]/80">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-[var(--border)]">
           <div className="md:col-span-7 space-y-4">
-            <p className="text-base sm:text-lg text-[#111214] leading-relaxed font-normal">
+            <p className="text-base sm:text-lg text-[var(--text-primary)] leading-relaxed font-normal">
               e-Yantra MSIT is the student robotics society of Maharaja Surajmal Institute
               of Technology. We provide an open engineering environment where students explore
               embedded systems, firmware, mechanical design, and autonomous robotics.
             </p>
-            <p className="text-sm sm:text-base text-[#5F6368] leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed font-normal">
               Rather than staying confined to simulation, members gain practical experience
               building real circuits, writing low-level code, and testing prototypes under
               real-world constraints.
             </p>
           </div>
 
-          <div className="md:col-span-5 md:pl-6 md:border-l md:border-[#D9D9D5]/80 flex flex-col justify-center space-y-4">
-            <div className="p-4 rounded-xl bg-white border border-[#D9D9D5]/70 shadow-2xs">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#5F6368] block mb-1">
+          <div className="md:col-span-5 md:pl-6 md:border-l md:border-[var(--border)] flex flex-col justify-center space-y-4">
+            <div className="p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-2xs">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)] block mb-1">
                 Our Focus
               </span>
-              <p className="text-xs sm:text-sm text-[#111214] font-medium leading-relaxed">
+              <p className="text-xs sm:text-sm text-[var(--text-primary)] font-medium leading-relaxed">
                 Applied robotics, sensor-actuator loops, and collaborative engineering from
                 first principles.
               </p>
@@ -152,16 +152,16 @@ export default function IntroSection() {
           {PILLARS.map((pillar) => (
             <div
               key={pillar.title}
-              className="p-6 rounded-xl bg-white border border-[#D9D9D5]/70 shadow-2xs flex flex-col justify-between"
+              className="p-6 rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-2xs flex flex-col justify-between"
             >
               <div>
-                <div className="w-9 h-9 rounded-lg bg-[#F3F3F0] text-[#111214] flex items-center justify-center mb-4">
+                <div className="w-9 h-9 rounded-lg bg-[var(--bg-surface-alt)] text-[var(--text-primary)] flex items-center justify-center mb-4">
                   <Iconify icon={pillar.icon} className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-semibold text-[#111214] tracking-tight mb-2">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] tracking-tight mb-2">
                   {pillar.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-[#5F6368] leading-relaxed font-normal">
+                <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed font-normal">
                   {pillar.desc}
                 </p>
               </div>

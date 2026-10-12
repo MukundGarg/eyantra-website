@@ -4,9 +4,11 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Iconify from "@/components/Iconify";
+import { useTheme } from "@/components/ThemeProvider";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { theme, toggleTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -45,25 +47,41 @@ export default function Navbar() {
         id="main-nav"
         className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between border rounded-full transition-all duration-300 px-6 py-2.5 relative ${
           isScrolled
-            ? "bg-white/90 backdrop-blur-2xl border-[#D9D9D5] shadow-[0_8px_30px_rgba(17,18,20,0.06)]"
-            : "bg-[#FAFAF8]/85 backdrop-blur-md border-[#D9D9D5]/80 shadow-[0_4px_20px_rgba(17,18,20,0.03)]"
+            ? "bg-[var(--bg-surface)]/90 backdrop-blur-2xl border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
+            : "bg-[var(--bg-primary)]/85 backdrop-blur-md border-[var(--border)]/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
         }`}
       >
         <div className="flex items-center justify-between w-full md:w-auto">
           <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="w-2 h-2 rounded-full bg-[#d83a32] group-hover:scale-125 transition-transform" />
-            <span className="text-sm font-semibold tracking-wide uppercase text-[#111214] group-hover:text-[#d83a32] transition-colors">
+            <span className="w-2 h-2 rounded-full bg-[var(--accent-red)] group-hover:scale-125 transition-transform" />
+            <span className="text-sm font-semibold tracking-wide uppercase text-[var(--text-primary)] group-hover:text-[var(--accent-red)] transition-colors">
               e-Yantra MSIT
             </span>
           </Link>
 
-          <button
-            className="md:hidden text-[#5F6368] hover:text-[#111214] focus:outline-none p-1 cursor-pointer"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            <Iconify icon={isOpen ? "lucide:x" : "lucide:menu"} className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Mobile Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={mounted && theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              className="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] border border-[var(--border)]/60 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] cursor-pointer"
+            >
+              <Iconify
+                icon={mounted && theme === "dark" ? "lucide:sun" : "lucide:moon"}
+                className="w-4 h-4"
+              />
+            </button>
+
+            {/* Mobile Hamburger Menu Button */}
+            <button
+              className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus:outline-hidden p-1 cursor-pointer"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              <Iconify icon={isOpen ? "lucide:x" : "lucide:menu"} className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div
@@ -79,18 +97,36 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setIsOpen(false)}
                 className={`relative text-xs tracking-wider uppercase transition-colors py-1 font-medium ${
-                  isActive ? "text-[#111214] font-semibold" : "text-[#5F6368] hover:text-[#111214]"
+                  isActive
+                    ? "text-[var(--text-primary)] font-semibold"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {link.name}
                 {isActive && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#d83a32] rounded-full" />
+                  <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[var(--accent-red)] rounded-full" />
                 )}
               </Link>
             );
           })}
+
+          {/* Desktop Theme Toggle Button */}
+          <div className="hidden md:flex items-center pl-2 border-l border-[var(--border)]">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={mounted && theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              className="p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] border border-transparent hover:border-[var(--border)] transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] cursor-pointer"
+            >
+              <Iconify
+                icon={mounted && theme === "dark" ? "lucide:sun" : "lucide:moon"}
+                className="w-4 h-4 transition-transform hover:rotate-12"
+              />
+            </button>
+          </div>
         </div>
       </nav>
     </header>
   );
 }
+

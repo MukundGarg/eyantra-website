@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
     --accent-red: #D83A32;
     --accent-red-strong: #B82D27;
@@ -10,11 +12,43 @@
     --text-primary: #111214;
     --text-secondary: #5F6368;
     --border: #D9D9D5;
+    --grid-line: rgba(17, 18, 20, 0.035);
+    --star-color: #111214;
+    --shadow-card: 0 4px 20px rgba(17, 18, 20, 0.06);
+    --overlay-subtle: rgba(17, 18, 20, 0.03);
+    --header-blur-bg: rgba(250, 250, 248, 0.85);
+}
+
+html.dark {
+    --accent-red: #E34A41;
+    --accent-red-strong: #F05A50;
+    --accent-red-glow: rgba(227, 74, 65, 0.2);
+    --bg-primary: #151618;
+    --bg-surface: #1D1F22;
+    --bg-surface-alt: #24262A;
+    --text-primary: #F4F3EF;
+    --text-secondary: #A7AAAF;
+    --border: #34373B;
+    --grid-line: rgba(244, 243, 239, 0.04);
+    --star-color: #F4F3EF;
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
+    --overlay-subtle: rgba(255, 255, 255, 0.03);
+    --header-blur-bg: rgba(21, 22, 24, 0.85);
 }
 
 /* ─── Base ─── */
 html {
     scroll-behavior: smooth;
+}
+
+body, header, nav, footer, section, aside, .theme-transition {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body, header, nav, footer, section, aside, .theme-transition {
+        transition: none !important;
+    }
 }
 
 /* Custom Animations */
@@ -263,9 +297,9 @@ html {
     z-index: 0;
 }
 
-/* ─── Parallax Stars / Grid Motifs (Light theme: subtle near-black dots) ─── */
-.stars-1 { box-shadow: 234px 124px #111214, 654px 345px #111214, 876px 12px #111214, 1200px 800px #111214, 400px 1500px #111214, 1800px 200px #111214, 100px 1000px #111214, 900px 1900px #111214, 500px 600px #111214, 1400px 100px #111214, 300px 400px #111214, 1600px 1200px #111214; }
-.stars-2 { box-shadow: 123px 456px #111214, 789px 234px #111214, 456px 890px #111214, 1100px 300px #111214, 200px 1200px #111214, 1500px 500px #111214, 600px 1700px #111214, 1300px 900px #111214; }
+/* ─── Parallax Stars / Grid Motifs (Adapts to light & dark theme) ─── */
+.stars-1 { box-shadow: 234px 124px var(--star-color), 654px 345px var(--star-color), 876px 12px var(--star-color), 1200px 800px var(--star-color), 400px 1500px var(--star-color), 1800px 200px var(--star-color), 100px 1000px var(--star-color), 900px 1900px var(--star-color), 500px 600px var(--star-color), 1400px 100px var(--star-color), 300px 400px var(--star-color), 1600px 1200px var(--star-color); }
+.stars-2 { box-shadow: 123px 456px var(--star-color), 789px 234px var(--star-color), 456px 890px var(--star-color), 1100px 300px var(--star-color), 200px 1200px var(--star-color), 1500px 500px var(--star-color), 600px 1700px var(--star-color), 1300px 900px var(--star-color); }
 
 .gradient-blur {
     position: fixed;
@@ -273,7 +307,7 @@ html {
     inset: 0 0 auto 0;
     height: 120px;
     pointer-events: none;
-    background: linear-gradient(to bottom, rgba(250, 250, 248, 0.85), transparent);
+    background: linear-gradient(to bottom, var(--header-blur-bg), transparent);
     backdrop-filter: blur(8px);
     mask-image: linear-gradient(to bottom, black, transparent);
 }

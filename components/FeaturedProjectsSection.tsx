@@ -138,7 +138,7 @@ export default function FeaturedProjectsSection({
   return (
     <section
       ref={sectionRef}
-      className="py-36 px-6 md:px-12 bg-[#FFFFFF] relative border-t border-[#D9D9D5] overflow-hidden select-none"
+      className="py-36 px-6 md:px-12 bg-[var(--bg-surface)] relative border-t border-[var(--border)] overflow-hidden select-none"
     >
       {/* Background Precision Grid Texture */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -146,12 +146,12 @@ export default function FeaturedProjectsSection({
           className="absolute inset-0 opacity-100"
           style={{
             backgroundImage:
-              "linear-gradient(to right, rgba(17, 18, 20, 0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(17, 18, 20, 0.035) 1px, transparent 1px)",
+              "linear-gradient(to right, var(--grid-line) 1px, transparent 1px), linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
         {/* Subtle radial ambient atmosphere */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-[#d83a32]/[0.02] blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-[var(--accent-red)]/[0.02] dark:bg-[var(--accent-red)]/[0.035] blur-[140px] rounded-full pointer-events-none" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -160,33 +160,33 @@ export default function FeaturedProjectsSection({
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-                <span className="text-xs font-mono text-[#d83a32] uppercase tracking-wider font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
+                <span className="text-xs font-mono text-[var(--accent-red)] uppercase tracking-wider font-semibold">
                   Selected Work • Student Engineering
                 </span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-[#111214] tracking-tight">
-                Featured <span className="text-[#d83a32]">Projects</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] tracking-tight">
+                Featured <span className="text-[var(--accent-red)]">Projects</span>
               </h2>
             </div>
 
             <Link
               href="/projects"
-              className="text-xs text-[#5F6368] hover:text-[#111214] uppercase tracking-wider flex items-center gap-2 group transition-colors self-start md:self-end font-semibold"
+              className="text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] uppercase tracking-wider flex items-center gap-2 group transition-colors self-start md:self-end font-semibold"
             >
               <span>View All Projects</span>
               <Iconify
                 icon="lucide:arrow-right"
-                className="w-4 h-4 transition-transform group-hover:translate-x-1 text-[#d83a32]"
+                className="w-4 h-4 transition-transform group-hover:translate-x-1 text-[var(--accent-red)]"
               />
             </Link>
           </div>
 
           {/* Animated Hairline Divider with Traveling Glow Pulse */}
-          <div className="relative h-[1px] w-full bg-[#D9D9D5] mt-8 overflow-hidden">
+          <div className="relative h-[1px] w-full bg-[var(--border)] mt-8 overflow-hidden">
             <div
               ref={dividerPulseRef}
-              className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-transparent via-[#d83a32] to-[#111214] transition-all duration-300"
+              className="absolute top-0 bottom-0 left-0 bg-gradient-to-r from-transparent via-[var(--accent-red)] to-[var(--text-primary)] transition-all duration-300"
               style={{ width: "25%" }}
             />
           </div>

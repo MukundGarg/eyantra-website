@@ -231,20 +231,20 @@ export default function ArduinoHero() {
           {/* Left Column: Identity + Editorial Headline + Copy + CTAs */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
             {/* Small Label */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111214]/[0.03] border border-[#111214]/[0.08] mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-              <span className="text-xs font-mono tracking-wider uppercase text-[#111214] font-medium">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--text-primary)]/[0.04] border border-[var(--border)] mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)]" />
+              <span className="text-xs font-mono tracking-wider uppercase text-[var(--text-primary)] font-medium">
                 e-Yantra MSIT
               </span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight text-[#111214] leading-[1.08] mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-bold tracking-tight text-[var(--text-primary)] leading-[1.08] mb-6">
               Build. Experiment. Engineer.
             </h1>
 
             {/* Body */}
-            <p className="text-base sm:text-lg text-[#5F6368] leading-relaxed max-w-xl font-normal mb-8">
+            <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl font-normal mb-8">
               The student robotics society of Maharaja Surajmal Institute of Technology,
               where ideas become working systems through hands-on engineering, projects and
               competitions.
@@ -254,14 +254,14 @@ export default function ArduinoHero() {
             <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <Link
                 href="/projects"
-                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#111214] text-white text-xs uppercase tracking-wider font-medium hover:bg-[#d83a32] transition-colors shadow-xs"
+                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs uppercase tracking-wider font-medium hover:bg-[var(--accent-red)] hover:text-white transition-colors shadow-xs"
               >
                 <span>Explore Projects</span>
                 <Iconify icon="lucide:arrow-right" className="w-4 h-4" />
               </Link>
               <Link
                 href="/team"
-                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-[#D9D9D5] text-[#111214] text-xs uppercase tracking-wider font-medium hover:border-[#111214] hover:bg-[#111214]/[0.02] transition-colors shadow-2xs"
+                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-primary)] text-xs uppercase tracking-wider font-medium hover:border-[var(--text-primary)] hover:bg-[var(--bg-surface-alt)] transition-colors shadow-2xs"
               >
                 <span>Meet the Team</span>
                 <Iconify icon="lucide:arrow-right" className="w-4 h-4 opacity-70" />
@@ -286,7 +286,7 @@ export default function ArduinoHero() {
               >
                 {/* Soft ground shadow */}
                 <div
-                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%] h-10 rounded-[100%] bg-black/[0.08] blur-xl pointer-events-none"
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[70%] h-10 rounded-[100%] bg-black/[0.08] dark:bg-black/40 blur-xl pointer-events-none"
                   style={{ transform: "translateZ(-40px)" }}
                 />
 
@@ -295,7 +295,7 @@ export default function ArduinoHero() {
                 <img
                   src="/images/arduino-3d-transparent.webp"
                   alt="Arduino Uno R3 Microcontroller Board"
-                  className="w-full h-auto object-contain filter drop-shadow-[0_16px_28px_rgba(17,18,20,0.12)] relative z-10"
+                  className="w-full h-auto object-contain filter drop-shadow-[0_16px_28px_rgba(0,0,0,0.12)] dark:drop-shadow-[0_16px_32px_rgba(0,0,0,0.6)] relative z-10"
                   draggable={false}
                 />
 
@@ -321,8 +321,8 @@ export default function ArduinoHero() {
                         <span
                           className={`w-3 h-3 rounded-full border border-white transition-all duration-200 ${
                             isSelected
-                              ? "bg-[#d83a32] ring-3 ring-[#d83a32]/25 scale-125"
-                              : "bg-[#111214] ring-2 ring-black/10 hover:bg-[#d83a32] hover:scale-110"
+                              ? "bg-[var(--accent-red)] ring-3 ring-[var(--accent-red)]/25 scale-125"
+                              : "bg-[var(--text-primary)] ring-2 ring-black/10 hover:bg-[var(--accent-red)] hover:scale-110"
                           }`}
                         />
                       </span>
@@ -335,7 +335,7 @@ export default function ArduinoHero() {
             {/* Focused Component Inspector (Generous negative space, single focal point) */}
             <div className="w-full max-w-lg mt-6">
               {/* Quick Tab Selector */}
-              <div className="flex items-center justify-between gap-1 p-1 bg-[#F3F3F0] rounded-lg border border-[#D9D9D5]/70 mb-3 overflow-x-auto no-scrollbar">
+              <div className="flex items-center justify-between gap-1 p-1 bg-[var(--bg-surface-alt)] rounded-lg border border-[var(--border)] mb-3 overflow-x-auto no-scrollbar">
                 {ANNOTATIONS.map((anno) => {
                   const isSelected = activeId === anno.id;
                   return (
@@ -345,8 +345,8 @@ export default function ArduinoHero() {
                       onClick={() => setActiveId(anno.id)}
                       className={`px-2.5 py-1 text-[11px] font-mono tracking-tight rounded-md whitespace-nowrap transition-colors ${
                         isSelected
-                          ? "bg-white text-[#111214] font-medium shadow-2xs border border-[#D9D9D5]"
-                          : "text-[#5F6368] hover:text-[#111214]"
+                          ? "bg-[var(--bg-surface)] text-[var(--text-primary)] font-medium shadow-2xs border border-[var(--border)]"
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                       }`}
                     >
                       {anno.number} {anno.title}
@@ -356,23 +356,24 @@ export default function ArduinoHero() {
               </div>
 
               {/* Active Callout Details */}
-              <div className="p-3.5 rounded-xl border border-[#D9D9D5] bg-white shadow-2xs">
+              <div className="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-2xs">
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-semibold text-[#d83a32] tracking-wider uppercase">
+                    <span className="text-[10px] font-mono font-semibold text-[var(--accent-red)] tracking-wider uppercase">
                       {activeAnnotation.number} • {activeAnnotation.title}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-[#111214] tracking-tight">
+                  <span className="text-xs font-semibold text-[var(--text-primary)] tracking-tight">
                     {activeAnnotation.spec}
                   </span>
                 </div>
-                <p className="text-xs text-[#5F6368] leading-relaxed">
+                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
                   {activeAnnotation.detail}
                 </p>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>
