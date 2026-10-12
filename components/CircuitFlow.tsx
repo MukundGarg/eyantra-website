@@ -164,31 +164,31 @@ export default function CircuitFlow() {
       {/* 3D Tilted Glass Motherboard Card */}
       <div
         ref={cardRef}
-        className="relative w-full rounded-2xl border border-[#292D32] bg-[#15181C]/80 backdrop-blur-xl p-6 sm:p-8 shadow-2xl transition-transform will-change-transform overflow-hidden"
+        className="relative w-full rounded-2xl border border-[#D9D9D5] bg-white/95 backdrop-blur-xl p-6 sm:p-8 shadow-xl transition-transform will-change-transform overflow-hidden"
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Subtle background PCB copper trace texture */}
         <div
-          className="absolute inset-0 opacity-[0.03] pointer-events-none"
+          className="absolute inset-0 opacity-[0.04] pointer-events-none"
           style={{
             backgroundImage:
-              "radial-gradient(#ffffff 1px, transparent 1px), linear-gradient(to right, #ffffff 1px, transparent 1px)",
+              "radial-gradient(#111214 0.8px, transparent 0.8px), linear-gradient(to right, #111214 1px, transparent 1px)",
             backgroundSize: "24px 24px, 48px 48px",
           }}
         />
 
         {/* Ambient red trace glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-24 bg-[#d83a32]/[0.08] blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-24 bg-[#d83a32]/[0.04] blur-[80px] rounded-full pointer-events-none" />
 
         {/* Top Telemetry Header */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-[#292D32]/80 font-mono text-[11px]">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-[#D9D9D5] font-mono text-[11px]">
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-[#d83a32] animate-pulse" />
-            <span className="text-white font-bold tracking-wider uppercase">
+            <span className="text-[#111214] font-bold tracking-wider uppercase">
               FLOW.CIRCUIT {"//"} SIGNAL PIPELINE
             </span>
           </div>
-          <div className="flex items-center gap-4 text-[#A6AAAE] tracking-widest uppercase text-[10px]">
+          <div className="flex items-center gap-4 text-[#5F6368] tracking-widest uppercase text-[10px]">
             <span>BUS: 16.000 MHZ</span>
             <span className="hidden sm:inline">CYCLE: ACTIVE</span>
             <span className="text-[#d83a32] font-bold">STATE: 0{activeNode + 1}</span>
@@ -206,15 +206,15 @@ export default function CircuitFlow() {
                 onMouseEnter={() => setActiveNode(i)}
                 className={`group relative p-4 rounded-xl border transition-all duration-400 cursor-pointer flex flex-col justify-between ${
                   isActive
-                    ? "bg-[#0B0D10] border-[#d83a32] shadow-[0_0_20px_rgba(216,58,50,0.25)] -translate-y-1"
-                    : "bg-[#0B0D10]/50 border-[#292D32]/70 hover:border-white/20 hover:bg-[#0B0D10]/80"
+                    ? "bg-[#FAFAF8] border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.15)] -translate-y-1"
+                    : "bg-[#F3F3F0]/80 border-[#D9D9D5] hover:border-[#111214]/30 hover:bg-white"
                 }`}
               >
                 {/* Node stage badge & active LED */}
                 <div className="flex items-center justify-between mb-3">
                   <span
                     className={`text-[10px] font-mono tracking-widest font-bold ${
-                      isActive ? "text-[#d83a32]" : "text-[#A6AAAE]/60"
+                      isActive ? "text-[#d83a32]" : "text-[#5F6368]"
                     }`}
                   >
                     STAGE {node.stage}
@@ -223,7 +223,7 @@ export default function CircuitFlow() {
                     className={`w-1.5 h-1.5 rounded-full transition-all ${
                       isActive
                         ? "bg-[#d83a32] shadow-[0_0_8px_#d83a32]"
-                        : "bg-white/10 group-hover:bg-white/30"
+                        : "bg-black/15 group-hover:bg-black/30"
                     }`}
                   />
                 </div>
@@ -233,14 +233,14 @@ export default function CircuitFlow() {
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 transition-colors ${
                       isActive
-                        ? "bg-[#d83a32]/20 text-[#d83a32] border border-[#d83a32]/40"
-                        : "bg-white/[0.04] text-[#A6AAAE] border border-white/5 group-hover:text-white"
+                        ? "bg-[#d83a32]/10 text-[#d83a32] border border-[#d83a32]/30"
+                        : "bg-white text-[#5F6368] border border-[#D9D9D5] group-hover:text-[#111214]"
                     }`}
                   >
                     <Iconify icon={node.icon} className="w-5 h-5" />
                   </div>
 
-                  <h4 className="text-sm font-bold font-mono text-white tracking-tight">
+                  <h4 className="text-sm font-bold font-mono text-[#111214] tracking-tight">
                     {node.title}
                   </h4>
                   <p className="text-[11px] font-mono text-[#d83a32] mt-0.5 tracking-wider uppercase font-medium">
@@ -249,8 +249,8 @@ export default function CircuitFlow() {
                 </div>
 
                 {/* Metric pill */}
-                <div className="mt-4 pt-3 border-t border-white/[0.06]">
-                  <span className="text-[10px] font-mono text-[#A6AAAE] tracking-widest block truncate">
+                <div className="mt-4 pt-3 border-t border-[#D9D9D5]/70">
+                  <span className="text-[10px] font-mono text-[#5F6368] tracking-widest block truncate">
                     {node.metric}
                   </span>
                 </div>
@@ -261,10 +261,10 @@ export default function CircuitFlow() {
 
         {/* Animated Vector Signal Trace Line (Connecting desktop pipeline) */}
         <div className="hidden md:block relative z-10 my-5 px-4">
-          <div className="relative h-2 w-full bg-[#0B0D10] border border-[#292D32] rounded-full overflow-hidden">
+          <div className="relative h-2 w-full bg-[#F3F3F0] border border-[#D9D9D5] rounded-full overflow-hidden">
             {/* The traveling electrical pulse */}
             <div
-              className={`absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-[#d83a32] to-white rounded-full transition-all duration-700 ${
+              className={`absolute top-0 bottom-0 w-24 bg-gradient-to-r from-transparent via-[#d83a32] to-[#111214] rounded-full transition-all duration-700 ${
                 reducedMotion ? "hidden" : "block"
               }`}
               style={{
@@ -277,7 +277,7 @@ export default function CircuitFlow() {
                 <span
                   key={i}
                   className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                    activeNode >= i ? "bg-[#d83a32]" : "bg-white/20"
+                    activeNode >= i ? "bg-[#d83a32]" : "bg-black/20"
                   }`}
                 />
               ))}
@@ -286,18 +286,18 @@ export default function CircuitFlow() {
         </div>
 
         {/* Active Node Deep Telemetry Inspection Panel */}
-        <div className="relative z-10 mt-4 p-4 rounded-xl bg-[#0B0D10]/70 border border-[#292D32] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
+        <div className="relative z-10 mt-4 p-4 rounded-xl bg-[#F3F3F0]/90 border border-[#D9D9D5] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono">
           <div className="flex items-start sm:items-center gap-3">
-            <span className="px-2 py-0.5 rounded bg-white/[0.05] border border-white/10 text-white uppercase text-[10px] font-bold">
+            <span className="px-2 py-0.5 rounded bg-white border border-[#D9D9D5] text-[#111214] uppercase text-[10px] font-bold shadow-xs">
               NODE 0{activeNode + 1} SPEC
             </span>
-            <p className="text-[#A6AAAE] leading-relaxed">
+            <p className="text-[#5F6368] leading-relaxed">
               {NODES[activeNode].detail}
             </p>
           </div>
           <div className="text-[11px] text-[#d83a32] shrink-0 font-bold uppercase tracking-wider flex items-center gap-1.5">
             <span>SIGNAL LOCKED</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
           </div>
         </div>
       </div>

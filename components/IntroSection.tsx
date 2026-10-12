@@ -168,7 +168,7 @@ export default function IntroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-36 md:py-48 px-6 md:px-12 overflow-hidden bg-[#0B0D10] border-t border-b border-[#292D32]/60 select-none"
+      className="relative py-36 md:py-48 px-6 md:px-12 overflow-hidden bg-[#F3F3F0]/60 border-t border-b border-[#D9D9D5] select-none"
     >
       {/* ── Section Handoff: Vertical Red Signal Pulse from Hero ── */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1px] h-20 bg-gradient-to-b from-[#d83a32] via-[#d83a32]/40 to-transparent pointer-events-none z-20">
@@ -181,24 +181,24 @@ export default function IntroSection() {
         className="absolute inset-0 pointer-events-none overflow-hidden will-change-transform"
       >
         <div
-          className="absolute inset-0 opacity-[0.035]"
+          className="absolute inset-0 opacity-[0.8]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,18,20,0.035) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
         />
 
         {/* Layer 2: Large faint radial circular geometry */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/[0.02] via-[#d83a32]/[0.02] to-transparent pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full border border-white/[0.02] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[550px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-black/[0.015] via-[#d83a32]/[0.015] to-transparent pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full border border-black/[0.03] pointer-events-none" />
 
         {/* Layer 3: Moving technical markers */}
-        <div className="absolute top-16 left-8 md:left-16 font-mono text-[10px] text-zinc-600 tracking-widest uppercase">
-          SEC.02 // ARCHITECTURE_INSPECTION // TRACE_BUS: 0x4F
+        <div className="absolute top-16 left-8 md:left-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
+          SEC.02 {"//"} ARCHITECTURE_INSPECTION {"//"} TRACE_BUS: 0x4F
         </div>
-        <div className="hidden lg:block absolute bottom-12 right-16 font-mono text-[10px] text-zinc-600 tracking-widest uppercase">
-          LATENCY // 1.2MS • REAL-TIME FEEDBACK
+        <div className="hidden lg:block absolute bottom-12 right-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
+          FEEDBACK {"//"} REAL-TIME SYNCHRONIZATION
         </div>
       </div>
 
@@ -213,7 +213,7 @@ export default function IntroSection() {
           <span className="text-xs font-mono text-[#d83a32] uppercase tracking-widest font-bold">
             CREED {"//"} THE LAB PHILOSOPHY
           </span>
-          <span className="hidden sm:inline text-[10px] font-mono text-zinc-600 tracking-wider">
+          <span className="hidden sm:inline text-[10px] font-mono text-[#5F6368] tracking-wider">
             [MSIT.ROBOTICS.LAB]
           </span>
         </div>
@@ -226,13 +226,13 @@ export default function IntroSection() {
           <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-mono tracking-tighter leading-[1.05]">
             <span
               ref={headlineLine1Ref}
-              className="block text-zinc-400 font-light will-change-transform"
+              className="block text-[#5F6368] font-light will-change-transform"
             >
               Engineering starts
             </span>
             <span
               ref={headlineLine2Ref}
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-zinc-400 will-change-transform mt-1"
+              className="block text-transparent bg-clip-text bg-gradient-to-r from-[#111214] via-[#111214] to-[#5F6368] will-change-transform mt-1"
             >
               where theory ends.
             </span>
@@ -242,28 +242,28 @@ export default function IntroSection() {
         {/* B. PARALLAX TEXT & EDITORIAL COLUMNS */}
         <div
           ref={bodyTextRef}
-          className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-8 border-t border-[#292D32]/80 will-change-transform"
+          className="grid grid-cols-1 md:grid-cols-12 gap-8 pt-8 border-t border-[#D9D9D5] will-change-transform"
         >
           <div className="md:col-span-7 space-y-4">
-            <p className="text-lg md:text-xl text-[#A6AAAE] leading-relaxed font-light">
+            <p className="text-lg md:text-xl text-[#111214] leading-relaxed font-light">
               We believe real understanding only begins when code meets copper, circuits close, and machines begin to move under their own autonomy.
             </p>
-            <p className="text-sm text-[#A6AAAE]/75 font-mono leading-relaxed">
+            <p className="text-sm text-[#5F6368] font-mono leading-relaxed">
               Every resistor, capacitor, and clock cycle is a deliberate decision in the pursuit of mechanical and computational harmony.
             </p>
           </div>
 
-          <div className="md:col-span-5 flex flex-col justify-center md:pl-8 border-l border-[#292D32]/40 text-xs font-mono text-zinc-500 space-y-2">
+          <div className="md:col-span-5 flex flex-col justify-center md:pl-8 border-l border-[#D9D9D5] text-xs font-mono text-[#5F6368] space-y-2">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
               <span>SUBSYSTEM DISPATCH: 100% IN-HOUSE</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/30" />
               <span>FIRMWARE COMPILATION: BARE-METAL C/C++</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white/30" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#111214]/30" />
               <span>ROBOTICS SIMULATION: ROS 2 & GAZEBO</span>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default function IntroSection() {
         {/* D. ANIMATED STATS WITH DEPTH & UNDERLINES */}
         <div
           ref={statsContainerRef}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-12 pt-8 border-t border-[#292D32]/80 will-change-transform"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-12 pt-8 border-t border-[#D9D9D5] will-change-transform"
         >
           {STATS_DATA.map((stat, idx) => {
             const isHovered = hoveredStat === idx;
@@ -288,36 +288,36 @@ export default function IntroSection() {
                 onMouseLeave={() => setHoveredStat(null)}
                 className={`p-5 rounded-xl border transition-all duration-300 cursor-pointer ${
                   isHovered
-                    ? "bg-[#15181C] border-[#d83a32] shadow-[0_0_20px_rgba(216,58,50,0.2)] -translate-y-1"
-                    : "bg-[#15181C]/50 border-[#292D32]/70 hover:border-white/20"
+                    ? "bg-white border-[#d83a32] shadow-[0_4px_20px_rgba(216,58,50,0.12)] -translate-y-1"
+                    : "bg-white/80 border-[#D9D9D5] hover:border-[#111214]/30 shadow-xs"
                 }`}
               >
                 <div className="flex items-baseline justify-between mb-1">
                   <span
                     className={`text-3xl sm:text-4xl font-mono font-bold tracking-tight transition-colors ${
-                      isHovered ? "text-[#d83a32]" : "text-white"
+                      isHovered ? "text-[#d83a32]" : "text-[#111214]"
                     }`}
                   >
                     {stat.value}
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-600">
+                  <span className="text-[10px] font-mono text-[#5F6368]">
                     0{idx + 1}
                   </span>
                 </div>
 
                 {/* Animated technical underline with pulse dot */}
-                <div className="relative h-[2px] w-full bg-[#292D32] my-2 overflow-hidden rounded-full">
+                <div className="relative h-[2px] w-full bg-[#D9D9D5] my-2 overflow-hidden rounded-full">
                   <div
-                    className={`absolute top-0 bottom-0 bg-gradient-to-r from-transparent via-[#d83a32] to-white rounded-full transition-all duration-500 ${
+                    className={`absolute top-0 bottom-0 bg-gradient-to-r from-transparent via-[#d83a32] to-[#111214] rounded-full transition-all duration-500 ${
                       statsRevealed || isHovered ? "w-full" : "w-0"
                     }`}
                   />
                 </div>
 
-                <h4 className="text-xs font-mono font-bold text-zinc-200 uppercase tracking-wider mt-2">
+                <h4 className="text-xs font-mono font-bold text-[#111214] uppercase tracking-wider mt-2">
                   {stat.label}
                 </h4>
-                <p className="text-[10px] font-mono text-[#A6AAAE] mt-0.5 leading-tight">
+                <p className="text-[10px] font-mono text-[#5F6368] mt-0.5 leading-tight">
                   {stat.spec}
                 </p>
               </div>

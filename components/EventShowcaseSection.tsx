@@ -48,15 +48,15 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
   return (
     <div className="relative w-full h-full flex flex-col justify-between p-6 overflow-hidden select-none">
       {/* Telemetry Corner Header */}
-      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#A6AAAE] border-b border-white/[0.08] pb-3">
+      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#5F6368] border-b border-[#D9D9D5] pb-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#d83a32] animate-ping" />
-          <span className="text-white font-semibold tracking-wider">TRACK_TELEMETRY // APEX_01</span>
+          <span className="text-[#111214] font-semibold tracking-wider">TRACK_TELEMETRY // APEX_01</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-zinc-500">BAND: 5.8GHz</span>
-          <span className="text-[#d83a32] bg-[#d83a32]/10 px-2 py-0.5 rounded border border-[#d83a32]/20">
-            LATENCY: 4.2ms
+          <span className="text-[#5F6368]">PATH // ACTIVE</span>
+          <span className="text-[#d83a32] bg-[#d83a32]/10 px-2 py-0.5 rounded border border-[#d83a32]/20 font-medium">
+            SYSTEM // VERIFIED
           </span>
         </div>
       </div>
@@ -76,25 +76,25 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
               <stop offset="100%" stopColor="#d83a32" stopOpacity="0.1" />
             </linearGradient>
             <filter id={`glow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feGaussianBlur stdDeviation="3" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           </defs>
 
           {/* Grid Ground Plane */}
-          <g opacity="0.15">
-            <line x1="20" y1="80" x2="520" y2="80" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
-            <line x1="20" y1="160" x2="520" y2="160" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
-            <line x1="20" y1="240" x2="520" y2="240" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
-            <line x1="140" y1="20" x2="140" y2="300" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
-            <line x1="270" y1="20" x2="270" y2="300" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
-            <line x1="400" y1="20" x2="400" y2="300" stroke="#fff" strokeWidth="0.5" strokeDasharray="3 3" />
+          <g opacity="0.6">
+            <line x1="20" y1="80" x2="520" y2="80" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
+            <line x1="20" y1="160" x2="520" y2="160" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
+            <line x1="20" y1="240" x2="520" y2="240" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
+            <line x1="140" y1="20" x2="140" y2="300" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
+            <line x1="270" y1="20" x2="270" y2="300" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
+            <line x1="400" y1="20" x2="400" y2="300" stroke="#D9D9D5" strokeWidth="0.75" strokeDasharray="3 3" />
           </g>
 
           {/* Track Outer Curbs */}
           <path
             d="M 60 160 C 60 70, 160 50, 270 50 C 400 50, 480 90, 480 160 C 480 230, 390 270, 270 270 C 150 270, 60 250, 60 160 Z"
-            stroke="rgba(255,255,255,0.08)"
+            stroke="#D9D9D5"
             strokeWidth="38"
             strokeLinejoin="round"
           />
@@ -102,7 +102,7 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
           {/* Track Asphalt Surface */}
           <path
             d="M 60 160 C 60 70, 160 50, 270 50 C 400 50, 480 90, 480 160 C 480 230, 390 270, 270 270 C 150 270, 60 250, 60 160 Z"
-            stroke="#15181C"
+            stroke="#F3F3F0"
             strokeWidth="32"
             strokeLinejoin="round"
           />
@@ -115,35 +115,35 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
             strokeWidth="2"
             strokeDasharray="8 6"
             className={isReducedMotion ? "" : "race-path-anim"}
-            opacity="0.85"
+            opacity="0.9"
           />
 
           {/* Sector Checkpoint 1 (Apex Left) */}
           <g transform="translate(60, 160)">
             <circle r="14" fill="none" stroke="#d83a32" strokeWidth="1" strokeDasharray="2 2" className="animate-spin" style={{ animationDuration: "8s" }} />
             <circle r="5" fill="#d83a32" />
-            <text x="-40" y="24" fill="#A6AAAE" fontSize="9" fontFamily="monospace">CP_01: HAIRPIN</text>
+            <text x="-40" y="24" fill="#5F6368" fontSize="9" fontFamily="monospace">CP_01: HAIRPIN</text>
           </g>
 
           {/* Sector Checkpoint 2 (Top High Speed Straight) */}
           <g transform="translate(270, 50)">
             <circle r="12" fill="none" stroke="#ff5a52" strokeWidth="1" opacity="0.6" />
             <circle r="4" fill="#ff5a52" />
-            <text x="-34" y="-12" fill="#A6AAAE" fontSize="9" fontFamily="monospace">CP_02: SPRINT</text>
+            <text x="-34" y="-12" fill="#5F6368" fontSize="9" fontFamily="monospace">CP_02: SPRINT</text>
           </g>
 
           {/* Sector Checkpoint 3 (Chicane Right) */}
           <g transform="translate(480, 160)">
             <circle r="14" fill="none" stroke="#d83a32" strokeWidth="1" strokeDasharray="2 2" />
             <circle r="5" fill="#d83a32" />
-            <text x="-15" y="26" fill="#A6AAAE" fontSize="9" fontFamily="monospace">CP_03: APEX</text>
+            <text x="-15" y="26" fill="#5F6368" fontSize="9" fontFamily="monospace">CP_03: APEX</text>
           </g>
 
           {/* Finish Line Telemetry Gate */}
           <g transform="translate(270, 270)">
-            <line x1="-16" y1="-14" x2="-16" y2="14" stroke="#fff" strokeWidth="2" strokeDasharray="3 3" opacity="0.7" />
-            <line x1="16" y1="-14" x2="16" y2="14" stroke="#fff" strokeWidth="2" strokeDasharray="3 3" opacity="0.7" />
-            <text x="-26" y="24" fill="#F3F2EE" fontSize="9" fontWeight="bold" fontFamily="monospace">FINISH GATE</text>
+            <line x1="-16" y1="-14" x2="-16" y2="14" stroke="#111214" strokeWidth="2" strokeDasharray="3 3" opacity="0.6" />
+            <line x1="16" y1="-14" x2="16" y2="14" stroke="#111214" strokeWidth="2" strokeDasharray="3 3" opacity="0.6" />
+            <text x="-26" y="24" fill="#111214" fontSize="9" fontWeight="bold" fontFamily="monospace">FINISH GATE</text>
           </g>
 
           {/* Moving Robot Marker on Track */}
@@ -159,14 +159,14 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
                 />
               )}
               {/* Rover Body */}
-              <rect x="-11" y="-7" width="22" height="14" rx="3" fill="#0B0D10" stroke="#d83a32" strokeWidth="1.5" />
+              <rect x="-11" y="-7" width="22" height="14" rx="3" fill="#FFFFFF" stroke="#d83a32" strokeWidth="1.5" />
               {/* Heading Direction Arrow */}
               <polygon points="8,0 3,-4 3,4" fill="#ff5a52" />
               {/* Wheels */}
-              <rect x="-9" y="-9" width="5" height="2" fill="#fff" opacity="0.8" />
-              <rect x="4" y="-9" width="5" height="2" fill="#fff" opacity="0.8" />
-              <rect x="-9" y="7" width="5" height="2" fill="#fff" opacity="0.8" />
-              <rect x="4" y="7" width="5" height="2" fill="#fff" opacity="0.8" />
+              <rect x="-9" y="-9" width="5" height="2" fill="#111214" />
+              <rect x="4" y="-9" width="5" height="2" fill="#111214" />
+              <rect x="-9" y="7" width="5" height="2" fill="#111214" />
+              <rect x="4" y="7" width="5" height="2" fill="#111214" />
               {/* Radar pulse wave */}
               <circle r="16" fill="none" stroke="#d83a32" strokeWidth="0.8" opacity="0.5" />
             </g>
@@ -175,18 +175,18 @@ function RoboRaceVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) {
       </div>
 
       {/* Telemetry Footer Gauges */}
-      <div className="grid grid-cols-3 gap-3 border-t border-white/[0.08] pt-3 font-mono text-[10px] text-[#A6AAAE] z-10">
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">VELOCITY</div>
-          <div className="text-white text-xs font-semibold mt-0.5">3.48 m/s</div>
+      <div className="grid grid-cols-3 gap-3 border-t border-[#D9D9D5] pt-3 font-mono text-[10px] text-[#5F6368] z-10">
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">TRAJECTORY</div>
+          <div className="text-[#111214] text-xs font-semibold mt-0.5">PATH // ACTIVE</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">IMU YAW RATE</div>
-          <div className="text-[#d83a32] text-xs font-semibold mt-0.5">±0.04°/s</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">CONTROL LOOP</div>
+          <div className="text-[#d83a32] text-xs font-semibold mt-0.5">LOOP // READY</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">TRAJECTORY</div>
-          <div className="text-emerald-400 text-xs font-semibold mt-0.5">LOCKED</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">TELEMETRY</div>
+          <div className="text-emerald-600 text-xs font-semibold mt-0.5">TRACKING // ONLINE</div>
         </div>
       </div>
     </div>
@@ -201,15 +201,15 @@ function RoboSoccerVisualizer({ isReducedMotion }: { isReducedMotion: boolean })
   return (
     <div className="relative w-full h-full flex flex-col justify-between p-6 overflow-hidden select-none">
       {/* Telemetry Corner Header */}
-      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#A6AAAE] border-b border-white/[0.08] pb-3">
+      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#5F6368] border-b border-[#D9D9D5] pb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-white font-semibold tracking-wider">ARENA_TACTICS // PITCH_GRID</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[#111214] font-semibold tracking-wider">ARENA_TACTICS // PITCH_GRID</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-zinc-500">AGENTS: 2 v 2</span>
-          <span className="text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
-            SYNC: RF 2.4GHz
+          <span className="text-[#5F6368]">FORMATION: DUAL-AGENT</span>
+          <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-medium">
+            CONTROL LOOP // READY
           </span>
         </div>
       </div>
@@ -230,27 +230,27 @@ function RoboSoccerVisualizer({ isReducedMotion }: { isReducedMotion: boolean })
           </defs>
 
           {/* Arena Boundary */}
-          <rect x="40" y="30" width="460" height="260" rx="8" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" fill="#111418" />
+          <rect x="40" y="30" width="460" height="260" rx="8" stroke="#D9D9D5" strokeWidth="1.5" fill="#FAFAF8" />
 
           {/* Halfway Line */}
-          <line x1="270" y1="30" x2="270" y2="290" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="4 4" />
+          <line x1="270" y1="30" x2="270" y2="290" stroke="#D9D9D5" strokeWidth="1" strokeDasharray="4 4" />
 
           {/* Center Circle & Spot */}
-          <circle cx="270" cy="160" r="50" stroke="rgba(255,255,255,0.12)" strokeWidth="1" fill="none" />
-          <circle cx="270" cy="160" r="3" fill="rgba(255,255,255,0.4)" />
+          <circle cx="270" cy="160" r="50" stroke="#D9D9D5" strokeWidth="1" fill="none" />
+          <circle cx="270" cy="160" r="3" fill="#5F6368" />
 
           {/* Left Goal Area (Blue/Zinc Zone) */}
-          <rect x="15" y="110" width="25" height="100" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="#0B0D10" />
-          <rect x="40" y="90" width="60" height="140" stroke="rgba(255,255,255,0.1)" strokeWidth="1" fill="none" />
+          <rect x="15" y="110" width="25" height="100" stroke="#D9D9D5" strokeWidth="1.5" fill="#FFFFFF" />
+          <rect x="40" y="90" width="60" height="140" stroke="#D9D9D5" strokeWidth="1" fill="none" />
 
           {/* Right Goal Area (Red Team Target Zone) */}
-          <rect x="500" y="110" width="25" height="100" stroke="#d83a32" strokeWidth="1.5" strokeOpacity="0.8" fill="#0B0D10" />
+          <rect x="500" y="110" width="25" height="100" stroke="#d83a32" strokeWidth="1.5" strokeOpacity="0.8" fill="#FFFFFF" />
           <rect x="440" y="90" width="60" height="140" stroke="#d83a32" strokeWidth="1" strokeOpacity="0.4" fill="none" />
 
           {/* Tactical Coordinate Markers */}
-          <text x="50" y="46" fill="#A6AAAE" fontSize="8" fontFamily="monospace" opacity="0.6">[-2200, +1100]</text>
-          <text x="430" y="46" fill="#A6AAAE" fontSize="8" fontFamily="monospace" opacity="0.6">[+2200, +1100]</text>
-          <text x="250" y="280" fill="#A6AAAE" fontSize="8" fontFamily="monospace" opacity="0.6">MIDFIELD_X0</text>
+          <text x="50" y="46" fill="#5F6368" fontSize="8" fontFamily="monospace">ZONE // ALPHA</text>
+          <text x="430" y="46" fill="#5F6368" fontSize="8" fontFamily="monospace">ZONE // BETA</text>
+          <text x="245" y="280" fill="#5F6368" fontSize="8" fontFamily="monospace">MIDFIELD_X0</text>
 
           {/* Tactical Ball Pass Trajectory (Dashed Vector) */}
           <path
@@ -266,23 +266,23 @@ function RoboSoccerVisualizer({ isReducedMotion }: { isReducedMotion: boolean })
           <g transform="translate(190, 200)">
             {/* Heading Cone */}
             <path d="M 0 0 L 40 -20 L 40 20 Z" fill="#d83a32" opacity="0.1" />
-            <circle r="15" fill="#15181C" stroke="#d83a32" strokeWidth="2" />
+            <circle r="15" fill="#FFFFFF" stroke="#d83a32" strokeWidth="2" />
             <circle r="5" fill="#d83a32" />
             <line x1="0" y1="0" x2="22" y2="-10" stroke="#d83a32" strokeWidth="1.5" />
-            <text x="-24" y="26" fill="#F3F2EE" fontSize="8" fontWeight="bold" fontFamily="monospace">RED_STRIKER</text>
+            <text x="-24" y="26" fill="#111214" fontSize="8" fontWeight="bold" fontFamily="monospace">RED_STRIKER</text>
           </g>
 
           {/* Agent 2: Red Team Support Bot */}
           <g transform="translate(140, 80)">
-            <circle r="14" fill="#15181C" stroke="#d83a32" strokeWidth="1.5" strokeDasharray="3 2" />
+            <circle r="14" fill="#FFFFFF" stroke="#d83a32" strokeWidth="1.5" strokeDasharray="3 2" />
             <circle r="4" fill="#d83a32" opacity="0.8" />
             <line x1="0" y1="0" x2="16" y2="12" stroke="#d83a32" strokeWidth="1.2" opacity="0.6" />
-            <text x="-20" y="-18" fill="#A6AAAE" fontSize="8" fontFamily="monospace">RED_WING</text>
+            <text x="-20" y="-18" fill="#5F6368" fontSize="8" fontFamily="monospace">RED_WING</text>
           </g>
 
           {/* Opponent Bot (Defending Near Goal) */}
           <g transform="translate(420, 140)">
-            <circle r="14" fill="#15181C" stroke="#71717a" strokeWidth="1.5" />
+            <circle r="14" fill="#FFFFFF" stroke="#71717a" strokeWidth="1.5" />
             <circle r="4" fill="#71717a" />
             <line x1="0" y1="0" x2="-14" y2="6" stroke="#71717a" strokeWidth="1.2" />
             <text x="-24" y="-18" fill="#71717a" fontSize="8" fontFamily="monospace">OPP_KEEPER</text>
@@ -292,25 +292,25 @@ function RoboSoccerVisualizer({ isReducedMotion }: { isReducedMotion: boolean })
           <g filter={`url(#ballGlow-${uid})`}>
             <circle cx="340" cy="148" r="7" fill="#ffffff" stroke="#ff5a52" strokeWidth="1.5" />
             {!isReducedMotion && (
-              <circle cx="340" cy="148" r="14" fill="none" stroke="#ffffff" strokeWidth="0.8" opacity="0.4" className="animate-ping" style={{ animationDuration: "3s" }} />
+              <circle cx="340" cy="148" r="14" fill="none" stroke="#d83a32" strokeWidth="0.8" opacity="0.4" className="animate-ping" style={{ animationDuration: "3s" }} />
             )}
           </g>
         </svg>
       </div>
 
       {/* Telemetry Footer Gauges */}
-      <div className="grid grid-cols-3 gap-3 border-t border-white/[0.08] pt-3 font-mono text-[10px] text-[#A6AAAE] z-10">
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">FORMATION</div>
-          <div className="text-white text-xs font-semibold mt-0.5">1-1 OFFENSIVE</div>
+      <div className="grid grid-cols-3 gap-3 border-t border-[#D9D9D5] pt-3 font-mono text-[10px] text-[#5F6368] z-10">
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">TACTICS</div>
+          <div className="text-[#111214] text-xs font-semibold mt-0.5">COORDINATED</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">BALL VECTOR</div>
-          <div className="text-emerald-400 text-xs font-semibold mt-0.5">[+2.8, -0.6] m/s</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">TARGET</div>
+          <div className="text-emerald-600 text-xs font-semibold mt-0.5">TARGET // ACQUIRED</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">POSSESSION</div>
-          <div className="text-[#d83a32] text-xs font-semibold mt-0.5">ATTACK MODE</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">SENSOR LINK</div>
+          <div className="text-[#d83a32] text-xs font-semibold mt-0.5">LINK // ONLINE</div>
         </div>
       </div>
     </div>
@@ -325,15 +325,15 @@ function RoboForgeVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) 
   return (
     <div className="relative w-full h-full flex flex-col justify-between p-6 overflow-hidden select-none">
       {/* Telemetry Corner Header */}
-      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#A6AAAE] border-b border-white/[0.08] pb-3">
+      <div className="flex items-center justify-between z-10 font-mono text-[11px] text-[#5F6368] border-b border-[#D9D9D5] pb-3">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-          <span className="text-white font-semibold tracking-wider">CAD_EXPLODED {"//"} FAB_STACK</span>
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          <span className="text-[#111214] font-semibold tracking-wider">CAD_EXPLODED {"//"} FAB_STACK</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-zinc-500">TOL: ±0.15mm</span>
-          <span className="text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
-            MATERIAL: AL6061-T6
+          <span className="text-[#5F6368]">CAD // ACTIVE</span>
+          <span className="text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 font-medium">
+            ASSEMBLY // ACTIVE
           </span>
         </div>
       </div>
@@ -348,9 +348,9 @@ function RoboForgeVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) 
         >
           <defs>
             <linearGradient id={`pcbGrad-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#15181C" />
-              <stop offset="50%" stopColor="#1c2127" />
-              <stop offset="100%" stopColor="#15181C" />
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="50%" stopColor="#FAFAF8" />
+              <stop offset="100%" stopColor="#FFFFFF" />
             </linearGradient>
             <filter id={`forgeGlow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur stdDeviation="3" result="blur" />
@@ -361,19 +361,19 @@ function RoboForgeVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) 
           {/* Vertical Assembly Guide Lines connecting layers */}
           <line x1="160" y1="50" x2="160" y2="260" stroke="#d83a32" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
           <line x1="380" y1="50" x2="380" y2="260" stroke="#d83a32" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
-          <line x1="270" y1="40" x2="270" y2="270" stroke="#fff" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.2" />
+          <line x1="270" y1="40" x2="270" y2="270" stroke="#D9D9D5" strokeWidth="0.8" strokeDasharray="4 4" opacity="0.6" />
 
-          {/* LAYER 4 (TOP): SENSOR DOME & LIDAR MAST (y ~ 55) */}
+          {/* LAYER 4 (TOP): SENSORY ARRAY (y ~ 55) */}
           <g transform="translate(270, 55)">
-            <ellipse cx="0" cy="0" rx="45" ry="16" fill="#15181C" stroke="#d83a32" strokeWidth="1.5" />
-            <ellipse cx="0" cy="-6" rx="28" ry="10" fill="#0B0D10" stroke="#ff5a52" strokeWidth="1" />
+            <ellipse cx="0" cy="0" rx="45" ry="16" fill="#FFFFFF" stroke="#d83a32" strokeWidth="1.5" />
+            <ellipse cx="0" cy="-6" rx="28" ry="10" fill="#FAFAF8" stroke="#ff5a52" strokeWidth="1" />
             <circle cx="0" cy="-6" r="3" fill="#ff5a52" />
-            {/* LiDAR Scan Fan */}
-            <path d="M 0 -6 L 40 -16 A 42 16 0 0 1 -40 -16 Z" fill="#d83a32" opacity="0.15" />
+            {/* Sensor Scan Fan */}
+            <path d="M 0 -6 L 40 -16 A 42 16 0 0 1 -40 -16 Z" fill="#d83a32" opacity="0.12" />
             {!isReducedMotion && (
               <circle cx="0" cy="-6" r="16" fill="none" stroke="#d83a32" strokeWidth="0.8" opacity="0.4" className="animate-ping" style={{ animationDuration: "3s" }} />
             )}
-            <text x="60" y="4" fill="#ff5a52" fontSize="9" fontFamily="monospace" fontWeight="bold">L4: LIDAR / SENSORS</text>
+            <text x="60" y="4" fill="#d83a32" fontSize="9" fontFamily="monospace" fontWeight="bold">L4: SENSORY ARRAY</text>
           </g>
 
           {/* LAYER 3: MCU EMBEDDED CONTROLLER BOARD (y ~ 125) */}
@@ -381,59 +381,59 @@ function RoboForgeVisualizer({ isReducedMotion }: { isReducedMotion: boolean }) 
             {/* PCB polygon in isometric view */}
             <polygon points="-110,-12 0,-34 110,-12 0,10" fill={`url(#pcbGrad-${uid})`} stroke="#d83a32" strokeWidth="1.5" />
             {/* Microcontroller Package */}
-            <polygon points="-30,-14 0,-20 30,-14 0,-8" fill="#0B0D10" stroke="#fff" strokeWidth="1" strokeOpacity="0.4" />
-            <text x="-8" y="-12" fill="#fff" fontSize="6" fontFamily="monospace">MCU</text>
+            <polygon points="-30,-14 0,-20 30,-14 0,-8" fill="#F3F3F0" stroke="#111214" strokeWidth="1" strokeOpacity="0.4" />
+            <text x="-8" y="-12" fill="#111214" fontSize="6" fontFamily="monospace">MCU</text>
             {/* Active Traces */}
             <line x1="-70" y1="-12" x2="-35" y2="-14" stroke="#ff5a52" strokeWidth="1.2" strokeDasharray="4 2" />
             <line x1="35" y1="-14" x2="70" y2="-12" stroke="#ff5a52" strokeWidth="1.2" strokeDasharray="4 2" />
-            <text x="125" y="0" fill="#F3F2EE" fontSize="9" fontFamily="monospace" fontWeight="bold">L3: CONTROL STACK</text>
+            <text x="125" y="0" fill="#111214" fontSize="9" fontFamily="monospace" fontWeight="bold">L3: EMBEDDED STACK</text>
           </g>
 
           {/* LAYER 2: MOTOR & GEARBOX MODULES (y ~ 190) */}
           <g transform="translate(270, 190)">
             {/* Left Motor Module */}
             <g transform="translate(-85, -5)">
-              <rect x="-24" y="-8" width="48" height="16" rx="3" fill="#15181C" stroke="#fff" strokeWidth="1" strokeOpacity="0.5" />
+              <rect x="-24" y="-8" width="48" height="16" rx="3" fill="#FFFFFF" stroke="#D9D9D5" strokeWidth="1" />
               <line x1="-24" y1="0" x2="-32" y2="0" stroke="#ff5a52" strokeWidth="2.5" />
-              <ellipse cx="-32" cy="0" rx="3" ry="8" fill="#292D32" stroke="#fff" strokeWidth="0.8" />
-              <text x="-20" y="4" fill="#A6AAAE" fontSize="7" fontFamily="monospace">MOTOR_L</text>
+              <ellipse cx="-32" cy="0" rx="3" ry="8" fill="#F3F3F0" stroke="#111214" strokeWidth="0.8" />
+              <text x="-20" y="4" fill="#5F6368" fontSize="7" fontFamily="monospace">ACTUATOR_L</text>
             </g>
             {/* Right Motor Module */}
             <g transform="translate(85, -5)">
-              <rect x="-24" y="-8" width="48" height="16" rx="3" fill="#15181C" stroke="#fff" strokeWidth="1" strokeOpacity="0.5" />
+              <rect x="-24" y="-8" width="48" height="16" rx="3" fill="#FFFFFF" stroke="#D9D9D5" strokeWidth="1" />
               <line x1="24" y1="0" x2="32" y2="0" stroke="#ff5a52" strokeWidth="2.5" />
-              <ellipse cx="32" cy="0" rx="3" ry="8" fill="#292D32" stroke="#fff" strokeWidth="0.8" />
-              <text x="-20" y="4" fill="#A6AAAE" fontSize="7" fontFamily="monospace">MOTOR_R</text>
+              <ellipse cx="32" cy="0" rx="3" ry="8" fill="#F3F3F0" stroke="#111214" strokeWidth="0.8" />
+              <text x="-20" y="4" fill="#5F6368" fontSize="7" fontFamily="monospace">ACTUATOR_R</text>
             </g>
-            <text x="125" y="0" fill="#A6AAAE" fontSize="9" fontFamily="monospace" fontWeight="bold">L2: ACTUATORS / MOTORS</text>
+            <text x="125" y="0" fill="#5F6368" fontSize="9" fontFamily="monospace" fontWeight="bold">L2: ACTUATION DRIVE</text>
           </g>
 
-          {/* LAYER 1 (BASE): CNC AL CHASSIS PLATE (y ~ 255) */}
+          {/* LAYER 1 (BASE): STRUCTURAL CHASSIS PLATE (y ~ 255) */}
           <g transform="translate(270, 255)">
-            <polygon points="-130,-12 0,-38 130,-12 0,14" fill="#0B0D10" stroke="#fff" strokeWidth="2" strokeOpacity="0.7" />
+            <polygon points="-130,-12 0,-38 130,-12 0,14" fill="#FFFFFF" stroke="#111214" strokeWidth="1.5" strokeOpacity="0.7" />
             <polygon points="-125,-12 0,-35 125,-12 0,11" fill="none" stroke="#d83a32" strokeWidth="1" strokeDasharray="6 3" />
             {/* Cutout mount holes */}
-            <circle cx="-50" cy="-12" r="3" fill="#292D32" stroke="#fff" strokeWidth="0.5" />
-            <circle cx="50" cy="-12" r="3" fill="#292D32" stroke="#fff" strokeWidth="0.5" />
-            <circle cx="0" cy="-12" r="4" fill="#292D32" stroke="#fff" strokeWidth="0.5" />
-            <text x="145" y="2" fill="#F3F2EE" fontSize="9" fontFamily="monospace" fontWeight="bold">L1: CNC BASE CHASSIS</text>
+            <circle cx="-50" cy="-12" r="3" fill="#FAFAF8" stroke="#111214" strokeWidth="0.5" />
+            <circle cx="50" cy="-12" r="3" fill="#FAFAF8" stroke="#111214" strokeWidth="0.5" />
+            <circle cx="0" cy="-12" r="4" fill="#FAFAF8" stroke="#111214" strokeWidth="0.5" />
+            <text x="145" y="2" fill="#111214" fontSize="9" fontFamily="monospace" fontWeight="bold">L1: STRUCTURAL BASE</text>
           </g>
         </svg>
       </div>
 
       {/* Telemetry Footer Gauges */}
-      <div className="grid grid-cols-3 gap-3 border-t border-white/[0.08] pt-3 font-mono text-[10px] text-[#A6AAAE] z-10">
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">FABRICATION</div>
-          <div className="text-white text-xs font-semibold mt-0.5">36H SPRINT</div>
+      <div className="grid grid-cols-3 gap-3 border-t border-[#D9D9D5] pt-3 font-mono text-[10px] text-[#5F6368] z-10">
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">PIPELINE</div>
+          <div className="text-[#111214] text-xs font-semibold mt-0.5">PROTOTYPE</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">PCB DENSITY</div>
-          <div className="text-amber-400 text-xs font-semibold mt-0.5">4-LAYER ENIG</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">CIRCUITRY</div>
+          <div className="text-amber-700 text-xs font-semibold mt-0.5">MULTI-LAYER</div>
         </div>
-        <div className="bg-black/40 border border-white/[0.06] p-2 rounded">
-          <div className="text-zinc-500">ASSEMBLY LOCK</div>
-          <div className="text-emerald-400 text-xs font-semibold mt-0.5">VERIFIED</div>
+        <div className="bg-[#FAFAF8] border border-[#D9D9D5] p-2 rounded">
+          <div className="text-[#5F6368]">ASSEMBLY LOCK</div>
+          <div className="text-emerald-600 text-xs font-semibold mt-0.5">SYSTEM // VERIFIED</div>
         </div>
       </div>
     </div>
@@ -454,7 +454,7 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
   const sectionRef = useRef<HTMLElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Map real Supabase events if available; otherwise maintain authentic flagship specifications without fake dates/prizes
+  // Map real Supabase events if available; maintain non-factual decorative states
   const flagshipDefinitions = [
     {
       key: "robo-race",
@@ -465,9 +465,9 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
         "Autonomous and semi-autonomous rovers traverse challenging race circuits featuring sharp hairpins, variable-friction surfaces, and live telemetry gates.",
       defaultImage: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=1200",
       telemetry: {
-        trackLength: "65m Multi-Sector Track",
-        controlMode: "Onboard PID & Computer Vision",
-        frequency: "5.8GHz Live Telemetry",
+        trackLength: "Multi-Sector Arena Circuit",
+        controlMode: "Autonomous Navigation Stack",
+        frequency: "Live Telemetry Feed",
       },
       renderVisualizer: (reduced: boolean) => <RoboRaceVisualizer isReducedMotion={reduced} />,
     },
@@ -480,9 +480,9 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
         "Dual-differential drive tactical rovers compete in real-time arena play. Fast-paced wireless coordinated strategies test low-latency RF links and drive precision.",
       defaultImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200",
       telemetry: {
-        trackLength: "2200mm × 1100mm Arena",
-        controlMode: "RF Differential Drive / NRF24",
-        frequency: "2.4GHz Ultra-Low Latency",
+        trackLength: "Enclosed Pitch Arena",
+        controlMode: "Coordinated Multi-Agent Strategy",
+        frequency: "Tactical Command Link",
       },
       renderVisualizer: (reduced: boolean) => <RoboSoccerVisualizer isReducedMotion={reduced} />,
     },
@@ -495,9 +495,9 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
         "An intensive hardware engineering sprint where teams go from CAD modeling to laser cutting, PCB assembly, firmware bring-up, and functional testing.",
       defaultImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200",
       telemetry: {
-        trackLength: "36-Hour Continuous Sprint",
-        controlMode: "Full-Stack Hardware Bring-Up",
-        frequency: "Laser CNC & SMD SMT Stack",
+        trackLength: "Rapid Prototyping Sprint",
+        controlMode: "CAD to Functional Hardware",
+        frequency: "Full Hardware Integration Lab",
       },
       renderVisualizer: (reduced: boolean) => <RoboForgeVisualizer isReducedMotion={reduced} />,
     },
@@ -572,26 +572,26 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
   return (
     <section
       ref={sectionRef}
-      className="py-28 md:py-36 px-6 relative bg-[#0B0D10] border-t border-[#292D32]/60 overflow-hidden"
+      className="py-28 md:py-36 px-6 relative bg-[#F3F3F0]/60 border-t border-[#D9D9D5] overflow-hidden"
     >
       {/* Background Subtle Spatial Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#d83a32]/[0.03] rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-[#d83a32]/[0.02] rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b border-[#292D32]/60 pb-8">
+        <div className="reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 border-b border-[#D9D9D5] pb-8">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-[#D9D9D5] mb-4 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-              <span className="text-[10px] font-mono text-zinc-300 uppercase tracking-widest">
+              <span className="text-[10px] font-mono text-[#111214] uppercase tracking-widest font-semibold">
                 FLAGSHIP ARENAS // COMPETITIONS & LAB SPRINTS
               </span>
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tight text-white">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tight text-[#111214]">
               Field <span className="text-[#d83a32]">Operations</span>
             </h2>
           </div>
-          <div className="max-w-md text-sm text-[#A6AAAE] font-light leading-relaxed">
+          <div className="max-w-md text-sm text-[#5F6368] font-normal leading-relaxed">
             High-speed autonomous navigation, multi-agent robotic combat, and hardware fabrication sprints engineered at e-Yantra MSIT.
           </div>
         </div>
@@ -601,15 +601,15 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
           {/* LEFT: Scrollable narrative milestones */}
           <div className="lg:col-span-5 space-y-10 relative">
             {/* Event Navigation Tabs */}
-            <div className="flex gap-2 p-1.5 bg-[#15181C] border border-[#292D32] rounded-xl mb-6">
+            <div className="flex gap-2 p-1.5 bg-white border border-[#D9D9D5] rounded-xl mb-6 shadow-sm">
               {resolvedEvents.map((evt, idx) => (
                 <button
                   key={evt.title}
                   onClick={() => setActiveIndex(idx)}
                   className={`flex-1 py-2.5 px-3 rounded-lg text-xs font-mono transition-all flex items-center justify-center gap-2 ${
                     activeIndex === idx
-                      ? "bg-[#d83a32] text-white shadow-lg shadow-[#d83a32]/20 font-semibold"
-                      : "text-[#A6AAAE] hover:text-white hover:bg-white/[0.04]"
+                      ? "bg-[#d83a32] text-white shadow-md font-semibold"
+                      : "text-[#5F6368] hover:text-[#111214] hover:bg-[#FAFAF8]"
                   }`}
                 >
                   <span className="opacity-70 text-[10px]">0{idx + 1}</span>
@@ -627,8 +627,8 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                   data-index={idx}
                   className={`event-scroll-trigger transition-all duration-500 p-8 rounded-2xl border ${
                     isActive
-                      ? "bg-[#15181C]/90 border-[#d83a32]/60 shadow-2xl shadow-black/80 ring-1 ring-[#d83a32]/30"
-                      : "bg-[#15181C]/30 border-[#292D32]/60 opacity-60 hover:opacity-85"
+                      ? "bg-white border-[#d83a32] shadow-[0_12px_28px_rgba(17,18,20,0.06)] ring-1 ring-[#d83a32]/20"
+                      : "bg-white/60 border-[#D9D9D5] opacity-70 hover:opacity-100"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4 mb-4">
@@ -636,41 +636,41 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                       PHASE 0{idx + 1} {"//"} {evt.eventType}
                     </span>
                     {evt.status && (
-                      <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-white/[0.05] border border-white/10 text-zinc-300">
+                      <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[#FAFAF8] border border-[#D9D9D5] text-[#5F6368] font-medium">
                         STATUS: {evt.status}
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-3xl font-bold font-mono text-white mb-4 tracking-tight">
+                  <h3 className="text-3xl font-bold font-mono text-[#111214] mb-4 tracking-tight">
                     {evt.title}
                   </h3>
 
-                  <p className="text-sm text-[#A6AAAE] leading-relaxed mb-6 font-light">
+                  <p className="text-sm text-[#5F6368] leading-relaxed mb-6 font-normal">
                     {evt.shortDescription}
                   </p>
 
                   {/* Real Date if Available */}
                   {evt.eventDate && (
-                    <div className="flex items-center gap-2 text-xs font-mono text-zinc-300 mb-6">
+                    <div className="flex items-center gap-2 text-xs font-mono text-[#111214] mb-6 font-medium">
                       <Iconify icon="lucide:calendar" className="w-4 h-4 text-[#d83a32]" />
                       <span>{evt.eventDate}</span>
                     </div>
                   )}
 
                   {/* Telemetry Bullet Badges */}
-                  <div className="space-y-2 border-t border-white/[0.06] pt-4 mb-6">
+                  <div className="space-y-2 border-t border-[#D9D9D5] pt-4 mb-6">
                     <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-zinc-500">SPECIFICATION:</span>
-                      <span className="text-zinc-300">{evt.telemetry.trackLength}</span>
+                      <span className="text-[#5F6368]">SPECIFICATION:</span>
+                      <span className="text-[#111214] font-medium">{evt.telemetry.trackLength}</span>
                     </div>
                     <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-zinc-500">CONTROL ARCH:</span>
-                      <span className="text-zinc-300">{evt.telemetry.controlMode}</span>
+                      <span className="text-[#5F6368]">CONTROL ARCH:</span>
+                      <span className="text-[#111214] font-medium">{evt.telemetry.controlMode}</span>
                     </div>
                     <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-zinc-500">TELEMETRY BAND:</span>
-                      <span className="text-zinc-300">{evt.telemetry.frequency}</span>
+                      <span className="text-[#5F6368]">TELEMETRY:</span>
+                      <span className="text-[#111214] font-medium">{evt.telemetry.frequency}</span>
                     </div>
                   </div>
 
@@ -678,7 +678,7 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                   <div className="flex items-center gap-4">
                     <Link
                       href={evt.link}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#15181C] border border-[#292D32] hover:border-[#d83a32] text-white font-mono text-xs uppercase tracking-wider transition-all hover:bg-[#d83a32]/10 cta-press group"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#FAFAF8] border border-[#D9D9D5] hover:border-[#d83a32] text-[#111214] hover:text-[#d83a32] font-mono text-xs uppercase tracking-wider transition-all cta-press group shadow-sm font-semibold"
                     >
                       <span>Explore Specification</span>
                       <Iconify
@@ -698,32 +698,32 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
               ref={stageRef}
               onMouseMove={handlePointerMove}
               onMouseLeave={handlePointerLeave}
-              className="relative rounded-2xl bg-[#15181C] border border-[#292D32] overflow-hidden shadow-2xl transition-transform duration-200 ease-out"
+              className="relative rounded-2xl bg-white border border-[#D9D9D5] overflow-hidden shadow-[0_16px_36px_rgba(17,18,20,0.08)] transition-transform duration-200 ease-out"
               style={{
                 height: "540px",
                 transformStyle: "preserve-3d",
               }}
             >
               {/* Corner HUD Reticles */}
-              <div className="absolute top-3 left-3 font-mono text-[9px] text-[#A6AAAE] pointer-events-none z-30 opacity-70">
-                ┌ CAD_RENDER [MODE: REALTIME]
+              <div className="absolute top-3 left-3 font-mono text-[9px] text-[#5F6368] pointer-events-none z-30 font-medium">
+                ┌ SCHEMATIC_RENDER [MODE: REALTIME]
               </div>
-              <div className="absolute top-3 right-3 font-mono text-[9px] text-[#A6AAAE] pointer-events-none z-30 opacity-70">
-                GRID_DIM: 1:1 SCALE ┐
+              <div className="absolute top-3 right-3 font-mono text-[9px] text-[#5F6368] pointer-events-none z-30 font-medium">
+                SCALE: 1:1 ┐
               </div>
-              <div className="absolute bottom-3 left-3 font-mono text-[9px] text-[#A6AAAE] pointer-events-none z-30 opacity-70">
+              <div className="absolute bottom-3 left-3 font-mono text-[9px] text-[#5F6368] pointer-events-none z-30 font-medium">
                 └ e-YANTRA ROBOTICS
               </div>
-              <div className="absolute bottom-3 right-3 font-mono text-[9px] text-[#A6AAAE] pointer-events-none z-30 opacity-70">
+              <div className="absolute bottom-3 right-3 font-mono text-[9px] text-[#5F6368] pointer-events-none z-30 font-medium">
                 SYS_VERIFIED ┘
               </div>
 
-              {/* Animated Scanline Overlay */}
+              {/* Grid Overlay */}
               <div
-                className="absolute inset-0 pointer-events-none z-20 opacity-20"
+                className="absolute inset-0 pointer-events-none z-20 opacity-40"
                 style={{
                   backgroundImage:
-                    "linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)",
+                    "linear-gradient(rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(17,18,20,0.035) 1px, transparent 1px)",
                   backgroundSize: "24px 24px",
                 }}
               />
@@ -756,11 +756,11 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
           {resolvedEvents.map((evt, idx) => (
             <div
               key={evt.title}
-              className="rounded-2xl bg-[#15181C] border border-[#292D32] overflow-hidden shadow-xl"
+              className="rounded-2xl bg-white border border-[#D9D9D5] overflow-hidden shadow-sm"
             >
               {/* Interactive SVG Visualizer at the top */}
-              <div className="h-[320px] bg-[#0B0D10] border-b border-[#292D32] relative">
-                <div className="absolute top-2 left-3 font-mono text-[9px] text-zinc-500 z-20">
+              <div className="h-[320px] bg-[#FAFAF8] border-b border-[#D9D9D5] relative">
+                <div className="absolute top-2 left-3 font-mono text-[9px] text-[#5F6368] z-20 font-medium">
                   PHASE 0{idx + 1} {"//"} {evt.title.toUpperCase()}
                 </div>
                 {evt.renderVisualizer(true)}
@@ -773,41 +773,41 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                     {evt.eventType}
                   </span>
                   {evt.status && (
-                    <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-white/[0.05] border border-white/10 text-zinc-300">
+                    <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[#FAFAF8] border border-[#D9D9D5] text-[#5F6368] font-medium">
                       {evt.status}
                     </span>
                   )}
                 </div>
 
-                <h3 className="text-2xl font-bold font-mono text-white mb-3">
+                <h3 className="text-2xl font-bold font-mono text-[#111214] mb-3">
                   {evt.title}
                 </h3>
 
-                <p className="text-sm text-[#A6AAAE] leading-relaxed mb-6 font-light">
+                <p className="text-sm text-[#5F6368] leading-relaxed mb-6 font-normal">
                   {evt.shortDescription}
                 </p>
 
                 {evt.eventDate && (
-                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-300 mb-6">
+                  <div className="flex items-center gap-2 text-xs font-mono text-[#111214] mb-6 font-medium">
                     <Iconify icon="lucide:calendar" className="w-4 h-4 text-[#d83a32]" />
                     <span>{evt.eventDate}</span>
                   </div>
                 )}
 
-                <div className="space-y-2 border-t border-white/[0.06] pt-4 mb-6 text-[11px] font-mono">
+                <div className="space-y-2 border-t border-[#D9D9D5] pt-4 mb-6 text-[11px] font-mono">
                   <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">SPECIFICATION:</span>
-                    <span className="text-zinc-300">{evt.telemetry.trackLength}</span>
+                    <span className="text-[#5F6368]">SPECIFICATION:</span>
+                    <span className="text-[#111214] font-medium">{evt.telemetry.trackLength}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-zinc-500">CONTROL:</span>
-                    <span className="text-zinc-300">{evt.telemetry.controlMode}</span>
+                    <span className="text-[#5F6368]">CONTROL:</span>
+                    <span className="text-[#111214] font-medium">{evt.telemetry.controlMode}</span>
                   </div>
                 </div>
 
                 <Link
                   href={evt.link}
-                  className="w-full py-3 rounded-xl bg-[#0B0D10] border border-[#292D32] text-white font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:border-[#d83a32] transition-colors"
+                  className="w-full py-3 rounded-xl bg-[#FAFAF8] border border-[#D9D9D5] text-[#111214] font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:border-[#d83a32] hover:text-[#d83a32] transition-colors font-semibold shadow-sm"
                 >
                   <span>Explore Specification</span>
                   <Iconify icon="lucide:arrow-right" className="w-3.5 h-3.5 text-[#d83a32]" />

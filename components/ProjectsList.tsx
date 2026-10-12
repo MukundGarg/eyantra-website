@@ -25,8 +25,8 @@ export default function ProjectsList({ projects }: { projects: ProjectProps[] })
             onClick={() => setActiveFilter(filter as string)}
             className={`px-4 py-2 text-[10px] font-bold font-mono uppercase tracking-widest rounded-full border transition-all cursor-pointer ${
               activeFilter === filter
-                ? "bg-[#d83a32] text-white border-[#d83a32] shadow-[0_0_15px_rgba(216,58,50,0.4)]"
-                : "bg-white/[0.03] text-[#A6AAAE] border-[#292D32] hover:border-white/30 hover:text-white"
+                ? "bg-[#d83a32] text-white border-[#d83a32] shadow-sm"
+                : "bg-white text-[#5F6368] border-[#D9D9D5] hover:border-[#111214]/30 hover:text-[#111214] shadow-sm"
             }`}
           >
             {filter}
@@ -39,7 +39,7 @@ export default function ProjectsList({ projects }: { projects: ProjectProps[] })
         id="projects-container"
       >
         {filteredProjects.length === 0 ? (
-          <div className="col-span-full text-center text-[#A6AAAE] py-24 font-mono text-sm border border-dashed border-[#292D32] rounded-2xl">
+          <div className="col-span-full text-center text-[#5F6368] py-24 font-mono text-sm border border-dashed border-[#D9D9D5] rounded-2xl bg-white">
             {"// NO REPOSITORIES FOUND IN THIS DISCIPLINE"}
           </div>
         ) : (

@@ -113,7 +113,7 @@ export default function DomainsSection() {
   return (
     <section
       ref={sectionRef}
-      className="py-36 md:py-48 px-6 md:px-12 relative overflow-hidden bg-[#0B0D10] select-none border-b border-[#292D32]/60"
+      className="py-36 md:py-48 px-6 md:px-12 relative overflow-hidden bg-[#FAFAF8] select-none border-b border-[#D9D9D5]"
     >
       {/* Layer 1: Background Parallax Coordinate Grid & Rings */}
       <div
@@ -121,27 +121,27 @@ export default function DomainsSection() {
         className="absolute inset-0 pointer-events-none overflow-hidden will-change-transform"
       >
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.8]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
+              "linear-gradient(to right, rgba(17,18,20,0.035) 1px, transparent 1px), linear-gradient(to bottom, rgba(17,18,20,0.035) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
           }}
         />
 
         {/* Layer 2: Subtle radial geometry */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#d83a32]/[0.035] blur-[160px] rounded-full pointer-events-none" />
-        <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-white/[0.02] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[750px] bg-[#d83a32]/[0.02] blur-[160px] rounded-full pointer-events-none" />
+        <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-black/[0.03] pointer-events-none" />
 
         {/* Layer 3: Technical coordinate marks */}
-        <div className="hidden lg:block absolute top-20 right-16 font-mono text-[10px] text-zinc-600 tracking-widest uppercase">
-          SEC.03 // DOMAIN_ARCHITECTURE // STICKY_HUD_ACTIVE
+        <div className="hidden lg:block absolute top-20 right-16 font-mono text-[10px] text-[#5F6368] tracking-widest uppercase">
+          SEC.03 {"//"} DOMAIN_ARCHITECTURE {"//"} STICKY_HUD_ACTIVE
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Section Header */}
-        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[#292D32] pb-8">
+        <div className="mb-20 flex flex-col md:flex-row md:items-end justify-between border-b border-[#D9D9D5] pb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
@@ -149,11 +149,11 @@ export default function DomainsSection() {
                 Disciplines {"//"} Laboratory Domains
               </span>
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tighter text-white">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold font-mono tracking-tighter text-[#111214]">
               Engineering <span className="text-[#d83a32]">Disciplines</span>
             </h2>
           </div>
-          <p className="text-sm font-mono text-[#A6AAAE] max-w-sm mt-4 md:mt-0 font-light leading-relaxed">
+          <p className="text-sm font-mono text-[#5F6368] max-w-sm mt-4 md:mt-0 font-light leading-relaxed">
             Scroll to inspect each track. Four specialized technical domains converging into unified autonomous robotics.
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function DomainsSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
           {/* LEFT: Scroll-Spied Domain Rows */}
           <div
-            className="lg:col-span-7 divide-y divide-[#292D32]/80"
+            className="lg:col-span-7 divide-y divide-[#D9D9D5]"
             style={{ perspective: "1000px" }}
           >
             {DOMAINS.map((domain, index) => {
@@ -195,7 +195,7 @@ export default function DomainsSection() {
                   <div className="flex items-baseline gap-6 md:gap-8 mb-3">
                     <span
                       className={`text-sm md:text-base font-mono font-bold transition-colors ${
-                        isActive ? "text-[#d83a32]" : "text-[#A6AAAE]/50"
+                        isActive ? "text-[#d83a32]" : "text-[#5F6368]"
                       }`}
                     >
                       {domain.num}
@@ -204,7 +204,7 @@ export default function DomainsSection() {
                     <div className="flex items-center gap-3">
                       <h3
                         className={`text-2xl sm:text-3xl md:text-4xl font-mono font-bold tracking-tight transition-colors ${
-                          isActive ? "text-white" : "text-zinc-400"
+                          isActive ? "text-[#111214]" : "text-[#5F6368]"
                         }`}
                       >
                         {domain.title}
@@ -212,8 +212,8 @@ export default function DomainsSection() {
                       <div
                         className={`p-1.5 rounded-lg transition-all ${
                           isActive
-                            ? "bg-[#d83a32]/20 text-[#d83a32] border border-[#d83a32]/40"
-                            : "bg-transparent text-zinc-600"
+                            ? "bg-[#d83a32]/10 text-[#d83a32] border border-[#d83a32]/30"
+                            : "bg-transparent text-zinc-400"
                         }`}
                       >
                         <Iconify icon={domain.icon} className="w-5 h-5" />
@@ -221,14 +221,14 @@ export default function DomainsSection() {
                     </div>
                   </div>
 
-                  <p className="text-xs font-mono uppercase tracking-widest text-[#d83a32]/90 mb-3 pl-10 md:pl-12 font-medium">
+                  <p className="text-xs font-mono uppercase tracking-widest text-[#d83a32] mb-3 pl-10 md:pl-12 font-medium">
                     {domain.subtitle}
                   </p>
 
                   <div className="pl-10 md:pl-12">
                     <p
                       className={`text-sm leading-relaxed font-light mb-4 transition-colors ${
-                        isActive ? "text-[#F3F2EE]" : "text-[#A6AAAE]"
+                        isActive ? "text-[#111214]" : "text-[#5F6368]"
                       }`}
                     >
                       {domain.desc}
@@ -241,8 +241,8 @@ export default function DomainsSection() {
                           key={tag}
                           className={`text-[10px] font-mono px-2.5 py-1 rounded transition-all duration-300 ${
                             isActive
-                              ? "bg-white/[0.08] text-white border border-[#d83a32]/50 shadow-[0_0_10px_rgba(216,58,50,0.15)]"
-                              : "bg-white/[0.02] text-[#A6AAAE]/60 border border-white/5"
+                              ? "bg-white text-[#111214] border border-[#d83a32]/40 shadow-xs font-medium"
+                              : "bg-[#F3F3F0] text-[#5F6368] border border-[#D9D9D5]"
                           }`}
                           style={{
                             transitionDelay: isActive ? `${tagIdx * 60}ms` : "0ms",

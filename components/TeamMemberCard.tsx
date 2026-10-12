@@ -95,17 +95,17 @@ export default function TeamMemberCard({
           role="dialog"
           aria-modal="true"
           aria-label={`Enlarged photo of ${member.name}`}
-          className={`relative max-w-xl max-h-[90vh] w-full bg-[#15181C] border border-[#292D32] rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col items-center transition-all duration-200 ease-out ${
+          className={`relative max-w-xl max-h-[90vh] w-full bg-white border border-[#D9D9D5] rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col items-center transition-all duration-200 ease-out ${
             isClosing ? "opacity-0 scale-95" : "opacity-100 scale-100"
           }`}
           style={{ animation: isClosing ? undefined : "lightboxScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)" }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="w-full flex items-center justify-between pb-3 px-1 border-b border-[#292D32] mb-3">
+          <div className="w-full flex items-center justify-between pb-3 px-1 border-b border-[#D9D9D5] mb-3">
             <div className="flex flex-col pr-2">
-              <h3 className="text-base font-bold font-mono text-white tracking-tight">{member.name}</h3>
+              <h3 className="text-base font-bold font-mono text-[#111214] tracking-tight">{member.name}</h3>
               {(member.designation || member.role) && (
-                <p className="text-xs text-[#d83a32] font-mono uppercase tracking-wider">
+                <p className="text-xs text-[#d83a32] font-mono uppercase tracking-wider font-semibold">
                   {member.designation || member.role}
                 </p>
               )}
@@ -114,14 +114,14 @@ export default function TeamMemberCard({
               ref={closeButtonRef}
               type="button"
               onClick={closeLightbox}
-              className="p-1.5 text-[#A6AAAE] hover:text-white bg-[#0B0D10] hover:bg-[#d83a32] border border-[#292D32] rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d83a32] shrink-0"
+              className="p-1.5 text-[#5F6368] hover:text-[#111214] bg-[#FAFAF8] hover:bg-[#F3F3F0] border border-[#D9D9D5] rounded-lg transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d83a32] shrink-0"
               aria-label="Close enlarged photo"
             >
               <Iconify icon="lucide:x" className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-[#0B0D10] border border-[#292D32] max-h-[70vh] w-full">
+          <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-[#FAFAF8] border border-[#D9D9D5] max-h-[70vh] w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={member.photo}
@@ -138,22 +138,22 @@ export default function TeamMemberCard({
   const renderSocialLinks = () => (
     <div className="social-reveal flex gap-3 mt-auto pt-4 w-full justify-center">
       {member.linkedin && (
-        <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+        <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
           <Iconify icon="lucide:linkedin" className="w-4 h-4" />
         </a>
       )}
       {member.github && (
-        <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+        <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
           <Iconify icon="lucide:github" className="w-4 h-4" />
         </a>
       )}
       {member.twitter && (
-        <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+        <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
           <Iconify icon="lucide:twitter" className="w-4 h-4" />
         </a>
       )}
       {member.email && (
-        <a href={`mailto:${member.email}`} className="text-[#A6AAAE] hover:text-white transition-colors">
+        <a href={`mailto:${member.email}`} className="text-[#5F6368] hover:text-[#111214] transition-colors">
           <Iconify icon="lucide:mail" className="w-4 h-4" />
         </a>
       )}
@@ -163,7 +163,7 @@ export default function TeamMemberCard({
   if (variant === "mentor") {
     return (
       <>
-        <div className="card-hover group relative overflow-hidden p-6 border border-[#292D32] bg-[#15181C] rounded-xl flex items-start gap-4">
+        <div className="card-hover group relative overflow-hidden p-6 border border-[#D9D9D5] bg-white rounded-xl flex items-start gap-4 shadow-sm hover:shadow-md">
           {member.photo ? (
             <button
               type="button"
@@ -175,40 +175,40 @@ export default function TeamMemberCard({
               <img
                 src={member.photo}
                 alt={member.name}
-                className="card-img w-full h-full rounded-lg object-cover bg-[#0B0D10] border border-[#292D32] grayscale opacity-80 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
+                className="card-img w-full h-full rounded-lg object-cover bg-[#F3F3F0] border border-[#D9D9D5] grayscale opacity-85 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
               />
               <span className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
                 <Iconify icon="lucide:zoom-in" className="w-5 h-5 text-white drop-shadow" />
               </span>
             </button>
           ) : (
-            <div className="w-20 h-20 rounded-lg bg-[#0B0D10] border border-[#292D32] flex items-center justify-center shrink-0">
-              <Iconify icon="lucide:user" className="w-8 h-8 text-[#292D32]" />
+            <div className="w-20 h-20 rounded-lg bg-[#F3F3F0] border border-[#D9D9D5] flex items-center justify-center shrink-0">
+              <Iconify icon="lucide:user" className="w-8 h-8 text-[#D9D9D5]" />
             </div>
           )}
           <div className="flex-1 flex flex-col h-full">
-            <h3 className="text-lg font-bold font-mono text-white tracking-tight">{member.name}</h3>
-            <p className="text-[#d83a32] text-xs font-mono uppercase tracking-wider mb-2">{member.designation}</p>
-            <p className="text-xs text-[#A6AAAE] mb-3">{member.department}</p>
-            {member.desc && <p className="text-sm text-[#A6AAAE] leading-relaxed mb-4">{member.desc}</p>}
+            <h3 className="text-lg font-bold font-mono text-[#111214] tracking-tight">{member.name}</h3>
+            <p className="text-[#d83a32] text-xs font-mono uppercase tracking-wider mb-2 font-semibold">{member.designation}</p>
+            <p className="text-xs text-[#5F6368] mb-3">{member.department}</p>
+            {member.desc && <p className="text-sm text-[#5F6368] leading-relaxed mb-4 font-normal">{member.desc}</p>}
             <div className="mt-auto pt-4 flex gap-3 w-full justify-start">
               {member.linkedin && (
-                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:linkedin" className="w-4 h-4" />
                 </a>
               )}
               {member.github && (
-                <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:github" className="w-4 h-4" />
                 </a>
               )}
               {member.twitter && (
-                <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={member.twitter} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:twitter" className="w-4 h-4" />
                 </a>
               )}
               {member.email && (
-                <a href={`mailto:${member.email}`} className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={`mailto:${member.email}`} className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:mail" className="w-4 h-4" />
                 </a>
               )}
@@ -223,7 +223,7 @@ export default function TeamMemberCard({
   if (variant === "dept") {
     return (
       <>
-        <div className="card-hover group relative overflow-hidden p-5 border border-[#292D32] bg-[#15181C] rounded-xl flex items-center gap-4 filter-fade">
+        <div className="card-hover group relative overflow-hidden p-5 border border-[#D9D9D5] bg-white rounded-xl flex items-center gap-4 filter-fade shadow-sm hover:shadow-md">
           {member.photo ? (
             <button
               type="button"
@@ -235,28 +235,28 @@ export default function TeamMemberCard({
               <img
                 src={member.photo}
                 alt={member.name}
-                className="card-img w-full h-full rounded-lg object-cover bg-[#0B0D10] border border-[#292D32] grayscale opacity-80 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
+                className="card-img w-full h-full rounded-lg object-cover bg-[#F3F3F0] border border-[#D9D9D5] grayscale opacity-85 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
               />
               <span className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
                 <Iconify icon="lucide:zoom-in" className="w-4 h-4 text-white drop-shadow" />
               </span>
             </button>
           ) : (
-            <div className="w-16 h-16 rounded-lg bg-[#0B0D10] border border-[#292D32] flex items-center justify-center shrink-0">
-              <Iconify icon="lucide:user" className="w-6 h-6 text-[#292D32]" />
+            <div className="w-16 h-16 rounded-lg bg-[#F3F3F0] border border-[#D9D9D5] flex items-center justify-center shrink-0">
+              <Iconify icon="lucide:user" className="w-6 h-6 text-[#D9D9D5]" />
             </div>
           )}
           <div className="flex-1">
-            <h3 className="text-md font-bold font-mono text-white tracking-tight leading-tight mb-1">{member.name}</h3>
-            <p className="text-[10px] text-[#A6AAAE] uppercase tracking-wider">{member.role}</p>
+            <h3 className="text-md font-bold font-mono text-[#111214] tracking-tight leading-tight mb-1">{member.name}</h3>
+            <p className="text-[10px] text-[#5F6368] uppercase tracking-wider font-medium">{member.role}</p>
             <div className="social-reveal mt-2 flex gap-3">
               {member.linkedin && (
-                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:linkedin" className="w-3 h-3" />
                 </a>
               )}
               {member.github && (
-                <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#A6AAAE] hover:text-white transition-colors">
+                <a href={member.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#111214] transition-colors">
                   <Iconify icon="lucide:github" className="w-3 h-3" />
                 </a>
               )}
@@ -270,32 +270,32 @@ export default function TeamMemberCard({
 
   return (
     <>
-      <div className="card-hover group relative overflow-hidden p-6 border border-[#292D32] bg-gradient-to-b from-[#15181C] to-[#0B0D10] rounded-xl text-center flex flex-col items-center">
+      <div className="card-hover group relative overflow-hidden p-6 border border-[#D9D9D5] bg-white rounded-xl text-center flex flex-col items-center shadow-sm hover:shadow-md">
         {member.photo ? (
           <button
             type="button"
             onClick={openLightbox}
-            className="group/photo relative w-24 h-24 rounded-full overflow-hidden shrink-0 mb-4 border-2 border-[#292D32] group-hover:border-[#d83a32] hover:border-[#d83a32] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d83a32]"
+            className="group/photo relative w-24 h-24 rounded-full overflow-hidden shrink-0 mb-4 border-2 border-[#D9D9D5] group-hover:border-[#d83a32] hover:border-[#d83a32] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d83a32]"
             aria-label={`Enlarge photo of ${member.name}`}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={member.photo}
               alt={member.name}
-              className="card-img w-full h-full rounded-full object-cover bg-[#0B0D10] grayscale opacity-80 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
+              className="card-img w-full h-full rounded-full object-cover bg-[#F3F3F0] grayscale opacity-85 transition-all duration-300 group-hover/photo:scale-110 group-hover/photo:grayscale-0 group-hover/photo:opacity-100"
             />
             <span className="absolute inset-0 bg-black/40 opacity-0 group-hover/photo:opacity-100 transition-opacity duration-200 flex items-center justify-center pointer-events-none">
               <Iconify icon="lucide:zoom-in" className="w-6 h-6 text-white drop-shadow" />
             </span>
           </button>
         ) : (
-          <div className="w-24 h-24 rounded-full bg-[#0B0D10] border-2 border-[#292D32] flex items-center justify-center mb-4 shrink-0">
-            <Iconify icon="lucide:user" className="w-10 h-10 text-[#292D32]" />
+          <div className="w-24 h-24 rounded-full bg-[#F3F3F0] border-2 border-[#D9D9D5] flex items-center justify-center mb-4 shrink-0">
+            <Iconify icon="lucide:user" className="w-10 h-10 text-[#D9D9D5]" />
           </div>
         )}
-        <h3 className="text-lg font-bold font-mono text-white tracking-tight">{member.name}</h3>
-        <p className="text-[#d83a32] text-xs font-mono uppercase tracking-wider mt-1">{member.role}</p>
-        {member.subtitle && <p className="text-[10px] text-[#A6AAAE] mt-1 uppercase tracking-widest">{member.subtitle}</p>}
+        <h3 className="text-lg font-bold font-mono text-[#111214] tracking-tight">{member.name}</h3>
+        <p className="text-[#d83a32] text-xs font-mono uppercase tracking-wider mt-1 font-semibold">{member.role}</p>
+        {member.subtitle && <p className="text-[10px] text-[#5F6368] mt-1 uppercase tracking-widest">{member.subtitle}</p>}
         {renderSocialLinks()}
       </div>
       {renderLightbox()}

@@ -43,22 +43,22 @@ export default function Navbar() {
     >
       <nav
         id="main-nav"
-        className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between border rounded-full transition-all duration-300 px-6 py-2.5 shadow-2xl relative ${
+        className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between border rounded-full transition-all duration-300 px-6 py-2.5 relative ${
           isScrolled
-            ? "bg-[#0B0D10]/90 backdrop-blur-2xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.6)]"
-            : "bg-black/40 backdrop-blur-md border-white/[0.08]"
+            ? "bg-white/90 backdrop-blur-2xl border-[#D9D9D5] shadow-[0_8px_30px_rgba(17,18,20,0.06)]"
+            : "bg-[#FAFAF8]/85 backdrop-blur-md border-[#D9D9D5]/80 shadow-[0_4px_20px_rgba(17,18,20,0.03)]"
         }`}
       >
         <div className="flex items-center justify-between w-full md:w-auto">
           <Link href="/" className="flex items-center gap-2.5 group">
             <span className="w-2 h-2 rounded-full bg-[#d83a32] group-hover:scale-125 transition-transform" />
-            <span className="text-sm font-bold font-mono tracking-wider uppercase text-white group-hover:text-white transition-colors">
+            <span className="text-sm font-bold font-mono tracking-wider uppercase text-[#111214] group-hover:text-[#d83a32] transition-colors">
               e-Yantra MSIT
             </span>
           </Link>
 
           <button
-            className="md:hidden text-zinc-400 hover:text-white focus:outline-none p-1 cursor-pointer"
+            className="md:hidden text-[#5F6368] hover:text-[#111214] focus:outline-none p-1 cursor-pointer"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
@@ -79,7 +79,7 @@ export default function Navbar() {
                 href={link.href}
                 onClick={() => setIsOpen(false)}
                 className={`relative text-xs font-mono tracking-wider uppercase transition-colors py-1 ${
-                  isActive ? "text-white font-bold" : "text-[#A6AAAE] hover:text-white"
+                  isActive ? "text-[#111214] font-bold" : "text-[#5F6368] hover:text-[#111214] font-medium"
                 }`}
               >
                 {link.name}

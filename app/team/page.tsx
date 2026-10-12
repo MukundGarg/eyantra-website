@@ -84,14 +84,14 @@ export default async function TeamPage() {
             />
 
             {isEmpty ? (
-              <div className="text-center text-[#A6AAAE] py-20 font-mono">
+              <div className="text-center text-[#5F6368] py-20 font-mono">
                 No team members found at the moment.
               </div>
             ) : (
               <>
                 {mentors.length > 0 && (
                   <div className="mb-24">
-                    <h3 className="text-xl font-bold font-mono text-white mb-8 border-b border-[#292D32] pb-4 reveal">
+                    <h3 className="text-xl font-bold font-mono text-[#111214] mb-8 border-b border-[#D9D9D5] pb-4 reveal">
                       Faculty Mentors
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 reveal">
@@ -106,7 +106,7 @@ export default async function TeamPage() {
 
                 {core.length > 0 && (
                   <div className="mb-24">
-                    <h3 className="text-xl font-bold font-mono text-white mb-8 border-b border-[#292D32] pb-4 reveal">
+                    <h3 className="text-xl font-bold font-mono text-[#111214] mb-8 border-b border-[#D9D9D5] pb-4 reveal">
                       Core Leadership
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 reveal">
@@ -121,7 +121,7 @@ export default async function TeamPage() {
 
                 {Object.entries(departmentGroups).map(([deptKey, deptMembers]) => (
                   <div className="mb-24" key={deptKey}>
-                    <h3 className="text-xl font-bold font-mono text-white mb-8 border-b border-[#292D32] pb-4 reveal">
+                    <h3 className="text-xl font-bold font-mono text-[#111214] mb-8 border-b border-[#D9D9D5] pb-4 reveal">
                       {formatDeptName(deptKey)}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 reveal">
