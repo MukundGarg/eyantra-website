@@ -1,9 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ProjectCard from "@/components/ProjectCard";
 import ArduinoHero from "@/components/ArduinoHero";
 import IntroSection from "@/components/IntroSection";
 import DomainsSection from "@/components/DomainsSection";
+import FeaturedProjectsSection from "@/components/FeaturedProjectsSection";
 import Link from "next/link";
 import Iconify from "@/components/Iconify";
 import { supabase } from "@/utils/supabase";
@@ -43,42 +43,8 @@ export default async function Home() {
         {/* 3. Core Disciplines / Domains Section (Large Typography & Separators) */}
         <DomainsSection />
 
-        {/* 4. Featured Engineering Projects Section */}
-        <section className="py-36 px-6 md:px-12 bg-[#0B0D10] relative border-t border-[#292D32]/60">
-          <div className="max-w-6xl mx-auto">
-            <div className="reveal flex flex-col md:flex-row md:items-end justify-between border-b border-[#292D32] pb-8 mb-16">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#d83a32]" />
-                  <span className="text-xs font-mono text-[#d83a32] uppercase tracking-widest font-bold">
-                    PORTFOLIO // SELECTED WORK
-                  </span>
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-white font-mono tracking-tight">
-                  Featured <span className="text-[#d83a32]">Engineering</span>
-                </h2>
-              </div>
-              <Link
-                href="/projects"
-                className="mt-4 md:mt-0 text-xs font-mono text-[#A6AAAE] hover:text-white uppercase tracking-widest flex items-center gap-2 group transition-colors"
-              >
-                All Projects
-                <Iconify
-                  icon="lucide:arrow-right"
-                  className="w-4 h-4 transition-transform group-hover:translate-x-1 text-[#d83a32]"
-                />
-              </Link>
-            </div>
-
-            <div className="reveal grid grid-cols-1 md:grid-cols-3 gap-8">
-              {mappedProjects.map((project, i) => (
-                <div key={i} className={`stagger-${i + 1}`}>
-                  <ProjectCard project={project} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* 4. Fully Animated 3D Featured Engineering Projects Section */}
+        <FeaturedProjectsSection projects={mappedProjects} />
 
         {/* 5. Minimal Editorial Closing Section */}
         <section className="py-36 px-6 text-center relative overflow-hidden border-t border-[#292D32]/60 bg-[#0B0D10]">

@@ -20,9 +20,28 @@ interface DomainVisualizerProps {
 }
 
 export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);
-  const [animTime, setAnimTime] = useState(0);
+  const [inView, setInView] = useState<boolean>(true);
+
+  // SVG direct DOM animation refs (eliminates React setState on animation frames)
+  // 01: Robotics refs
+  const armLink1Ref = useRef<SVGGElement>(null);
+  const armLink2Ref = useRef<SVGGElement>(null);
+  const theta1TextRef = useRef<SVGTextElement>(null);
+  const theta2TextRef = useRef<SVGTextElement>(null);
+
+  // 02: Embedded Systems refs
+  const sigLine1Ref = useRef<SVGPathElement>(null);
+  const sigLine2Ref = useRef<SVGPathElement>(null);
+
+  // 03: Automation refs
+  const encoderDiskRef = useRef<SVGGElement>(null);
+
+  // 04: AI & Edge IoT refs
+  const packet1Ref = useRef<SVGCircleElement>(null);
+  const packet2Ref = useRef<SVGCircleElement>(null);
 
   const reducedMotion = useSyncExternalStore(
     subscribeReducedMotion,
@@ -34,21 +53,21 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
   const mouseTarget = useRef({ x: 0, y: 0 });
   const currentRot = useRef({ x: 0, y: 0 });
 
-  // Continuous animation frame time for kinematics/oscillations
+  // IntersectionObserver to pause RAF loop when visualizer is offscreen
   useEffect(() => {
-    if (reducedMotion) return;
+    const el = containerRef.current;
+    if (!el) return;
 
-    const start = performance.now();
-    let frame: number;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
 
-    const tick = (now: number) => {
-      setAnimTime((now - start) * 0.001);
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [reducedMotion]);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   // Pointer move handler (desktop tilt)
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -63,28 +82,82 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
     mouseTarget.current = { x: 0, y: 0 };
   };
 
-  // 60FPS damped tilt loop
+  // High-performance 60FPS animation loop: updates tilt and active SVG elements directly via refs
   useEffect(() => {
-    if (reducedMotion) return;
+    if (!inView || reducedMotion) {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      return;
+    }
 
-    const loop = () => {
-      if (!cardRef.current) {
-        rafId.current = requestAnimationFrame(loop);
-        return;
+    const startTime = performance.now();
+
+    const loop = (now: number) => {
+      const elapsed = (now - startTime) * 0.001;
+
+      // 1. Damped Card Tilt (max 3° pitch, 4° yaw)
+      if (cardRef.current) {
+        const targetRotX = -mouseTarget.current.y * 3;
+        const targetRotY = mouseTarget.current.x * 4;
+        const lerp = 0.08;
+        currentRot.current.x += (targetRotX - currentRot.current.x) * lerp;
+        currentRot.current.y += (targetRotY - currentRot.current.y) * lerp;
+
+        cardRef.current.style.transform = `
+          rotateX(${currentRot.current.x.toFixed(2)}deg)
+          rotateY(${currentRot.current.y.toFixed(2)}deg)
+        `;
       }
 
-      // Max tilt: 3° pitch, 4° yaw
-      const targetRotX = -mouseTarget.current.y * 3;
-      const targetRotY = mouseTarget.current.x * 4;
+      // 2. Direct SVG DOM Updates per active domain (Zero React re-renders)
+      if (activeDomain === 0) {
+        // Robotics: forward/inverse kinematics calculations
+        const t1 = Math.sin(elapsed * 1.5) * 25 - 15;
+        const t2 = Math.cos(elapsed * 1.2) * 35 + 40;
 
-      const lerp = 0.08;
-      currentRot.current.x += (targetRotX - currentRot.current.x) * lerp;
-      currentRot.current.y += (targetRotY - currentRot.current.y) * lerp;
+        if (armLink1Ref.current) {
+          armLink1Ref.current.setAttribute("transform", `translate(160, 170) rotate(${t1.toFixed(1)})`);
+        }
+        if (armLink2Ref.current) {
+          armLink2Ref.current.setAttribute("transform", `translate(0, -65) rotate(${t2.toFixed(1)})`);
+        }
+        if (theta1TextRef.current) {
+          theta1TextRef.current.textContent = `THETA_1: ${t1.toFixed(1)}°`;
+        }
+        if (theta2TextRef.current) {
+          theta2TextRef.current.textContent = `THETA_2: ${t2.toFixed(1)}°`;
+        }
+      } else if (activeDomain === 1) {
+        // Embedded: signal lines stroke dash offset
+        const offset = (elapsed * 40).toFixed(1);
+        if (sigLine1Ref.current) {
+          sigLine1Ref.current.style.strokeDashoffset = `-${offset}px`;
+        }
+        if (sigLine2Ref.current) {
+          sigLine2Ref.current.style.strokeDashoffset = `${offset}px`;
+        }
+      } else if (activeDomain === 2) {
+        // Automation: motor encoder ring continuous rotation
+        const motorRot = ((elapsed * 120) % 360).toFixed(1);
+        if (encoderDiskRef.current) {
+          encoderDiskRef.current.setAttribute("transform", `translate(160, 110) rotate(${motorRot})`);
+        }
+      } else if (activeDomain === 3) {
+        // AI & IoT: synapse weight packets traveling along neural layers
+        const pProgress = (elapsed * 80) % 95;
+        const cx1 = (65 + pProgress).toFixed(1);
+        const cy1 = (110 + Math.sin(elapsed * 3) * 15).toFixed(1);
+        const cx2 = (160 + pProgress).toFixed(1);
+        const cy2 = (130 + Math.cos(elapsed * 3) * 10).toFixed(1);
 
-      cardRef.current.style.transform = `
-        rotateX(${currentRot.current.x.toFixed(2)}deg)
-        rotateY(${currentRot.current.y.toFixed(2)}deg)
-      `;
+        if (packet1Ref.current) {
+          packet1Ref.current.setAttribute("cx", cx1);
+          packet1Ref.current.setAttribute("cy", cy1);
+        }
+        if (packet2Ref.current) {
+          packet2Ref.current.setAttribute("cx", cx2);
+          packet2Ref.current.setAttribute("cy", cy2);
+        }
+      }
 
       rafId.current = requestAnimationFrame(loop);
     };
@@ -94,17 +167,11 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
     return () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [reducedMotion]);
-
-  // Kinematic joint angle calculations for Robotics
-  const theta1 = Math.sin(animTime * 1.5) * 25 - 15;
-  const theta2 = Math.cos(animTime * 1.2) * 35 + 40;
-
-  // Motor rotation angle for Automation
-  const motorRot = (animTime * 120) % 360;
+  }, [inView, reducedMotion, activeDomain]);
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full max-w-lg mx-auto select-none"
       style={{ perspective: "1000px" }}
       onMouseMove={handleMouseMove}
@@ -177,14 +244,14 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               {/* Kinematic Manipulator Arm Base Joint */}
               <circle cx="160" cy="170" r="8" fill="#15181C" stroke="#d83a32" strokeWidth="2" />
 
-              {/* Link 1 (Rotated by theta1) */}
-              <g transform={`translate(160, 170) rotate(${theta1})`}>
+              {/* Link 1 (Controlled via direct ref) */}
+              <g ref={armLink1Ref} transform="translate(160, 170) rotate(-15)">
                 <line x1="0" y1="0" x2="0" y2="-65" stroke="#F3F2EE" strokeWidth="4" strokeLinecap="round" />
                 {/* Joint 2 (Elbow) */}
                 <circle cx="0" cy="-65" r="6" fill="#0B0D10" stroke="#d83a32" strokeWidth="2" />
 
-                {/* Link 2 (Rotated by theta2 relative to link 1) */}
-                <g transform={`translate(0, -65) rotate(${theta2})`}>
+                {/* Link 2 (Controlled via direct ref) */}
+                <g ref={armLink2Ref} transform="translate(0, -65) rotate(40)">
                   <line x1="0" y1="0" x2="0" y2="-55" stroke="#d83a32" strokeWidth="3" strokeLinecap="round" />
                   {/* End Effector Gripper */}
                   <circle cx="0" cy="-55" r="4" fill="#F3F2EE" />
@@ -192,15 +259,15 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 </g>
               </g>
 
-              {/* Kinematics Telemetry Overlay */}
+              {/* Kinematics Telemetry Overlay (Updated directly via text refs) */}
               <text x="210" y="35" fill="#A6AAAE" fontSize="9" fontFamily="monospace">
                 IK.SOLVER: ACTIVE
               </text>
-              <text x="210" y="50" fill="#d83a32" fontSize="9" fontFamily="monospace">
-                THETA_1: {theta1.toFixed(1)}°
+              <text ref={theta1TextRef} x="210" y="50" fill="#d83a32" fontSize="9" fontFamily="monospace">
+                THETA_1: -15.0°
               </text>
-              <text x="210" y="65" fill="#d83a32" fontSize="9" fontFamily="monospace">
-                THETA_2: {theta2.toFixed(1)}°
+              <text ref={theta2TextRef} x="210" y="65" fill="#d83a32" fontSize="9" fontFamily="monospace">
+                THETA_2: 40.0°
               </text>
               <text x="210" y="80" fill="#A6AAAE" fontSize="9" fontFamily="monospace">
                 PAYLOAD: 1.5 KG
@@ -228,20 +295,20 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               <path d="M 280 40 L 220 40 L 190 70 L 190 110" stroke="#292D32" strokeWidth="1.5" />
               <path d="M 280 180 L 210 180 L 190 150 L 190 110" stroke="#292D32" strokeWidth="1.5" />
 
-              {/* Pulsing signal lines */}
+              {/* Pulsing signal lines (Controlled via ref strokeDashoffset) */}
               <path
+                ref={sigLine1Ref}
                 d="M 40 110 L 130 110"
                 stroke="#d83a32"
                 strokeWidth="2"
                 strokeDasharray="6 4"
-                strokeDashoffset={-animTime * 40}
               />
               <path
+                ref={sigLine2Ref}
                 d="M 190 110 L 280 110"
                 stroke="#10b981"
                 strokeWidth="2"
                 strokeDasharray="6 4"
-                strokeDashoffset={animTime * 40}
               />
 
               {/* Central Microcontroller Chip */}
@@ -302,8 +369,8 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               {/* Circular Closed-Loop PID Ring */}
               <circle cx="160" cy="110" r="70" stroke="#292D32" strokeWidth="1.5" strokeDasharray="4 4" />
 
-              {/* Rotating Encoder Disk */}
-              <g transform={`translate(160, 110) rotate(${motorRot})`}>
+              {/* Rotating Encoder Disk (Controlled via ref transform) */}
+              <g ref={encoderDiskRef} transform="translate(160, 110) rotate(0)">
                 <circle cx="0" cy="0" r="38" fill="#15181C" stroke="#d83a32" strokeWidth="2" />
                 {[0, 45, 90, 135, 180, 225, 270, 315].map((ang) => (
                   <line
@@ -320,25 +387,21 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               </g>
 
               {/* 4 Loop Nodes on the circle */}
-              {/* Top: SENSOR */}
               <g transform="translate(160, 40)">
                 <circle cx="0" cy="0" r="14" fill="#0B0D10" stroke="#d83a32" strokeWidth="1.5" />
                 <text x="0" y="3" fill="#F3F2EE" fontSize="7" fontFamily="monospace" textAnchor="middle" fontWeight="bold">SENS</text>
               </g>
 
-              {/* Right: PID ALGORITHM */}
               <g transform="translate(230, 110)">
                 <circle cx="0" cy="0" r="14" fill="#0B0D10" stroke="#10b981" strokeWidth="1.5" />
                 <text x="0" y="3" fill="#F3F2EE" fontSize="7" fontFamily="monospace" textAnchor="middle" fontWeight="bold">PID</text>
               </g>
 
-              {/* Bottom: ACTUATOR */}
               <g transform="translate(160, 180)">
                 <circle cx="0" cy="0" r="14" fill="#0B0D10" stroke="#d83a32" strokeWidth="1.5" />
                 <text x="0" y="3" fill="#F3F2EE" fontSize="7" fontFamily="monospace" textAnchor="middle" fontWeight="bold">ACT</text>
               </g>
 
-              {/* Left: PLANT */}
               <g transform="translate(90, 110)">
                 <circle cx="0" cy="0" r="14" fill="#0B0D10" stroke="#F3F2EE" strokeWidth="1.5" />
                 <text x="0" y="3" fill="#F3F2EE" fontSize="7" fontFamily="monospace" textAnchor="middle" fontWeight="bold">MECH</text>
@@ -366,7 +429,6 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
               xmlns="http://www.w3.org/2000/svg"
             >
               {/* Neural Synapses connecting Input -> Hidden -> Output */}
-              {/* Layer 1 (X: 65, Y: 60, 110, 160) to Layer 2 (X: 160, Y: 45, 90, 130, 175) */}
               {[60, 110, 160].map((y1, i) =>
                 [45, 90, 130, 175].map((y2, j) => (
                   <line
@@ -382,7 +444,6 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 ))
               )}
 
-              {/* Layer 2 to Layer 3 (X: 255, Y: 85, 135) */}
               {[45, 90, 130, 175].map((y2, j) =>
                 [85, 135].map((y3, k) => (
                   <line
@@ -398,16 +459,18 @@ export default function DomainVisualizer({ activeDomain }: DomainVisualizerProps
                 ))
               )}
 
-              {/* Pulsing Synapse Weight Packet */}
+              {/* Pulsing Synapse Weight Packets (Controlled via ref cx/cy) */}
               <circle
-                cx={65 + ((animTime * 80) % 95)}
-                cy={110 + Math.sin(animTime * 3) * 15}
+                ref={packet1Ref}
+                cx="65"
+                cy="110"
                 r="3"
                 fill="#d83a32"
               />
               <circle
-                cx={160 + ((animTime * 80) % 95)}
-                cy={130 + Math.cos(animTime * 3) * 10}
+                ref={packet2Ref}
+                cx="160"
+                cy="130"
                 r="3"
                 fill="#10b981"
               />
