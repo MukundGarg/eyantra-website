@@ -741,9 +741,15 @@ body, header, nav, footer, section, aside, .theme-transition {
 #main-nav.nav-scrolled {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.88);
-    border-color: rgba(217, 217, 213, 0.8);
-    box-shadow: 0 8px 32px rgba(17, 18, 20, 0.06);
+    background-color: var(--header-blur-bg);
+    border-color: var(--border);
+    box-shadow: 0 8px 32px rgba(17, 18, 20, 0.08);
+}
+
+html.dark #main-nav.nav-scrolled {
+    background-color: var(--header-blur-bg);
+    border-color: var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 /* ─── Section Transitions ─── */
