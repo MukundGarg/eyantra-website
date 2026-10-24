@@ -81,8 +81,12 @@ export default function BuntyChatPanel({
           timestamp: getTimestamp(),
         },
       ]);
-    } catch {
-      setError("I couldn’t connect just now. Please try sending that again.");
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "I couldn’t connect just now. Please try sending that again.",
+      );
     } finally {
       isSendingRef.current = false;
       onChatStateChange("answered");
@@ -151,6 +155,7 @@ export default function BuntyChatPanel({
           placeholder="Ask Bunty anything..."
           autoComplete="off"
           disabled={isThinking}
+          maxLength={4000}
         />
         <button
           type="submit"

@@ -1,6 +1,8 @@
 .env
 .env.local
 .env.*
+!.env.example
+BUNTY_API_HANDOFF.md
 
 node_modules/
 .next/

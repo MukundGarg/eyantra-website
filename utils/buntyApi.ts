@@ -1,14 +1,3 @@
-/**
- * Bunty API Client Stub & Interface Contract
- *
- * This module isolates all communication with the Bunty Bot AI backend.
- *
- * FUTURE IMPLEMENTATION:
- * 1. Store the API endpoint in process.env.NEXT_PUBLIC_BUNTY_API_URL or a Next.js Route Handler (/api/bunty).
- * 2. Authenticate using either an environment API key or a user-provided API key from the frontend settings.
- * 3. Never commit raw keys to git.
- */
-
 export interface BuntyChatMessage {
   id: string;
   sender: "user" | "bunty";
@@ -18,7 +7,6 @@ export interface BuntyChatMessage {
 
 export interface SendMessageOptions {
   message: string;
-  apiKey?: string; // Optional user key override for future BYOK (bring-your-own-key)
   signal?: AbortSignal;
 }
 
@@ -28,46 +16,40 @@ export interface BuntyApiResponse {
   error?: string;
 }
 
-/**
- * Stub function ready to be wired with the actual Bunty backend.
- * Currently returns a mock thoughtful response until the API key and endpoint are attached.
- */
 export async function sendBuntyMessage(
-  options: SendMessageOptions
+  options: SendMessageOptions,
 ): Promise<BuntyApiResponse> {
-  const { message, apiKey, signal } = options;
-
-  // Staged for future API key authentication logging/verification:
-  if (apiKey) {
-    // Custom key provided by user (client-side BYOK)
+  let response: Response;
+  try {
+    response = await fetch("/api/bunty/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: options.message }),
+      signal: options.signal,
+    });
+  } catch {
+    return {
+      success: false,
+      error: "I couldn’t connect just now. Please try sending that again.",
+    };
   }
 
-  // Simulate network latency for natural UX preview
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  if (signal?.aborted) {
-    throw new Error("Request was cancelled.");
+  const data: unknown = await response.json().catch(() => null);
+  if (
+    !response.ok ||
+    !data ||
+    typeof data !== "object" ||
+    !("success" in data) ||
+    data.success !== true ||
+    !("reply" in data) ||
+    typeof data.reply !== "string"
+  ) {
+    const error =
+      data && typeof data === "object" && "error" in data && typeof data.error === "string"
+        ? data.error
+        : "Bunty is unavailable right now. Please try again shortly.";
+    return { success: false, error };
   }
 
-  // Placeholder for real fetch call:
-  /*
-  const response = await fetch('/api/bunty/chat', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
-    },
-    body: JSON.stringify({ prompt: message }),
-    signal
-  });
-  const data = await response.json();
-  return data;
-  */
-
-  return {
-    success: true,
-    reply: message.trim().endsWith("?")
-      ? "That’s a good question. I’m still learning the details, but I can help you explore e-Yantra’s projects, student teams, and events."
-      : "Thanks for sharing that. I’m still learning the details, but I can help you explore e-Yantra’s projects, student teams, and events.",
-  };
+  return { success: true, reply: data.reply };
 }
