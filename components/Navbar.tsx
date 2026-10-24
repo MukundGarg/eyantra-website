@@ -32,9 +32,10 @@ export default function Navbar() {
 
   const links = [
     { name: "Home", href: "/" },
-    { name: "Team", href: "/team" },
     { name: "Projects", href: "/projects" },
     { name: "Events", href: "/events" },
+    { name: "Team", href: "/team" },
+    { name: "Bunty", href: "/bunty" },
   ];
 
   return (

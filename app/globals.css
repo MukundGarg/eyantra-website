@@ -98,6 +98,63 @@ body, header, nav, footer, section, aside, .theme-transition {
     }
 }
 
+/* ─── Bunty Floating Aurora Animations ─── */
+@keyframes bunty-float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    33% {
+        transform: translateY(-16px) rotate(1.2deg) scale(1.02);
+    }
+    66% {
+        transform: translateY(-8px) rotate(-1.2deg) scale(0.99);
+    }
+}
+
+@keyframes bunty-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes bunty-spin-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes bunty-aurora-pulse {
+    0%, 100% {
+        opacity: 0.55;
+        transform: scale(0.95);
+    }
+    50% {
+        opacity: 0.85;
+        transform: scale(1.08);
+    }
+}
+
+@keyframes bunty-halo {
+    0% {
+        transform: scale(0.94) rotate(0deg);
+        opacity: 0.35;
+    }
+    50% {
+        transform: scale(1.06) rotate(180deg);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(0.98) rotate(360deg);
+        opacity: 0.35;
+    }
+}
+
 @property --gradient-angle { 
     syntax: "<angle>"; 
     initial-value: 0deg; 

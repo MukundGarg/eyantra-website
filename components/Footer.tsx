@@ -112,6 +112,15 @@ export default function Footer() {
                 <span>Team</span>
               </Link>
             </li>
+            <li>
+              <Link
+                href="/bunty"
+                className="hover:text-[var(--text-primary)] hover:translate-x-1 inline-flex items-center gap-2.5 transition-all group"
+              >
+                <span className="font-mono text-xs text-[var(--text-secondary)] group-hover:text-[var(--accent-red)]">05</span>
+                <span>Bunty</span>
+              </Link>
+            </li>
           </ul>
         </div>
 
