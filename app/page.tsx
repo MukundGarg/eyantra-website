@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ArduinoHero from "@/components/ArduinoHero";
+import EngineeringLabHero from "@/components/EngineeringLabHero";
 import IntroSection from "@/components/IntroSection";
 import DomainsSection from "@/components/DomainsSection";
 import FeaturedProjectsSection from "@/components/FeaturedProjectsSection";
@@ -40,8 +40,8 @@ export default async function Home() {
       <Navbar />
 
       <main className="relative z-10">
-        {/* 1. Dedicated 3D Arduino Interactive Hero */}
-        <ArduinoHero />
+        {/* 1. Dedicated 3D Interactive Robotics Innovation Lab Hero */}
+        <EngineeringLabHero />
 
         {/* 2. Large Editorial Intro Section (Arago inspired) */}
         <IntroSection />
