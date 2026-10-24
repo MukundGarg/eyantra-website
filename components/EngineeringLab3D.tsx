@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export type StationId = "idea" | "code" | "electronics" | "build" | "test";
 
@@ -68,15 +69,12 @@ export default function EngineeringLab3D({
   // References to communicate with Three.js animate loop
   const sceneState = useRef({
     activeStation,
-    isDark,
-    targetRotationY: 0,
-    currentRotationY: 0,
-    targetRotationX: 0,
-    currentRotationX: 0,
     inView: true,
     pointerDown: false,
-    prevPointerX: 0,
-    prevPointerY: 0,
+    pointerMoved: false,
+    pointerStartX: 0,
+    pointerStartY: 0,
+    onStationSelect,
   });
 
   // Keep state updated
@@ -85,27 +83,12 @@ export default function EngineeringLab3D({
   }, [activeStation]);
 
   useEffect(() => {
-    sceneState.current.isDark = isDark;
-  }, [isDark]);
+    sceneState.current.onStationSelect = onStationSelect;
+  }, [onStationSelect]);
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
-
-    // WebGL support check
-    let hasGl = true;
-    try {
-      const testCanvas = document.createElement("canvas");
-      const gl = testCanvas.getContext("webgl") || testCanvas.getContext("experimental-webgl");
-      if (!gl) hasGl = false;
-    } catch {
-      hasGl = false;
-    }
-
-    if (!hasGl) {
-      const timer = setTimeout(() => setWebGlSupported(false), 0);
-      return () => clearTimeout(timer);
-    }
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -113,31 +96,11 @@ export default function EngineeringLab3D({
     const width = container.clientWidth || 640;
     const height = container.clientHeight || 520;
 
-    // ─── Scene & Camera (Isometric Orthographic) ───
+    // ─── Scene & Camera ───
     const scene = new THREE.Scene();
 
     const aspect = width / height;
-    const frustumSize = 13.5;
-    const camera = new THREE.OrthographicCamera(
-      (-frustumSize * aspect) / 2,
-      (frustumSize * aspect) / 2,
-      frustumSize / 2,
-      -frustumSize / 2,
-      0.1,
-      100
-    );
-
-    // Isometric viewing angle: ~45 deg Y, ~35.26 deg X
-    const isoAngleY = Math.PI / 4;
-    const isoAngleX = Math.atan(1 / Math.SQRT2);
-    const cameraDistance = 22;
-
-    camera.position.set(
-      cameraDistance * Math.cos(isoAngleX) * Math.sin(isoAngleY),
-      cameraDistance * Math.sin(isoAngleX),
-      cameraDistance * Math.cos(isoAngleX) * Math.cos(isoAngleY)
-    );
-    camera.lookAt(0, 0.4, 0);
+    const camera = new THREE.PerspectiveCamera(35, aspect, 0.1, 100);
 
     // ─── Renderer ───
     let renderer: THREE.WebGLRenderer;
@@ -153,32 +116,75 @@ export default function EngineeringLab3D({
     }
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.VSMShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
     container.appendChild(renderer.domElement);
 
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.065;
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.minPolarAngle = 0.2;
+    controls.maxPolarAngle = Math.PI * 0.48;
+    controls.rotateSpeed = 0.48;
+    controls.autoRotateSpeed = 0.24;
+    controls.target.set(0, 0.4, 0);
+    const calculateCameraDistance = (w: number, h: number) => {
+      const viewAspect = w / h;
+      const halfFovTangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const widthFit = 11.5 / (2 * halfFovTangent * viewAspect * 0.84);
+      const heightFit = 8.2 / (2 * halfFovTangent * 0.78);
+      return Math.max(widthFit, heightFit) * 1.08;
+    };
+    let baseCameraDistance = calculateCameraDistance(width, height);
+    const overviewDirection = new THREE.Vector3(0.52, 0.72, 0.64).normalize();
+    camera.position
+      .copy(overviewDirection)
+      .multiplyScalar(baseCameraDistance)
+      .add(controls.target);
+    controls.minDistance = baseCameraDistance * 0.48;
+    controls.maxDistance = baseCameraDistance * 1.6;
+    controls.update();
+    let lastInteraction = performance.now() - 4000;
+    let isDragging = false;
+    let cameraAnimating = false;
+
     // ─── Lighting ───
-    const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.85 : 0.95);
+    const ambientLight = new THREE.AmbientLight(0xffffff, isDark ? 0.55 : 0.72);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, isDark ? 1.4 : 1.6);
+    const hemisphereLight = new THREE.HemisphereLight(
+      isDark ? 0x8298c5 : 0xf5f8ff,
+      isDark ? 0x171a22 : 0x777985,
+      isDark ? 0.85 : 1.05,
+    );
+    scene.add(hemisphereLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, isDark ? 2.2 : 2.6);
     dirLight.position.set(12, 18, 10);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.mapSize.width = 768;
+    dirLight.shadow.mapSize.height = 768;
     dirLight.shadow.camera.left = -9;
     dirLight.shadow.camera.right = 9;
     dirLight.shadow.camera.top = 9;
     dirLight.shadow.camera.bottom = -9;
-    dirLight.shadow.bias = -0.001;
+    dirLight.shadow.bias = -0.0002;
+    dirLight.shadow.normalBias = 0.025;
+    dirLight.shadow.radius = 4;
     scene.add(dirLight);
 
     const fillLight = new THREE.DirectionalLight(0xa5b4fc, isDark ? 0.5 : 0.4);
     fillLight.position.set(-10, 8, -8);
     scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xffd8c4, isDark ? 0.7 : 0.55);
+    rimLight.position.set(3, 6, -10);
+    scene.add(rimLight);
 
     // ─── Master Lab Platform Group ───
     const labGroup = new THREE.Group();
@@ -186,15 +192,15 @@ export default function EngineeringLab3D({
 
     // ─── Materials ───
     const matTable = new THREE.MeshStandardMaterial({
-      color: isDark ? 0x222428 : 0xf1f1ed,
-      roughness: 0.7,
-      metalness: 0.1,
+      color: isDark ? 0x252a32 : 0x353b45,
+      roughness: 0.46,
+      metalness: 0.58,
     });
 
     const matTableEdge = new THREE.MeshStandardMaterial({
-      color: isDark ? 0x303338 : 0xdadad4,
-      roughness: 0.5,
-      metalness: 0.25,
+      color: isDark ? 0x15191f : 0x20252e,
+      roughness: 0.32,
+      metalness: 0.78,
     });
 
     const matRedAccent = new THREE.MeshStandardMaterial({
@@ -206,15 +212,15 @@ export default function EngineeringLab3D({
     });
 
     const matSilver = new THREE.MeshStandardMaterial({
-      color: 0xd4d4d8,
-      roughness: 0.3,
-      metalness: 0.7,
+      color: 0xb8c2ce,
+      roughness: 0.28,
+      metalness: 0.82,
     });
 
     const matDarkGraphite = new THREE.MeshStandardMaterial({
-      color: 0x18181b,
-      roughness: 0.6,
-      metalness: 0.2,
+      color: 0x202630,
+      roughness: 0.38,
+      metalness: 0.42,
     });
 
     const matOffWhite = new THREE.MeshStandardMaterial({
@@ -224,9 +230,43 @@ export default function EngineeringLab3D({
     });
 
     const matPcbGreen = new THREE.MeshStandardMaterial({
-      color: 0x15803d,
-      roughness: 0.45,
-      metalness: 0.1,
+      color: 0x075c4b,
+      roughness: 0.4,
+      metalness: 0.28,
+    });
+
+    const matCopper = new THREE.MeshStandardMaterial({
+      color: 0xc77a45,
+      roughness: 0.3,
+      metalness: 0.8,
+    });
+
+    const matBoardTrace = new THREE.MeshStandardMaterial({
+      color: 0xd6a15e,
+      roughness: 0.36,
+      metalness: 0.72,
+      emissive: 0x5c3118,
+      emissiveIntensity: 0.12,
+    });
+
+    const matScreen = new THREE.MeshStandardMaterial({
+      color: 0x071723,
+      roughness: 0.24,
+      metalness: 0.12,
+      emissive: 0x123449,
+      emissiveIntensity: 0.85,
+    });
+
+    const matKey = new THREE.MeshStandardMaterial({
+      color: 0x303844,
+      roughness: 0.48,
+      metalness: 0.32,
+    });
+
+    const matWheel = new THREE.MeshStandardMaterial({
+      color: 0x20242b,
+      roughness: 0.82,
+      metalness: 0.06,
     });
 
     const matBreadboard = new THREE.MeshStandardMaterial({
@@ -240,8 +280,12 @@ export default function EngineeringLab3D({
       roughness: 0.8,
     });
 
-    const matGlowPath = new THREE.MeshBasicMaterial({
-      color: 0xd83a32,
+    const matGlowPath = new THREE.MeshStandardMaterial({
+      color: 0xb84a42,
+      roughness: 0.34,
+      metalness: 0.72,
+      emissive: 0x531a18,
+      emissiveIntensity: isDark ? 0.5 : 0.24,
     });
 
     // ─── 1. Main Workbench Slab ───
@@ -249,16 +293,43 @@ export default function EngineeringLab3D({
     const baseMesh = new THREE.Mesh(baseGeo, matTable);
     baseMesh.position.y = -0.25;
     baseMesh.receiveShadow = true;
+    baseMesh.castShadow = true;
     labGroup.add(baseMesh);
 
-    // Bevel rim / trim
-    const rimGeo = new THREE.BoxGeometry(11.4, 0.12, 8.0);
-    const rimMesh = new THREE.Mesh(rimGeo, matTableEdge);
-    rimMesh.position.y = -0.06;
-    labGroup.add(rimMesh);
+    // Edge rails wrap the slab sides instead of overlapping its top face.
+    const longRailGeo = new THREE.BoxGeometry(11.32, 0.42, 0.075);
+    const shortRailGeo = new THREE.BoxGeometry(0.075, 0.42, 7.8);
+    const edgeRails: { geometry: THREE.BoxGeometry; position: [number, number, number] }[] = [
+      { geometry: longRailGeo, position: [0, -0.25, -3.91] },
+      { geometry: longRailGeo, position: [0, -0.25, 3.91] },
+      { geometry: shortRailGeo, position: [-5.61, -0.25, 0] },
+      { geometry: shortRailGeo, position: [5.61, -0.25, 0] },
+    ];
+    edgeRails.forEach(({ geometry, position }) => {
+      const rail = new THREE.Mesh(geometry, matTableEdge);
+      rail.position.set(...position);
+      rail.castShadow = true;
+      rail.receiveShadow = true;
+      labGroup.add(rail);
+    });
+
+    const topAccentGeo = new THREE.BoxGeometry(11.08, 0.018, 0.025);
+    const topAccent = new THREE.Mesh(topAccentGeo, matCopper);
+    topAccent.position.set(0, 0.012, 3.82);
+    labGroup.add(topAccent);
 
     // Station hitboxes & highlight groups
     const stationMeshes: { id: StationId; group: THREE.Group; marker: THREE.Mesh }[] = [];
+    const stationRingGeo = new THREE.RingGeometry(1.08, 1.25, 40);
+    const stationRingMat = new THREE.MeshStandardMaterial({
+      color: isDark ? 0x77859a : 0x66717f,
+      roughness: 0.42,
+      metalness: 0.58,
+      emissive: 0x253244,
+      emissiveIntensity: 0.2,
+    });
+    const stationHitGeo = new THREE.CylinderGeometry(1.4, 1.4, 2.5, 16);
+    const invisibleMat = new THREE.MeshBasicMaterial({ visible: false });
 
     // Helper to add interactive station
     const createStationZone = (id: StationId, x: number, z: number) => {
@@ -266,33 +337,19 @@ export default function EngineeringLab3D({
       group.position.set(x, 0, z);
 
       // Station pedestal / outline ring
-      const ringGeo = new THREE.CylinderGeometry(1.25, 1.25, 0.04, 32);
-      const ringMat = new THREE.MeshStandardMaterial({
-        color: isDark ? 0x2b2e34 : 0xe2e2db,
-        roughness: 0.6,
-      });
-      const ring = new THREE.Mesh(ringGeo, ringMat);
-      ring.position.y = 0.02;
-      ring.receiveShadow = true;
+      const ring = new THREE.Mesh(stationRingGeo, stationRingMat);
+      ring.rotation.x = -Math.PI / 2;
+      ring.position.y = 0.045;
       group.add(ring);
 
-      // Pulsing indicator pip
-      const pipGeo = new THREE.SphereGeometry(0.12, 16, 16);
-      const pipMat = new THREE.MeshBasicMaterial({ color: 0xd83a32 });
-      const pip = new THREE.Mesh(pipGeo, pipMat);
-      pip.position.set(0, 1.6, 0);
-      group.add(pip);
-
       // Invisible raycast cylinder
-      const hitGeo = new THREE.CylinderGeometry(1.4, 1.4, 2.5, 16);
-      const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      const hitMesh = new THREE.Mesh(stationHitGeo, invisibleMat);
       hitMesh.position.y = 1.0;
       hitMesh.userData = { stationId: id };
       group.add(hitMesh);
 
       labGroup.add(group);
-      stationMeshes.push({ id, group, marker: pip });
+      stationMeshes.push({ id, group, marker: ring });
       return group;
     };
 
@@ -307,6 +364,41 @@ export default function EngineeringLab3D({
     book.castShadow = true;
     book.receiveShadow = true;
     ideaGroup.add(book);
+
+    const pageLineGeo = new THREE.BoxGeometry(0.72, 0.006, 0.012);
+    const sketchGeo = new THREE.BoxGeometry(0.25, 0.008, 0.012);
+    const sketchMat = new THREE.MeshStandardMaterial({
+      color: 0x65778b,
+      roughness: 0.78,
+    });
+    for (let i = 0; i < 5; i += 1) {
+      const pageLine = new THREE.Mesh(pageLineGeo, sketchMat);
+      pageLine.position.set(0.08, 0.103, -0.31 + i * 0.11);
+      pageLine.rotation.y = 0.2;
+      ideaGroup.add(pageLine);
+    }
+    [
+      [-0.31, 0.105, -0.12],
+      [-0.31, 0.105, 0.04],
+      [-0.31, 0.105, 0.2],
+    ].forEach(([x, y, z]) => {
+      const sketchLine = new THREE.Mesh(sketchGeo, sketchMat);
+      sketchLine.position.set(x, y, z);
+      sketchLine.rotation.y = 0.2;
+      ideaGroup.add(sketchLine);
+    });
+    const wheelSketchGeo = new THREE.RingGeometry(0.035, 0.046, 16);
+    for (const x of [-0.34, -0.14]) {
+      const wheelSketch = new THREE.Mesh(wheelSketchGeo, sketchMat);
+      wheelSketch.rotation.set(-Math.PI / 2, 0.2, 0);
+      wheelSketch.position.set(x, 0.109, 0.29);
+      ideaGroup.add(wheelSketch);
+    }
+    const sketchConnectorGeo = new THREE.BoxGeometry(0.24, 0.008, 0.012);
+    const sketchConnector = new THREE.Mesh(sketchConnectorGeo, sketchMat);
+    sketchConnector.position.set(-0.24, 0.109, 0.29);
+    sketchConnector.rotation.y = 0.2;
+    ideaGroup.add(sketchConnector);
 
     // Notebook spine & strap
     const spineGeo = new THREE.BoxGeometry(0.12, 0.09, 1.02);
@@ -327,42 +419,63 @@ export default function EngineeringLab3D({
     // ─── Station 2: CODE (Mini Laptop / Monitor) ───
     const codeGroup = createStationZone("code", -3.6, -1.8);
 
-    // Laptop base
-    const laptopBaseGeo = new THREE.BoxGeometry(1.2, 0.05, 0.9);
+    // Laptop base with inset keyboard and firmware display.
+    const laptop = new THREE.Group();
+    laptop.rotation.y = -0.25;
+    codeGroup.add(laptop);
+    const laptopBaseGeo = new THREE.BoxGeometry(1.2, 0.055, 0.9);
     const laptopBase = new THREE.Mesh(laptopBaseGeo, matSilver);
-    laptopBase.position.set(0, 0.05, 0);
-    laptopBase.rotation.y = -0.25;
+    laptopBase.position.set(0, 0.065, 0);
     laptopBase.castShadow = true;
-    codeGroup.add(laptopBase);
+    laptop.add(laptopBase);
 
-    // Laptop screen
-    const screenGeo = new THREE.BoxGeometry(1.16, 0.75, 0.04);
+    const keyboardBed = new THREE.Mesh(
+      new THREE.BoxGeometry(0.92, 0.012, 0.4),
+      matDarkGraphite,
+    );
+    keyboardBed.position.set(0, 0.101, 0.12);
+    laptop.add(keyboardBed);
+    const keyGeo = new THREE.BoxGeometry(0.105, 0.018, 0.07);
+    for (let row = 0; row < 3; row += 1) {
+      const keyCount = row === 2 ? 6 : 7;
+      for (let col = 0; col < keyCount; col += 1) {
+        const key = new THREE.Mesh(keyGeo, matKey);
+        key.position.set(
+          (col - (keyCount - 1) / 2) * 0.125,
+          0.116,
+          -0.015 + row * 0.105,
+        );
+        laptop.add(key);
+      }
+    }
+    const trackpad = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.006, 0.13),
+      matSilver,
+    );
+    trackpad.position.set(0, 0.102, 0.37);
+    laptop.add(trackpad);
+
+    const screenGeo = new THREE.BoxGeometry(1.12, 0.72, 0.055);
     const screen = new THREE.Mesh(screenGeo, matDarkGraphite);
-    screen.position.set(0.1, 0.45, -0.42);
-    screen.rotation.y = -0.25;
-    screen.rotation.x = 0.2;
+    screen.position.set(0, 0.49, -0.405);
     screen.castShadow = true;
-    codeGroup.add(screen);
+    laptop.add(screen);
 
-    // Screen display glow (firmware code lines)
     const codeScreenGeo = new THREE.PlaneGeometry(1.0, 0.6);
-    const codeScreenMat = new THREE.MeshBasicMaterial({
-      color: 0x0f172a,
-    });
+    const codeScreenMat = new THREE.MeshBasicMaterial({ color: 0x102536 });
     const codePlane = new THREE.Mesh(codeScreenGeo, codeScreenMat);
-    codePlane.position.set(0.1, 0.45, -0.395);
-    codePlane.rotation.y = -0.25;
-    codePlane.rotation.x = 0.2;
-    codeGroup.add(codePlane);
-
-    // Emissive code cursor line
-    const codeLineGeo = new THREE.BoxGeometry(0.3, 0.03, 0.01);
-    const codeLineMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-    const codeLine = new THREE.Mesh(codeLineGeo, codeLineMat);
-    codeLine.position.set(-0.15, 0.58, -0.37);
-    codeLine.rotation.y = -0.25;
-    codeLine.rotation.x = 0.2;
-    codeGroup.add(codeLine);
+    codePlane.position.set(0, 0.49, -0.373);
+    laptop.add(codePlane);
+    const codeLineGeo = new THREE.BoxGeometry(0.42, 0.016, 0.008);
+    for (let row = 0; row < 5; row += 1) {
+      const codeLine = new THREE.Mesh(
+        codeLineGeo,
+        row === 4 ? matBoardTrace : matScreen,
+      );
+      codeLine.scale.x = row % 2 === 0 ? 0.78 : 1;
+      codeLine.position.set(-0.21 + (row % 2) * 0.08, 0.68 - row * 0.09, -0.363);
+      laptop.add(codeLine);
+    }
 
     // ─── Station 3: ELECTRONICS (Arduino PCB, Breadboard, Jumper Signals) ───
     const elecGroup = createStationZone("electronics", -0.2, 0.2);
@@ -372,26 +485,81 @@ export default function EngineeringLab3D({
     const pcb = new THREE.Mesh(pcbGeo, matPcbGreen);
     pcb.position.set(-0.45, 0.05, -0.3);
     pcb.castShadow = true;
+    pcb.receiveShadow = true;
     elecGroup.add(pcb);
 
     // ATmega IC chip
-    const chipGeo = new THREE.BoxGeometry(0.55, 0.08, 0.2);
+    const chipGeo = new THREE.BoxGeometry(0.48, 0.1, 0.24);
     const chip = new THREE.Mesh(chipGeo, matDarkGraphite);
-    chip.position.set(-0.4, 0.1, -0.3);
+    chip.position.set(-0.4, 0.14, -0.3);
     elecGroup.add(chip);
+    const chipLegGeo = new THREE.BoxGeometry(0.035, 0.025, 0.055);
+    for (let side = -1; side <= 1; side += 2) {
+      for (let pin = 0; pin < 5; pin += 1) {
+        const leg = new THREE.Mesh(chipLegGeo, matCopper);
+        leg.position.set(-0.4 + (pin - 2) * 0.085, 0.09, -0.3 + side * 0.15);
+        elecGroup.add(leg);
+      }
+    }
+
+    const traceGeo = new THREE.BoxGeometry(0.012, 0.008, 0.3);
+    [
+      [-0.87, 0.086, 0.02],
+      [-0.73, 0.086, 0.01],
+      [-0.08, 0.086, -0.02],
+      [-0.87, 0.086, -0.62],
+    ].forEach(([x, y, z]) => {
+      const trace = new THREE.Mesh(traceGeo, matBoardTrace);
+      trace.position.set(x, y, z);
+      elecGroup.add(trace);
+    });
 
     // USB Type-B port
-    const usbGeo = new THREE.BoxGeometry(0.24, 0.2, 0.28);
+    const usbGeo = new THREE.BoxGeometry(0.26, 0.18, 0.3);
     const usb = new THREE.Mesh(usbGeo, matSilver);
-    usb.position.set(-1.0, 0.13, -0.5);
+    usb.position.set(-1.02, 0.15, -0.5);
     elecGroup.add(usb);
+    const usbOpening = new THREE.Mesh(
+      new THREE.BoxGeometry(0.17, 0.08, 0.012),
+      matDarkGraphite,
+    );
+    usbOpening.position.set(-1.02, 0.15, -0.343);
+    elecGroup.add(usbOpening);
+
+    const headerPinGeo = new THREE.BoxGeometry(0.035, 0.16, 0.035);
+    for (const x of [-0.9, -0.05]) {
+      for (let pin = 0; pin < 6; pin += 1) {
+        const headerPin = new THREE.Mesh(headerPinGeo, matCopper);
+        headerPin.position.set(x, 0.15, -0.62 + pin * 0.12);
+        elecGroup.add(headerPin);
+      }
+    }
+    const headerRailGeo = new THREE.BoxGeometry(0.09, 0.045, 0.76);
+    for (const x of [-0.9, -0.05]) {
+      const headerRail = new THREE.Mesh(headerRailGeo, matDarkGraphite);
+      headerRail.position.set(x, 0.115, -0.32);
+      elecGroup.add(headerRail);
+    }
 
     // Mini Breadboard
     const bbGeo = new THREE.BoxGeometry(1.3, 0.1, 0.6);
     const bb = new THREE.Mesh(bbGeo, matBreadboard);
-    bb.position.set(0.35, 0.06, 0.4);
+    bb.position.set(0.35, 0.075, 0.4);
     bb.castShadow = true;
     elecGroup.add(bb);
+    const breadboardHoleGeo = new THREE.CylinderGeometry(0.013, 0.013, 0.008, 6);
+    const holeMat = new THREE.MeshStandardMaterial({
+      color: 0x68717b,
+      roughness: 0.7,
+      metalness: 0.12,
+    });
+    for (let row = 0; row < 4; row += 1) {
+      for (let col = 0; col < 12; col += 1) {
+        const hole = new THREE.Mesh(breadboardHoleGeo, holeMat);
+        hole.position.set(0.35 - 0.5 + col * 0.09, 0.128, 0.19 + row * 0.13);
+        elecGroup.add(hole);
+      }
+    }
 
     // Tiny red status LED
     const ledGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.08, 12);
@@ -429,19 +597,27 @@ export default function EngineeringLab3D({
       buildGroup.add(pillar);
     });
 
-    // Wheels (Left and Right)
-    const wheelGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.16, 24);
-    const wheelL = new THREE.Mesh(wheelGeo, matRedAccent);
-    wheelL.rotation.x = Math.PI / 2;
-    wheelL.position.set(-0.55, 0.3, 0.55);
-    wheelL.castShadow = true;
-    buildGroup.add(wheelL);
+    // Side-mounted drive motors and wheels have an axle along the robot's X axis.
+    const motorGeo = new THREE.BoxGeometry(0.28, 0.22, 0.38);
+    const wheelGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.16, 24);
+    const hubGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.17, 16);
+    for (const side of [-1, 1]) {
+      const motor = new THREE.Mesh(motorGeo, matSilver);
+      motor.position.set(side * 0.56, 0.29, 0.02);
+      motor.castShadow = true;
+      buildGroup.add(motor);
 
-    const wheelR = new THREE.Mesh(wheelGeo, matRedAccent);
-    wheelR.rotation.x = Math.PI / 2;
-    wheelR.position.set(0.55, 0.3, 0.55);
-    wheelR.castShadow = true;
-    buildGroup.add(wheelR);
+      const wheel = new THREE.Mesh(wheelGeo, matWheel);
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(side * 0.78, 0.3, 0.02);
+      wheel.castShadow = true;
+      buildGroup.add(wheel);
+
+      const hub = new THREE.Mesh(hubGeo, matCopper);
+      hub.rotation.z = Math.PI / 2;
+      hub.position.set(side * 0.87, 0.3, 0.02);
+      buildGroup.add(hub);
+    }
 
     // Ultrasonic sensor "eyes" on front
     const sensorBaseGeo = new THREE.BoxGeometry(0.4, 0.18, 0.06);
@@ -470,11 +646,21 @@ export default function EngineeringLab3D({
     testPad.receiveShadow = true;
     testGroup.add(testPad);
 
-    // Contrast line strip (Robo-race path)
-    const lineTrackGeo = new THREE.BoxGeometry(1.6, 0.05, 0.15);
+    // Matte line-following route with a junction and contrasting edge markers.
+    const lineTrackGeo = new THREE.BoxGeometry(1.68, 0.014, 0.075);
     const lineTrack = new THREE.Mesh(lineTrackGeo, matDarkGraphite);
-    lineTrack.position.set(0, 0.035, 0);
+    lineTrack.position.set(0, 0.059, 0);
     testGroup.add(lineTrack);
+    const trackBranchGeo = new THREE.BoxGeometry(0.075, 0.014, 0.9);
+    const trackBranch = new THREE.Mesh(trackBranchGeo, matDarkGraphite);
+    trackBranch.position.set(-0.42, 0.059, -0.35);
+    testGroup.add(trackBranch);
+    const calibrationGeo = new THREE.BoxGeometry(0.12, 0.012, 0.12);
+    for (const [x, z] of [[-0.72, 0.55], [-0.42, 0.55], [-0.12, 0.55]]) {
+      const calibrationMark = new THREE.Mesh(calibrationGeo, matOffWhite);
+      calibrationMark.position.set(x, 0.06, z);
+      testGroup.add(calibrationMark);
+    }
 
     // Tiny test obstacle beacon
     const beaconGeo = new THREE.CylinderGeometry(0.1, 0.14, 0.35, 16);
@@ -498,92 +684,133 @@ export default function EngineeringLab3D({
     gateCross.position.set(0, 0.52, -0.4);
     testGroup.add(gateCross);
 
-    // ─── Connected Signal Path (Visible Red Guide Lines) ───
+    // ─── Routed twin signal traces between the station pads ───
     const curvePoints = [
-      new THREE.Vector3(-3.8, 0.06, 1.8), // 01 Idea
-      new THREE.Vector3(-3.6, 0.06, -1.8), // 02 Code
-      new THREE.Vector3(-0.2, 0.06, 0.2), // 03 Electronics
-      new THREE.Vector3(3.4, 0.06, -1.6), // 04 Build
-      new THREE.Vector3(3.6, 0.06, 1.8), // 05 Test
+      new THREE.Vector3(-2.55, 0.025, 1.8),
+      new THREE.Vector3(-2.2, 0.025, 1.15),
+      new THREE.Vector3(-2.2, 0.025, -0.85),
+      new THREE.Vector3(-2.2, 0.025, -1.8),
+      new THREE.Vector3(-1.7, 0.025, -1.8),
+      new THREE.Vector3(-1.45, 0.025, -0.8),
+      new THREE.Vector3(-1.45, 0.025, 0.2),
+      new THREE.Vector3(-0.2, 0.025, -1.05),
+      new THREE.Vector3(1.35, 0.025, -1.05),
+      new THREE.Vector3(2, 0.025, -1.6),
+      new THREE.Vector3(4.65, 0.025, -1.6),
+      new THREE.Vector3(4.85, 0.025, -1.1),
+      new THREE.Vector3(4.85, 0.025, 1.1),
+      new THREE.Vector3(4.65, 0.025, 1.8),
     ];
 
     const curve = new THREE.CatmullRomCurve3(curvePoints, false, "centripetal");
-    const tubeGeo = new THREE.TubeGeometry(curve, 64, 0.032, 8, false);
+    const tubeGeo = new THREE.TubeGeometry(curve, 96, 0.018, 6, false);
     const tubeMesh = new THREE.Mesh(tubeGeo, matGlowPath);
+    tubeMesh.receiveShadow = true;
     labGroup.add(tubeMesh);
 
-    // Traveling packet / signal pulse along path
-    const packetGeo = new THREE.SphereGeometry(0.1, 16, 16);
-    const packetMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const packetMesh = new THREE.Mesh(packetGeo, packetMat);
-    labGroup.add(packetMesh);
+    const secondTrace = new THREE.CatmullRomCurve3(
+      curvePoints.map((point) => new THREE.Vector3(point.x + 0.055, point.y, point.z)),
+      false,
+      "centripetal",
+    );
+    const secondTraceGeo = new THREE.TubeGeometry(secondTrace, 96, 0.009, 5, false);
+    const secondTraceMesh = new THREE.Mesh(secondTraceGeo, matCopper);
+    labGroup.add(secondTraceMesh);
 
     // ─── Raycasting for interactive clicks & hover ───
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
-    const getRaycastTargets = () => {
-      const targets: THREE.Object3D[] = [];
-      scene.traverse((obj) => {
-        if (obj.userData?.stationId) {
-          targets.push(obj);
-        }
-      });
-      return targets;
+    const raycastTargets = stationMeshes.flatMap(({ group }) =>
+      group.children.filter((child) => child.userData?.stationId),
+    );
+
+    const desiredCameraPosition = new THREE.Vector3();
+    const desiredCameraTarget = new THREE.Vector3();
+    const cameraDirection = new THREE.Vector3();
+    const stationWorldPosition = new THREE.Vector3();
+    let focusedStation = sceneState.current.activeStation;
+
+    const focusStation = (id: StationId) => {
+      const station = stationMeshes.find((item) => item.id === id);
+      if (!station) return;
+
+      station.group.getWorldPosition(stationWorldPosition);
+      desiredCameraTarget.copy(stationWorldPosition).add(new THREE.Vector3(0, 0.48, 0));
+      cameraDirection.copy(camera.position).sub(controls.target).normalize();
+      desiredCameraPosition
+        .copy(cameraDirection)
+        .multiplyScalar(Math.max(9, baseCameraDistance * 0.66))
+        .add(desiredCameraTarget);
+      cameraAnimating = true;
+      lastInteraction = performance.now();
+      focusedStation = id;
     };
 
+    controls.addEventListener("start", () => {
+      isDragging = true;
+      cameraAnimating = false;
+      controls.autoRotate = false;
+      lastInteraction = performance.now();
+    });
+    controls.addEventListener("end", () => {
+      isDragging = false;
+      lastInteraction = performance.now();
+    });
+
     const handlePointerDown = (e: PointerEvent) => {
+      if (e.button !== 0 && e.pointerType === "mouse") return;
       sceneState.current.pointerDown = true;
-      sceneState.current.prevPointerX = e.clientX;
-      sceneState.current.prevPointerY = e.clientY;
+      sceneState.current.pointerMoved = false;
+      sceneState.current.pointerStartX = e.clientX;
+      sceneState.current.pointerStartY = e.clientY;
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       if (sceneState.current.pointerDown) {
-        const dx = e.clientX - sceneState.current.prevPointerX;
-        const dy = e.clientY - sceneState.current.prevPointerY;
-        sceneState.current.prevPointerX = e.clientX;
-        sceneState.current.prevPointerY = e.clientY;
-
-        // Controlled rotation clamp
-        sceneState.current.targetRotationY += dx * 0.006;
-        sceneState.current.targetRotationX = Math.max(
-          Math.min(sceneState.current.targetRotationX + dy * 0.004, 0.25),
-          -0.2
-        );
-      } else {
-        // Hover raycast
-        const rect = container.getBoundingClientRect();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(getRaycastTargets());
-        container.style.cursor = intersects.length > 0 ? "pointer" : "grab";
+        const distanceX = e.clientX - sceneState.current.pointerStartX;
+        const distanceY = e.clientY - sceneState.current.pointerStartY;
+        if (Math.hypot(distanceX, distanceY) > 5) {
+          sceneState.current.pointerMoved = true;
+        }
       }
+
+      if (isDragging) return;
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(raycastTargets);
+      container.style.cursor = intersects.length > 0 ? "pointer" : "grab";
     };
 
     const handlePointerUp = (e: PointerEvent) => {
-      if (sceneState.current.pointerDown) {
-        sceneState.current.pointerDown = false;
+      if (!sceneState.current.pointerDown) return;
+      const wasClick = !sceneState.current.pointerMoved;
+      sceneState.current.pointerDown = false;
+      if (!wasClick) return;
 
-        // Check if it was a quick click rather than a drag
-        const rect = container.getBoundingClientRect();
-        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(raycastTargets);
+      if (!intersects.length) return;
 
-        raycaster.setFromCamera(mouse, camera);
-        const intersects = raycaster.intersectObjects(getRaycastTargets());
-        if (intersects.length > 0) {
-          const hitId = intersects[0].object.userData.stationId as StationId;
-          if (hitId) onStationSelect(hitId);
-        }
-      }
+      const hitId = intersects[0].object.userData.stationId as StationId;
+      if (!hitId) return;
+      focusStation(hitId);
+      sceneState.current.onStationSelect(hitId);
+    };
+
+    const handlePointerCancel = () => {
+      sceneState.current.pointerDown = false;
     };
 
     container.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("pointerup", handlePointerUp);
+    container.addEventListener("pointermove", handlePointerMove);
+    container.addEventListener("pointerup", handlePointerUp);
+    container.addEventListener("pointercancel", handlePointerCancel);
 
     // ─── IntersectionObserver for power saving ───
     const observer = new IntersectionObserver(
@@ -602,48 +829,75 @@ export default function EngineeringLab3D({
 
     // ─── Resize Handler ───
     const handleResize = () => {
-      if (!container) return;
       const w = container.clientWidth || 640;
       const h = container.clientHeight || 520;
-      const a = w / h;
-      camera.left = (-frustumSize * a) / 2;
-      camera.right = (frustumSize * a) / 2;
-      camera.top = frustumSize / 2;
-      camera.bottom = -frustumSize / 2;
+      const nextCameraDistance = calculateCameraDistance(w, h);
+      const distanceRatio = nextCameraDistance / baseCameraDistance;
+      camera.position
+        .sub(controls.target)
+        .multiplyScalar(distanceRatio)
+        .add(controls.target);
+      if (cameraAnimating) {
+        desiredCameraPosition
+          .sub(controls.target)
+          .multiplyScalar(distanceRatio)
+          .add(controls.target);
+      }
+      baseCameraDistance = nextCameraDistance;
+      controls.minDistance = baseCameraDistance * 0.48;
+      controls.maxDistance = baseCameraDistance * 1.6;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
-    window.addEventListener("resize", handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
 
     // ─── Animation Loop ───
     let animationFrameId: number;
-    const clock = new THREE.Clock();
-
-    const animate = () => {
+    const timer = new THREE.Timer();
+    const animate = (timestamp: number) => {
       animationFrameId = requestAnimationFrame(animate);
+      timer.update(timestamp);
 
       if (!sceneState.current.inView) return;
 
-      const elapsed = clock.getElapsedTime();
+      const elapsed = timer.getElapsed();
+      const delta = timer.getDelta();
 
-      // Smooth damped lerp for user drag rotation
-      sceneState.current.currentRotationY +=
-        (sceneState.current.targetRotationY - sceneState.current.currentRotationY) * 0.08;
-      sceneState.current.currentRotationX +=
-        (sceneState.current.targetRotationX - sceneState.current.currentRotationX) * 0.08;
-
-      // Gentle subtle breathing float if not reduced motion
       const subtleFloat = reducedMotion ? 0 : Math.sin(elapsed * 1.5) * 0.08;
       labGroup.position.y = subtleFloat;
 
-      labGroup.rotation.y = sceneState.current.currentRotationY;
-      labGroup.rotation.x = sceneState.current.currentRotationX;
+      if (sceneState.current.activeStation !== focusedStation) {
+        focusStation(sceneState.current.activeStation);
+      }
 
-      // Pulse active station marker and signal packet
+      if (cameraAnimating) {
+        const transition = 1 - Math.exp(-Math.min(delta, 0.05) * 3.5);
+        camera.position.lerp(desiredCameraPosition, transition);
+        controls.target.lerp(desiredCameraTarget, transition);
+        if (
+          camera.position.distanceToSquared(desiredCameraPosition) < 0.0025 &&
+          controls.target.distanceToSquared(desiredCameraTarget) < 0.0025
+        ) {
+          camera.position.copy(desiredCameraPosition);
+          controls.target.copy(desiredCameraTarget);
+          cameraAnimating = false;
+        }
+      }
+
+      controls.autoRotate =
+        !reducedMotion &&
+        !isDragging &&
+        !cameraAnimating &&
+        performance.now() - lastInteraction > 6500;
+      controls.update(Math.min(delta, 0.05));
+
+      // Gently emphasize the selected station without adding floating markers.
       const currentActive = sceneState.current.activeStation;
       stationMeshes.forEach(({ id, group, marker }) => {
         const isActive = id === currentActive;
-        const scale = isActive ? 1.0 + Math.sin(elapsed * 4) * 0.25 : 0.8;
+        const scale = isActive ? 1.02 + Math.sin(elapsed * 3) * 0.012 : 1;
         marker.scale.set(scale, scale, scale);
 
         // Gentle hover highlight
@@ -651,45 +905,44 @@ export default function EngineeringLab3D({
         group.position.y += (targetY - group.position.y) * 0.1;
       });
 
-      // Signal packet motion along red circuit pipeline
-      if (!reducedMotion) {
-        const t = (elapsed * 0.22) % 1;
-        const pt = curve.getPointAt(t);
-        packetMesh.position.copy(pt);
-        packetMesh.position.y += 0.04;
-      }
-
       renderer.render(scene, camera);
     };
 
-    animate();
+    animationFrameId = requestAnimationFrame(animate);
 
     // ─── Cleanup ───
     return () => {
       cancelAnimationFrame(animationFrameId);
+      timer.dispose();
       observer.disconnect();
+      resizeObserver.disconnect();
+      controls.dispose();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("resize", handleResize);
       container.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("pointerup", handlePointerUp);
+      container.removeEventListener("pointermove", handlePointerMove);
+      container.removeEventListener("pointerup", handlePointerUp);
+      container.removeEventListener("pointercancel", handlePointerCancel);
 
+      const geometries = new Set<THREE.BufferGeometry>();
+      const materials = new Set<THREE.Material>();
       scene.traverse((obj) => {
         if (obj instanceof THREE.Mesh) {
-          obj.geometry.dispose();
+          geometries.add(obj.geometry);
           if (Array.isArray(obj.material)) {
-            obj.material.forEach((m) => m.dispose());
+            obj.material.forEach((material) => materials.add(material));
           } else {
-            obj.material.dispose();
+            materials.add(obj.material);
           }
         }
       });
+      geometries.forEach((geometry) => geometry.dispose());
+      materials.forEach((material) => material.dispose());
       renderer.dispose();
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [onStationSelect, isDark]);
+  }, [isDark]);
 
   // Fallback if WebGL isn't supported
   if (!webGlSupported) {

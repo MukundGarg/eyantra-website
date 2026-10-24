@@ -9,3 +9,5 @@ node_modules/
 *.log
 
 AGENTS.md
+# Ignore local screen recordings
+Screen Recording*.mov
