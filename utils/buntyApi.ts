@@ -66,6 +66,8 @@ export async function sendBuntyMessage(
 
   return {
     success: true,
-    reply: `I received: "${message}". Live backend integration is coming next! Soon I'll answer questions about e-Yantra MSIT, our robotics domains, competitions, lab inventory, and past projects.`,
+    reply: message.trim().endsWith("?")
+      ? "That’s a good question. I’m still learning the details, but I can help you explore e-Yantra’s projects, student teams, and events."
+      : "Thanks for sharing that. I’m still learning the details, but I can help you explore e-Yantra’s projects, student teams, and events.",
   };
 }
