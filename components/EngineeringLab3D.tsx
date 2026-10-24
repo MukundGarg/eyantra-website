@@ -812,20 +812,50 @@ export default function EngineeringLab3D({
     container.addEventListener("pointerup", handlePointerUp);
     container.addEventListener("pointercancel", handlePointerCancel);
 
+    // Track document visibility and intersection separately
+    let isIntersecting = true;
+    let isDocumentVisible = !document.hidden;
+
+    const updateVisibility = () => {
+      const shouldBeActive = isIntersecting && isDocumentVisible;
+      if (shouldBeActive !== sceneState.current.inView) {
+        sceneState.current.inView = shouldBeActive;
+        if (shouldBeActive && !animationFrameId) {
+          animationFrameId = requestAnimationFrame(animate);
+        }
+      }
+    };
+
     // ─── IntersectionObserver for power saving ───
     const observer = new IntersectionObserver(
       ([entry]) => {
-        sceneState.current.inView = entry.isIntersecting;
+        isIntersecting = entry.isIntersecting;
+        updateVisibility();
       },
-      { threshold: 0.1 }
+      { threshold: 0.05 }
     );
     observer.observe(container);
 
     // ─── VisibilityChange listener ───
     const handleVisibilityChange = () => {
-      sceneState.current.inView = !document.hidden;
+      isDocumentVisible = !document.hidden;
+      updateVisibility();
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // WebGL Context Loss & Restore handling
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = 0;
+      }
+    };
+    const handleContextRestored = () => {
+      updateVisibility();
+    };
+    renderer.domElement.addEventListener("webglcontextlost", handleContextLost);
+    renderer.domElement.addEventListener("webglcontextrestored", handleContextRestored);
 
     // ─── Resize Handler ───
     const handleResize = () => {
@@ -854,13 +884,15 @@ export default function EngineeringLab3D({
     resizeObserver.observe(container);
 
     // ─── Animation Loop ───
-    let animationFrameId: number;
+    let animationFrameId = 0;
     const timer = new THREE.Timer();
     const animate = (timestamp: number) => {
+      if (!sceneState.current.inView) {
+        animationFrameId = 0;
+        return;
+      }
       animationFrameId = requestAnimationFrame(animate);
       timer.update(timestamp);
-
-      if (!sceneState.current.inView) return;
 
       const elapsed = timer.getElapsed();
       const delta = timer.getDelta();
@@ -912,12 +944,17 @@ export default function EngineeringLab3D({
 
     // ─── Cleanup ───
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = 0;
+      }
       timer.dispose();
       observer.disconnect();
       resizeObserver.disconnect();
       controls.dispose();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      renderer.domElement.removeEventListener("webglcontextlost", handleContextLost);
+      renderer.domElement.removeEventListener("webglcontextrestored", handleContextRestored);
       container.removeEventListener("pointerdown", handlePointerDown);
       container.removeEventListener("pointermove", handlePointerMove);
       container.removeEventListener("pointerup", handlePointerUp);
@@ -968,7 +1005,7 @@ export default function EngineeringLab3D({
       {/* 3D Canvas Container */}
       <div
         ref={mountRef}
-        className="w-full h-full cursor-grab active:cursor-grabbing touch-none select-none"
+        className="w-full h-full cursor-grab active:cursor-grabbing touch-pan-y select-none"
       />
 
       {/* Floating Interaction Hint */}

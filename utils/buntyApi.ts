@@ -27,7 +27,13 @@ export async function sendBuntyMessage(
       body: JSON.stringify({ prompt: options.message }),
       signal: options.signal,
     });
-  } catch {
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
+      return {
+        success: false,
+        error: "Message cancelled.",
+      };
+    }
     return {
       success: false,
       error: "I couldn’t connect just now. Please try sending that again.",

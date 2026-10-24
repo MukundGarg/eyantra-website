@@ -28,6 +28,7 @@ export default function BuntyChatPanel({
   const messagesRef = useRef<HTMLDivElement>(null);
   const isSendingRef = useRef(false);
   const answeredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const isThinking = chatState === "thinking";
 
   useEffect(() => {
@@ -38,6 +39,9 @@ export default function BuntyChatPanel({
   useEffect(
     () => () => {
       if (answeredTimerRef.current) clearTimeout(answeredTimerRef.current);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     },
     [],
   );
@@ -51,6 +55,12 @@ export default function BuntyChatPanel({
       clearTimeout(answeredTimerRef.current);
       answeredTimerRef.current = null;
     }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     isSendingRef.current = true;
     setInputValue("");
     setError("");
@@ -65,8 +75,14 @@ export default function BuntyChatPanel({
     ]);
     onChatStateChange("thinking");
 
+    let isSuccess = false;
     try {
-      const response = await sendBuntyMessage({ message: text });
+      const response = await sendBuntyMessage({
+        message: text,
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted) return;
+
       const reply = response.reply?.trim();
       if (!response.success || !reply) {
         throw new Error(response.error || "Bunty could not reply to that message.");
@@ -81,19 +97,28 @@ export default function BuntyChatPanel({
           timestamp: getTimestamp(),
         },
       ]);
+      isSuccess = true;
     } catch (requestError) {
+      if (controller.signal.aborted) return;
       setError(
         requestError instanceof Error
           ? requestError.message
           : "I couldn’t connect just now. Please try sending that again.",
       );
     } finally {
-      isSendingRef.current = false;
-      onChatStateChange("answered");
-      answeredTimerRef.current = setTimeout(() => {
-        onChatStateChange("idle");
-        answeredTimerRef.current = null;
-      }, 450);
+      if (!controller.signal.aborted) {
+        isSendingRef.current = false;
+        if (isSuccess) {
+          onChatStateChange("answered");
+          answeredTimerRef.current = setTimeout(() => {
+            onChatStateChange("idle");
+            answeredTimerRef.current = null;
+          }, 450);
+        } else {
+          // Failure: immediately return to idle so thinking cloud disappears and error is shown
+          onChatStateChange("idle");
+        }
+      }
     }
   };
 

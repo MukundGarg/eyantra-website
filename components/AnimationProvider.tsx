@@ -37,43 +37,14 @@ export default function AnimationProvider({ children }: { children: React.ReactN
       });
     }
 
-    function initNavbarScroll() {
-      const nav = document.getElementById("main-nav");
-      if (!nav) return;
-
-      let ticking = false;
-      const scrollThreshold = 80;
-
-      function onScroll() {
-        if (!ticking) {
-          window.requestAnimationFrame(() => {
-            if (window.scrollY > scrollThreshold) {
-              nav!.classList.add("nav-scrolled");
-            } else {
-              nav!.classList.remove("nav-scrolled");
-            }
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }
-
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-      return () => window.removeEventListener("scroll", onScroll);
-    }
-
     // Wrap initialization in a small delay to ensure DOM is ready after navigation
     const timeoutId = setTimeout(() => {
       initScrollReveals();
     }, 50);
-    
-    const cleanupNav = initNavbarScroll();
 
     return () => {
       clearTimeout(timeoutId);
       if (observer) observer.disconnect();
-      if (cleanupNav) cleanupNav();
     };
   }, [pathname]);
 

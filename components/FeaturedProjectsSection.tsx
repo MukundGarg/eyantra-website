@@ -135,6 +135,10 @@ export default function FeaturedProjectsSection({
     };
   }, [inView, reducedMotion, isMobile]);
 
+  if (!projects || projects.length === 0) {
+    return null;
+  }
+
   return (
     <section
       ref={sectionRef}

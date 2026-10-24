@@ -48,7 +48,7 @@ export default function Navbar() {
         id="main-nav"
         className={`max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between border rounded-full transition-all duration-300 px-6 py-2.5 relative ${
           isScrolled
-            ? "bg-[var(--bg-surface)]/90 backdrop-blur-2xl border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
+            ? "nav-scrolled bg-[var(--bg-surface)]/90 backdrop-blur-2xl border-[var(--border)] shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
             : "bg-[var(--bg-primary)]/85 backdrop-blur-md border-[var(--border)]/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.2)]"
         }`}
       >

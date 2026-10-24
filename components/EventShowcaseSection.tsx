@@ -512,6 +512,8 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
       return flagship.queryMatch.some((q) => titleLower.includes(q) || typeLower.includes(q));
     });
 
+    const isVerified = Boolean(dbMatch);
+
     return {
       title: dbMatch?.title || flagship.defaultTitle,
       eventType: dbMatch?.event_type || flagship.defaultEventType,
@@ -524,6 +526,7 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
       link: dbMatch?.registration_url && dbMatch.registration_url !== "#" ? dbMatch.registration_url : "/events",
       telemetry: flagship.telemetry,
       renderVisualizer: flagship.renderVisualizer,
+      isVerified,
     };
   });
 
@@ -635,11 +638,20 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                     <span className="font-mono text-xs text-[var(--accent-red)] uppercase tracking-wider font-semibold">
                       EVENT 0{idx + 1} • {evt.eventType}
                     </span>
-                    {evt.status && (
-                      <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[var(--bg-surface-alt)] border border-[var(--border)] text-[var(--text-secondary)] font-medium">
-                        {evt.status}
+                    <div className="flex items-center gap-2">
+                      <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded border font-medium ${
+                        evt.isVerified
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                          : "bg-[var(--bg-surface-alt)] border-[var(--border)] text-[var(--text-secondary)]"
+                      }`}>
+                        {evt.isVerified ? "Verified Event" : "Demonstration Preview"}
                       </span>
-                    )}
+                      {evt.status && (
+                        <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[var(--bg-surface-alt)] border border-[var(--border)] text-[var(--text-secondary)] font-medium">
+                          {evt.status}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <h3 className="text-3xl font-bold text-[var(--text-primary)] mb-4 tracking-tight">
@@ -763,11 +775,20 @@ export default function EventShowcaseSection({ events = [] }: EventShowcaseProps
                   <span className="font-mono text-xs text-[var(--accent-red)] uppercase tracking-wider font-semibold">
                     {evt.eventType}
                   </span>
-                  {evt.status && (
-                    <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[var(--bg-surface-alt)] border border-[var(--border)] text-[var(--text-secondary)] font-medium">
-                      {evt.status}
+                  <div className="flex items-center gap-2">
+                    <span className={`font-mono text-[10px] uppercase px-2 py-0.5 rounded border font-medium ${
+                      evt.isVerified
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                        : "bg-[var(--bg-surface-alt)] border-[var(--border)] text-[var(--text-secondary)]"
+                    }`}>
+                      {evt.isVerified ? "Verified Event" : "Demonstration Preview"}
                     </span>
-                  )}
+                    {evt.status && (
+                      <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-[var(--bg-surface-alt)] border border-[var(--border)] text-[var(--text-secondary)] font-medium">
+                        {evt.status}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-3">

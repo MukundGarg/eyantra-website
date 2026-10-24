@@ -11,7 +11,7 @@ import { supabase } from "@/utils/supabase";
 export const revalidate = 60;
 
 export default async function Home() {
-  const { data: featuredProjects = [] } = await supabase
+  const { data: featuredProjects, error: projectsError } = await supabase
     .from("projects")
     .select("*")
     .eq("published", true)
@@ -19,11 +19,19 @@ export default async function Home() {
     .order("display_order", { ascending: true })
     .limit(3);
 
-  const { data: events = [] } = await supabase
+  if (projectsError) {
+    console.error("Supabase featured projects error:", projectsError);
+  }
+
+  const { data: events, error: eventsError } = await supabase
     .from("events")
     .select("*")
     .eq("published", true)
     .order("display_order", { ascending: true });
+
+  if (eventsError) {
+    console.error("Supabase events error:", eventsError);
+  }
 
   const mappedProjects = (featuredProjects || []).map((p) => ({
     image: p.cover_image,
