@@ -6,10 +6,34 @@ BUNTY_API_HANDOFF.md
 
 node_modules/
 .next/
+out/
+build/
+dist/
 
 .DS_Store
+*.pem
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
+# Next.js agent & dev rules
 AGENTS.md
-# Ignore local screen recordings
+
+# Local recordings & media
 Screen Recording*.mov
+*.mov
+*.mp4
+
+# Editor directories
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# TypeScript incremental build cache
+*.tsbuildinfo

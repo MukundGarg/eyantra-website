@@ -27,7 +27,11 @@ export default function BuntyVisual({ chatState }: BuntyVisualProps) {
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse" || motionPreference.matches) return;
+      if (motionPreference.matches) {
+        resetPosition();
+        return;
+      }
+      if (event.pointerType !== "mouse") return;
 
       const bounds = visual.getBoundingClientRect();
       const x = Math.max(-1, Math.min(1, (event.clientX - (bounds.left + bounds.width / 2)) / (window.innerWidth / 2)));
@@ -43,11 +47,17 @@ export default function BuntyVisual({ chatState }: BuntyVisualProps) {
       visual.style.setProperty("--bunty-counter-y", `${y * -12}px`);
     };
 
+    const handleMotionPreferenceChange = () => {
+      if (motionPreference.matches) resetPosition();
+    };
+
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("blur", resetPosition);
+    motionPreference.addEventListener("change", handleMotionPreferenceChange);
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("blur", resetPosition);
+      motionPreference.removeEventListener("change", handleMotionPreferenceChange);
     };
   }, []);
 
@@ -55,6 +65,7 @@ export default function BuntyVisual({ chatState }: BuntyVisualProps) {
     <div
       ref={visualRef}
       className="bunty-visual"
+      data-state={chatState}
       role="img"
       aria-label="Bunty, a softly glowing character"
     >
@@ -83,9 +94,9 @@ export default function BuntyVisual({ chatState }: BuntyVisualProps) {
           <svg viewBox="0 0 180 112" fill="none">
             <defs>
               <linearGradient id="bunty-cloud-gradient" x1="20" y1="16" x2="160" y2="88">
-                <stop stopColor="#65C9DE" />
-                <stop offset="0.55" stopColor="#A48DE6" />
-                <stop offset="1" stopColor="#86B7E9" />
+                <stop stopColor="var(--bunty-cloud-start)" />
+                <stop offset="0.55" stopColor="var(--bunty-cloud-mid)" />
+                <stop offset="1" stopColor="var(--bunty-cloud-end)" />
               </linearGradient>
             </defs>
             <path

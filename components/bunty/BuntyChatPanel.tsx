@@ -29,12 +29,18 @@ export default function BuntyChatPanel({
   const isSendingRef = useRef(false);
   const answeredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const shouldStickToBottomRef = useRef(true);
   const isThinking = chatState === "thinking";
 
   useEffect(() => {
     const messagesElement = messagesRef.current;
-    if (messagesElement) messagesElement.scrollTop = messagesElement.scrollHeight;
-  }, [messages, chatState]);
+    if (messagesElement && shouldStickToBottomRef.current) {
+      messagesElement.scrollTo({
+        top: messagesElement.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
 
   useEffect(
     () => () => {
@@ -130,6 +136,11 @@ export default function BuntyChatPanel({
         role="log"
         aria-live="polite"
         aria-relevant="additions"
+        onScroll={(event) => {
+          const element = event.currentTarget;
+          shouldStickToBottomRef.current =
+            element.scrollHeight - element.scrollTop - element.clientHeight < 48;
+        }}
       >
         {messages.map((message) => {
           const isUser = message.sender === "user";
@@ -148,7 +159,7 @@ export default function BuntyChatPanel({
           );
         })}
         {isThinking && (
-          <div className="bunty-message-row is-bunty" aria-label="Bunty is thinking">
+          <div className="bunty-message-row is-bunty" role="status" aria-label="Bunty is thinking">
             <div className="bunty-message is-bunty bunty-typing" aria-hidden="true">
               <span />
               <span />

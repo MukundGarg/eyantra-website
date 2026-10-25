@@ -1,14 +1,14 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 
-const ALLOWED_BUCKETS = ['team', 'projects', 'events'] as const
-
+export const ALLOWED_BUCKETS = ['team', 'projects', 'events'] as const
 export type ManagedBucket = (typeof ALLOWED_BUCKETS)[number]
 
 export function getManagedStoragePath(
   url: string | null | undefined,
   bucket: ManagedBucket
 ): string | null {
-  if (!url) return null
+  if (!url || !ALLOWED_BUCKETS.includes(bucket)) return null
+
 
   try {
     const parsedUrl = new URL(url)
