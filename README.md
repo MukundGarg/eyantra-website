@@ -1,177 +1,220 @@
-# 🤖 e-Yantra MSIT — Official Website
+<p align="center">
+  <img src="public/images/eyantra-logo.png" width="120" alt="e-Yantra MSIT logo" />
+</p>
 
-> **Think. Build. Innovate.**
-> The official digital presence of the **e-Yantra Robotics Lab & Engineering Community** at Maharaja Surajmal Institute of Technology (MSIT), affiliated with GGSIPU, New Delhi.
+<h1 align="center">e-Yantra MSIT</h1>
 
-Production Website: [https://eyantra-website-wine.vercel.app/](https://eyantra-website-wine.vercel.app/)
+<p align="center"><strong>Think. Build. Innovate.</strong></p>
+<p align="center">An interactive home for the robotics and engineering community at Maharaja Surajmal Institute of Technology.</p>
+
+<p align="center">
+  <a href="https://eyantra-website-wine.vercel.app/"><strong>Explore the website</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://eyantra-website-wine.vercel.app/bunty">Meet Bunty</a>
+  &nbsp;·&nbsp;
+  <a href="#explore-the-experience">The experience</a>
+  &nbsp;·&nbsp;
+  <a href="#how-it-works">Architecture</a>
+  &nbsp;·&nbsp;
+  <a href="#run-locally">Get started</a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-16-111214?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js 16" />
+  <img src="https://img.shields.io/badge/React-19-111214?style=flat-square&logo=react&logoColor=61DAFB" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript 5" />
+  <img src="https://img.shields.io/badge/Supabase-Backend-3ECF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase" />
+  <img src="https://img.shields.io/badge/Vercel-Deployment-111214?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
 
 ---
 
-## 📖 Overview
+## Why this website?
 
-The e-Yantra MSIT website showcases the society's robotics projects, research domains, upcoming and past workshops/hackathons, core engineering team, and an interactive AI guide named **Bunty**. It includes an administrative content management system powered by Supabase for dynamic project, event, and member updates.
+Engineering communities are built through projects, workshops, experiments, and the people behind them. The e-Yantra MSIT website brings those activities into one place: visitors can discover the society's technical domains, explore showcased work, find events, meet the team, and ask Bunty for guidance.
 
----
+The experience is designed to feel like a small engineering lab rather than a static noticeboard. Interactive Three.js visuals, circuit-inspired components, responsive layouts, and a shared light/dark color system bring the society's identity into the interface. Behind the scenes, an authenticated content-management area lets authorized admins maintain the content.
 
-## 🛠️ Tech Stack
+## Explore the experience
 
-- **Framework:** [Next.js](https://nextjs.org/) 16 (App Router, Turbopack)
-- **Language:** TypeScript 5
-- **UI & Styling:** React 19, Tailwind CSS 4, CSS variables & design tokens
-- **3D Graphics & Animations:** [Three.js](https://threejs.org/) for interactive lab visuals, custom canvas animations, and CSS keyframe telemetry
-- **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, Supabase Auth, Storage buckets)
-- **Icons:** [Iconify](https://iconify.design/)
-- **AI Assistant:** Bunty AI (Gemini Flash Lite backend proxy)
-- **Hosting & Deployment:** [Vercel](https://vercel.com/)
+<details open>
+<summary><strong>Visitors · Discover the community</strong></summary>
 
----
+The homepage introduces the community through an interactive engineering-lab scene and technical-domain sections. Dedicated pages surface projects, events, and team information without requiring visitors to navigate an admin system.
 
-## 📂 Repository Structure
+| Destination | What you can explore |
+| --- | --- |
+| [Home](https://eyantra-website-wine.vercel.app/) | Interactive lab, technical domains, featured projects, and community highlights |
+| [Projects](https://eyantra-website-wine.vercel.app/projects) | Project showcase and category-based browsing |
+| [Events](https://eyantra-website-wine.vercel.app/events) | Workshops, competitions, and past or upcoming activities |
+| [Team](https://eyantra-website-wine.vercel.app/team) | The people behind the community |
+| [Bunty](https://eyantra-website-wine.vercel.app/bunty) | Conversational help through the society's AI assistant |
 
+The interface supports both light and dark themes, with a consistent navigation bar across public pages.
+
+</details>
+
+<details>
+<summary><strong>Bunty · Ask, learn, and explore</strong></summary>
+
+Bunty is a separate AI service integrated into the website through a server-side Next.js API route. Visitors send questions in the interactive chat interface; the website validates the request, forwards it to Bunty's external API, and renders the returned reply.
+
+The page includes an animated character, a thinking state, chat history for the current page session, and responsive message controls. The current proxy sends individual prompts; it does not send the full conversation history to the external service.
+
+**Integration boundary:** The website owns the UI and secure request proxy. The upstream Bunty service owns the model and generated responses.
+
+</details>
+
+<details>
+<summary><strong>Admins · Maintain the website</strong></summary>
+
+An authenticated administration area supports management of content for projects, events, and team members. The app uses Supabase for database records, authentication, and uploaded media, with database authorization and row-level security configuration maintained under `supabase/`.
+
+The admin interface is accessed at `/admin/login`. Admin access requires the appropriate Supabase account and authorization configuration; it is not a public editing interface.
+
+</details>
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[Visitor] --> B[Next.js website]
+    B --> C[Projects / Events / Team]
+    C --> D[(Supabase)]
+    A --> E[Bunty chat]
+    E --> F[Next.js API proxy]
+    F --> G[External Bunty API]
+    H[Authorized admin] --> I[Admin dashboard]
+    I --> D
 ```
-eyantra-website/
-├── app/                        # Next.js App Router routes
-│   ├── admin/                  # Protected CMS (events, projects, team, login)
-│   ├── api/bunty/chat/         # Secure Bunty AI proxy route handler
-│   ├── bunty/                  # Interactive Bunty AI chat experience page
-│   ├── events/                 # Events & workshops showcase page
-│   ├── projects/               # Robotics & engineering projects showcase page
-│   ├── team/                   # Society mentors, leads & core team page
-│   ├── globals.css             # Design tokens, typography, and aesthetic utilities
-│   ├── layout.tsx              # Root HTML layout with providers and fonts
-│   └── page.tsx                # Homepage featuring interactive 3D Lab and telemetry
-├── components/                 # Reusable UI & Feature components
-│   ├── bunty/                  # Bunty visual avatar, chat panel & experience
-│   ├── AdminImageUpload.tsx    # Secure Supabase storage image uploader
-│   ├── AnimationProvider.tsx   # Global scroll and viewport animation observer
-│   ├── CircuitFlow.tsx         # Interactive signal pipeline motherboard module
-│   ├── DomainsSection.tsx      # Engineering domains showcase
-│   ├── EngineeringLab3D.tsx    # Interactive Three.js 3D workbench canvas
-│   ├── EngineeringLabHero.tsx  # Hero banner combining telemetry and 3D lab
-│   ├── EventCard.tsx           # Event display card
-│   ├── EventShowcaseSection.tsx# Homepage events carousel
-│   ├── EventsList.tsx          # Filterable event directory
-│   ├── FeaturedProjectsSection.tsx # Homepage projects showcase
-│   ├── Footer.tsx              # Global footer with social links and branding
-│   ├── Iconify.tsx             # Universal SVG icon component
-│   ├── IntroSection.tsx        # Society philosophy and circuit flow section
-│   ├── Navbar.tsx              # Responsive navigation with dark mode toggle
-│   ├── ProjectCard.tsx         # Project showcase card
-│   ├── ProjectsList.tsx        # Filterable project portfolio
-│   ├── SectionHeading.tsx      # Consistent section titles and badges
-│   ├── TeamMemberCard.tsx      # Team profile card with social handles
-│   └── ThemeProvider.tsx       # Dark/light theme state provider
-├── data/                       # Fallback datasets and filter configurations
-│   ├── events.ts               # Local event seeds & filter categories
-│   └── projects.ts             # Local project seeds & filter categories
-├── public/                     # Static assets (favicons, images, logos)
-├── supabase/                   # Database schemas, migrations & RLS policies
-│   ├── admin_allowlist.sql     # Admin RBAC allowlist functions
-│   ├── admin_rls.sql           # Row Level Security policies
-│   ├── schema.sql              # Core tables (events, projects, team_members)
-│   └── seed.sql                # Initial seed data
-├── utils/                      # Helper libraries & client wrappers
-│   ├── supabase/               # Supabase SSR & session middleware
-│   ├── buntyApi.ts             # Frontend client for Bunty chat
-│   ├── storage.ts              # Supabase storage upload/deletion helpers
-│   ├── supabase.ts             # Supabase client singleton
-│   └── validation.ts           # URL and input validators
-└── proxy.ts                    # Next.js route proxy / session update hook
-```
 
----
+The public-facing pages and admin tools share the same Next.js application. Data-oriented content is backed by Supabase; the AI chat follows a separate request path so the Bunty API credential stays on the server rather than being shipped to browsers.
 
-## ⚙️ Environment Variables
+<details>
+<summary><strong>Inside a Bunty request</strong></summary>
 
-Create a `.env.local` file in the project root:
+1. The visitor submits a prompt through the Bunty chat component.
+2. The frontend posts `{ "prompt": "..." }` to `/api/bunty/chat`.
+3. The server route checks the request shape and length, applies a per-instance rate limit, and reads `BUNTY_API_KEY` from the server environment.
+4. The route forwards the prompt to the external Bunty API and handles upstream errors and timeouts.
+5. The frontend displays the returned reply or an error message.
+
+The application-side rate limiter is in memory; it is not a globally coordinated distributed rate limit.
+
+</details>
+
+## Design and interaction
+
+The visual system uses warm white and graphite surfaces, with the e-Yantra red accent and corresponding dark-mode colors. The site combines animated circuit motifs and a 3D lab with simpler content views so visitors can browse the content without the visuals getting in the way.
+
+| Area | Implementation |
+| --- | --- |
+| Interactive lab | Three.js with React-driven scene integration |
+| Design system | Tailwind CSS 4, shared CSS variables, light/dark themes |
+| Motion | CSS animations and custom React interactions |
+| Chat character | State-aware Bunty visual and message interface |
+| Responsive UI | Shared navigation and adaptable page layouts |
+
+## Technology and data
+
+| Layer | Stack |
+| --- | --- |
+| Application | Next.js 16 App Router, React 19, TypeScript |
+| Styling | Tailwind CSS 4, custom CSS tokens |
+| 3D rendering | Three.js |
+| Data, authentication, storage | Supabase (PostgreSQL, Auth, Storage) |
+| AI integration | Server-side proxy to the external Bunty API |
+| Hosting | Vercel |
+| Quality checks | ESLint, TypeScript, Next.js production build |
+
+## Run locally
+
+### Requirements
+
+Use a Node.js version compatible with the project's installed Next.js version. Node.js 22 LTS has been used successfully for local development.
 
 ```bash
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="your-supabase-anon-key"
-
-# Bunty AI Backend (Server-Side Only)
-BUNTY_API_KEY="your-bunty-api-key"
-```
-
-> **Security Note:** `BUNTY_API_KEY` is loaded exclusively by the server-side route handler in `app/api/bunty/chat/route.ts`. Never prefix it with `NEXT_PUBLIC_`.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js:** v20.x or v22.x LTS (Recommended: Node 22 via `nvm use 22`)
-- **Package Manager:** `npm` (included with Node.js)
-
-### Installation
-
-```bash
+# Clone the repository
 git clone https://github.com/MukundGarg/eyantra-website.git
 cd eyantra-website
+
+# Install dependencies
 npm install
 ```
 
-### Running Locally
+Create `.env.local` in the repository root:
 
-```bash
-npm run dev
+```dotenv
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-publishable-or-anon-key
+BUNTY_API_KEY=your-server-side-bunty-api-key
 ```
 
-The application will be accessible at [http://localhost:3000](http://localhost:3000).
-
----
-
-## 🔒 Admin & Supabase Configuration
-
-1. **Database Setup:**
-   Run the SQL scripts in `supabase/` via the Supabase SQL Editor:
-   - `supabase/schema.sql` (Creates `projects`, `events`, `team_members` tables)
-   - `supabase/admin_allowlist.sql` (Sets up admin allowlist and authorization)
-   - `supabase/admin_rls.sql` (Applies security policies)
-   - `supabase/seed.sql` (Optional default data)
-
-2. **Storage Buckets:**
-   Create three public buckets in Supabase Storage:
-   - `projects`
-   - `events`
-   - `team`
-
-3. **Admin Dashboard Access:**
-   Navigate to `/admin/login` to authenticate. Only users present in the `admin_users` table will be granted access to modify projects, events, and team members.
-
----
-
-## 🤖 Bunty AI Integration
-
-Bunty is an interactive AI companion trained to guide visitors through e-Yantra projects, domains, and society activities.
-- **Client component:** `components/bunty/BuntyChatPanel.tsx` communicates with `/api/bunty/chat`.
-- **Server proxy:** `app/api/bunty/chat/route.ts` validates incoming payloads (max 4000 characters, rate limited to 15 req/min per IP) and securely forwards requests to the external Bunty API using `BUNTY_API_KEY`.
-
----
-
-## 🧪 Quality & Verification Scripts
+Do not commit `.env.local`. The Bunty API key must not have a `NEXT_PUBLIC_` prefix. API credentials used in earlier handoff materials should be rotated if exposed.
 
 ```bash
-# Type-check TypeScript files without emitting output
+# Start the development server
+npm run dev
+
+# Check code quality
+npm run lint
 npx tsc --noEmit
 
-# Lint code with ESLint
-npm run lint
-
-# Create production build
+# Create and run a production build
 npm run build
-
-# Start production server locally
 npm run start
 ```
 
+The local site is served at [http://localhost:3000](http://localhost:3000) by default.
+
+### Supabase setup
+
+The `supabase/` directory contains the schema, admin-authorization, row-level security, and seed SQL used by the project. Configure the database and storage policies for your own Supabase project before using the CMS.
+
+Expected media bucket names referenced by the application are `team`, `projects`, and `events`. Admin access must be configured intentionally; never expose elevated Supabase service credentials in client code.
+
+## Explore the codebase
+
+<details>
+<summary><strong>Repository map</strong></summary>
+
+```text
+app/
+  page.tsx                 Homepage
+  bunty/                   Bunty AI page
+  events/                  Events page
+  projects/                Projects page
+  team/                    Team page
+  admin/                   Authenticated content management
+  api/bunty/chat/          Server-side external AI proxy
+components/
+  bunty/                   Chat panel, animated character, experience
+  EngineeringLab3D.tsx    Interactive Three.js lab
+  EngineeringLabHero.tsx  Lab hero section
+  ...                      Shared navigation, sections, cards, UI
+utils/
+  supabase/                Supabase session and server/client helpers
+  buntyApi.ts              Browser-side chat API wrapper
+  storage.ts               Managed media storage helpers
+data/                       Local fallback showcase data
+supabase/                   SQL schema, auth policies, seed files
+public/images/              Site logo and public image assets
+proxy.ts                    Request/session middleware integration
+```
+
+</details>
+
+## Scope and next steps
+
+The current project includes the public website, an interactive 3D lab, projects/events/team views, the administrative CMS, light/dark theming, and the Bunty API integration.
+
+Potential future improvements include stronger accessibility and device testing, richer project documentation, more complete society-specific knowledge for Bunty, conversational context support if its API evolves, and a clearer workflow for keeping events and team information current. These are opportunities, not claims of already-implemented functionality.
+
+## Contributing
+
+Contributions should preserve the site's existing design system and avoid exposing environment credentials. Work on a feature branch, explain user-facing changes, and run the lint, TypeScript, and build checks before proposing a merge.
+
 ---
 
-## 🤝 Contribution Guidelines
-
-1. Create a feature branch: `git checkout -b feature/your-feature-name`
-2. Follow Next.js App Router conventions and maintain dark/light theme consistency.
-3. Verify that `npx tsc --noEmit` and `npm run lint` pass without errors before committing.
-4. Submit a Pull Request describing your changes and test verification steps.
+<p align="center"><strong>Think. Build. Innovate.</strong></p>
+<p align="center"><sub>Built for the e-Yantra MSIT engineering community.</sub></p>
