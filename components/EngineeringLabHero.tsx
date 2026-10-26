@@ -1,121 +1,125 @@
 "use client";
 
-import React, { useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 import Link from "next/link";
 import Iconify from "@/components/Iconify";
-import EngineeringLab3D, { STATIONS, StationId } from "@/components/EngineeringLab3D";
+import EngineeringLab3D, { STATIONS, type StationId } from "@/components/EngineeringLab3D";
 import { useTheme } from "@/components/ThemeProvider";
 
 export default function EngineeringLabHero() {
   const { theme } = useTheme();
   const [activeStationId, setActiveStationId] = useState<StationId>("electronics");
+  const stageRef = useRef<HTMLDivElement>(null);
+  const activeStation =
+    STATIONS.find((station) => station.id === activeStationId) ?? STATIONS[2];
 
-  const currentStation =
-    STATIONS.find((s) => s.id === activeStationId) || STATIONS[2];
+  const resetPointer = () => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    stage.style.setProperty("--hero-pointer-x", "50%");
+    stage.style.setProperty("--hero-pointer-y", "50%");
+    stage.style.setProperty("--hero-tilt-x", "0deg");
+    stage.style.setProperty("--hero-tilt-y", "0deg");
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== "mouse") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      resetPointer();
+      return;
+    }
+
+    const stage = stageRef.current;
+    if (!stage) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = Math.max(-1, Math.min(1, (event.clientX - bounds.left) / bounds.width * 2 - 1));
+    const y = Math.max(-1, Math.min(1, (event.clientY - bounds.top) / bounds.height * 2 - 1));
+    stage.style.setProperty("--hero-pointer-x", `${(x + 1) * 50}%`);
+    stage.style.setProperty("--hero-pointer-y", `${(y + 1) * 50}%`);
+    stage.style.setProperty("--hero-tilt-x", `${-y * 1.4}deg`);
+    stage.style.setProperty("--hero-tilt-y", `${x * 1.8}deg`);
+  };
 
   return (
-    <section className="relative w-full min-h-[calc(100vh-4rem)] flex items-center pt-24 pb-16 md:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
-      {/* Background radial gradient mesh */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] bg-[var(--accent-red)]/[0.035] blur-[140px] rounded-full" />
-        <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-cyan-500/[0.025] blur-[120px] rounded-full" />
+    <section
+      id="home-hero"
+      className="home-hero"
+      aria-labelledby="home-hero-title"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetPointer}
+    >
+      <div className="home-hero-atmosphere" aria-hidden="true" />
+      <div className="home-hero-grid" aria-hidden="true" />
+      <div className="home-hero-coordinate" aria-hidden="true">
+        28°37&apos;N&nbsp;&nbsp; 77°05&apos;E
       </div>
 
-      <div className="relative z-10 w-full max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* ─── Left Editorial Column (~42% desktop) ─── */}
-          <div className="lg:col-span-5 flex flex-col items-start text-left">
-            {/* Small Label */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border)] mb-6 shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-red)] animate-pulse" />
-              <span className="text-xs font-mono tracking-wider uppercase text-[var(--text-secondary)] font-medium">
-                e-Yantra MSIT • Student Robotics Society
-              </span>
-            </div>
+      <div className="home-hero-inner">
+        <div className="home-hero-intro">
+          <p className="home-hero-eyebrow">
+            <span />
+            e-Yantra MSIT&nbsp; / &nbsp;Robotics Society
+          </p>
+          <h1 id="home-hero-title">
+            Ideas into
+            <br />
+            <span>motion.</span>
+          </h1>
+          <p className="home-hero-copy">
+            We turn curiosity into circuits, code and machines that move.
+            A student robotics community at MSIT, New Delhi.
+          </p>
+          <Link className="home-hero-link" href="#home-work">
+            Explore what we build
+            <Iconify icon="lucide:arrow-down-right" className="h-4 w-4" />
+          </Link>
+        </div>
 
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-bold tracking-tight text-[var(--text-primary)] leading-[1.08] mb-6">
-              From ideas to working robots.
-            </h1>
+        <div className="home-hero-wordmark" aria-hidden="true">
+          E/Y
+        </div>
 
-            {/* Description */}
-            <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl font-normal mb-8">
-              We explore robotics, embedded systems and automation through hands-on projects, learning and collaboration at Maharaja Surajmal Institute of Technology.
+        <div
+          ref={stageRef}
+          className="home-hero-stage"
+          aria-label="Interactive e-Yantra robotics workbench"
+        >
+          <div className="home-hero-stage-glow" aria-hidden="true" />
+          <EngineeringLab3D
+            activeStation={activeStationId}
+            onStationSelect={setActiveStationId}
+            isDark={theme === "dark"}
+          />
+          <div className="home-hero-stage-label">
+            <span>THE WORKING LAB</span>
+            <span>PHASE {activeStation.step} / 05</span>
+          </div>
+        </div>
+
+        <div className="home-hero-bottom">
+          <div className="home-hero-caption">
+            <span className="home-hero-caption-mark">01</span>
+            <p>
+              <strong>{activeStation.name}</strong>
+              <span>{activeStation.subtitle}</span>
             </p>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-10">
-              <Link
-                href="/projects"
-                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] text-xs uppercase tracking-wider font-semibold hover:bg-[var(--accent-red)] hover:text-white transition-colors shadow-xs"
-              >
-                <span>Explore Projects</span>
-                <Iconify icon="lucide:arrow-right" className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/team"
-                className="cta-press inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border)] text-xs uppercase tracking-wider font-semibold hover:border-[var(--accent-red)] hover:text-[var(--accent-red)] transition-colors"
-              >
-                <span>Meet the Team</span>
-              </Link>
-            </div>
-
-            {/* Interactive Station Inspector Box */}
-            <div className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 sm:p-5 shadow-xs transition-all">
-              <div className="flex items-center justify-between mb-3 border-b border-[var(--border)] pb-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-[var(--accent-red)]">
-                    PHASE {currentStation.step}
-                  </span>
-                  <span className="text-xs font-semibold text-[var(--text-primary)]">
-                    {currentStation.name}
-                  </span>
-                </div>
-                <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase">
-                  Connected Station
-                </span>
-              </div>
-
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed mb-4">
-                {currentStation.description}
-              </p>
-
-              {/* 5-Station Clickable Pills */}
-              <div className="grid grid-cols-5 gap-1.5 pt-1">
-                {STATIONS.map((station) => {
-                  const isCurrent = station.id === activeStationId;
-                  return (
-                    <button
-                      key={station.id}
-                      type="button"
-                      onClick={() => setActiveStationId(station.id)}
-                      className={`py-1.5 px-1 rounded-lg text-center transition-all cursor-pointer ${
-                        isCurrent
-                          ? "bg-[var(--accent-red)] text-white shadow-xs font-semibold"
-                          : "bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border)]"
-                      }`}
-                    >
-                      <div className="font-mono text-[10px]">{station.step}</div>
-                      <div className="text-[9px] uppercase tracking-wider truncate hidden sm:block">
-                        {station.id}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
-
-          {/* ─── Right 3D Lab Column (~58% desktop) ─── */}
-          <div className="lg:col-span-7 relative flex items-center justify-center">
-            <div className="w-full relative rounded-3xl border border-[var(--border)]/70 bg-[var(--bg-surface)]/40 backdrop-blur-xs p-2 sm:p-4 shadow-sm">
-              <EngineeringLab3D
-                activeStation={activeStationId}
-                onStationSelect={(id) => setActiveStationId(id)}
-                isDark={theme === "dark"}
-              />
-            </div>
-          </div>
+          <nav className="home-hero-phases" aria-label="Robotics build phases">
+            {STATIONS.map((station) => (
+              <button
+                key={station.id}
+                type="button"
+                aria-label={`Select phase ${station.step}: ${station.name}`}
+                aria-pressed={station.id === activeStationId}
+                onClick={() => setActiveStationId(station.id)}
+              >
+                {station.step}
+              </button>
+            ))}
+          </nav>
+          <span className="home-hero-scroll-hint">
+            SCROLL TO EXPLORE <span aria-hidden="true">↓</span>
+          </span>
         </div>
       </div>
     </section>

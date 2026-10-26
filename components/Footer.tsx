@@ -1,34 +1,13 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import Iconify from "@/components/Iconify";
 import Link from "next/link";
+import FooterWorkshopScene from "@/components/FooterWorkshopScene";
 
 export default function Footer() {
-  const footerRef = useRef<HTMLElement>(null);
-  const oversizedTextRef = useRef<HTMLHeadingElement>(null);
-
-  // Subtle perspective response on oversized footer typography
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (!oversizedTextRef.current) return;
-    const rect = footerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    oversizedTextRef.current.style.transform = `perspective(1000px) rotateX(${y * 12}deg) rotateY(${x * -12}deg) scale(1.02)`;
-  };
-
-  const handleMouseLeave = () => {
-    if (!oversizedTextRef.current) return;
-    oversizedTextRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)";
-  };
-
   return (
     <footer
-      ref={footerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       className="bg-[var(--bg-primary)] border-t border-[var(--border)] pt-20 pb-12 relative overflow-hidden select-none"
     >
       {/* ─── Top Divider ─── */}
@@ -160,19 +139,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ─── Massive E-YANTRA Typography with 3D Depth ─── */}
-      <div className="reveal flex justify-center items-center py-4 md:py-6 relative overflow-hidden select-none">
-        <h1
-          ref={oversizedTextRef}
-          className="text-[16vw] leading-none font-black tracking-tighter text-stroke select-none transition-transform duration-300 ease-out opacity-20 hover:opacity-40 hover:text-[var(--text-primary)]/5 cursor-default"
-          style={{
-            transformStyle: "preserve-3d",
-            willChange: "transform",
-          }}
-        >
-          E-YANTRA
-        </h1>
-      </div>
+      <FooterWorkshopScene />
 
       {/* ─── Footer Bottom Bar ─── */}
       <div className="max-w-7xl mx-auto px-6 border-t border-[var(--border)] pt-6 flex flex-col md:flex-row items-center justify-between text-[var(--text-secondary)] text-xs gap-4 font-normal">

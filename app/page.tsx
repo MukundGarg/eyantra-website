@@ -1,72 +1,22 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import EngineeringLabHero from "@/components/EngineeringLabHero";
-import IntroSection from "@/components/IntroSection";
-import DomainsSection from "@/components/DomainsSection";
-import FeaturedProjectsSection from "@/components/FeaturedProjectsSection";
-import EventShowcaseSection from "@/components/EventShowcaseSection";
-import ClosingSection from "@/components/ClosingSection";
-import { supabase } from "@/utils/supabase";
+import Navbar from "@/components/Navbar";
+import HomeCoreSection from "@/components/home-v2/HomeCoreSection";
+import HomeEventsSection from "@/components/home-v2/HomeEventsSection";
+import HomeProjectsSection from "@/components/home-v2/HomeProjectsSection";
+import HomeV2Hero from "@/components/home-v2/HomeV2Hero";
 
 export const revalidate = 60;
 
-export default async function Home() {
-  const { data: featuredProjects, error: projectsError } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("published", true)
-    .eq("featured", true)
-    .order("display_order", { ascending: true })
-    .limit(3);
-
-  if (projectsError) {
-    console.error("Supabase featured projects error:", projectsError);
-  }
-
-  const { data: events, error: eventsError } = await supabase
-    .from("events")
-    .select("*")
-    .eq("published", true)
-    .order("display_order", { ascending: true });
-
-  if (eventsError) {
-    console.error("Supabase events error:", eventsError);
-  }
-
-  const mappedProjects = (featuredProjects || []).map((p) => ({
-    image: p.cover_image,
-    title: p.title,
-    category: p.category,
-    desc: p.short_description,
-    techStack: p.tech_stack,
-    link: p.demo_url,
-    githubUrl: p.github_url,
-  }));
-
+export default function Home() {
   return (
     <>
       <Navbar />
-
       <main className="relative z-10">
-        {/* 1. Dedicated 3D Interactive Robotics Innovation Lab Hero */}
-        <EngineeringLabHero />
-
-        {/* 2. Large Editorial Intro Section (Arago inspired) */}
-        <IntroSection />
-
-        {/* 3. Core Disciplines / Domains Section (Large Typography & Separators) */}
-        <DomainsSection />
-
-        {/* 4. Fully Animated 3D Featured Engineering Projects Section */}
-        <FeaturedProjectsSection projects={mappedProjects} />
-
-        {/* 5. Scroll-Driven Flagship Event Showcase (Robo Race, Robo Soccer, Robo Forge) */}
-        <EventShowcaseSection events={events || []} />
-
-        {/* 6. Cinematic Editorial Closing Section */}
-        <ClosingSection />
+        <HomeV2Hero />
+        <HomeCoreSection />
+        <HomeProjectsSection />
+        <HomeEventsSection />
       </main>
-
       <Footer />
     </>
   );

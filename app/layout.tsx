@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import AnimationProvider from "@/components/AnimationProvider";
+import FloatingBunty from "@/components/bunty/FloatingBunty";
 import ThemeProvider from "@/components/ThemeProvider";
 
 const inter = Inter({
@@ -69,6 +70,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AnimationProvider>
             {children}
+            <FloatingBunty />
           </AnimationProvider>
         </ThemeProvider>
 
@@ -77,4 +79,3 @@ export default function RootLayout({
     </html>
   );
 }
-

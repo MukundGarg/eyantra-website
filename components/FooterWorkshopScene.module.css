@@ -1,0 +1,551 @@
+.scene {
+  --scene-ink: #f5ecde;
+  --scene-muted: #c0b0a0;
+  --scene-accent: #ef6354;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  margin: 12px 0 44px;
+  padding: clamp(38px, 6vw, 76px) clamp(20px, 5vw, 72px) 30px;
+  border-block: 1px solid rgb(255 246 231 / 11%);
+  border-radius: 3px;
+  background:
+    radial-gradient(ellipse at 78% 45%, rgb(148 68 48 / 28%), transparent 34%),
+    radial-gradient(ellipse at 18% 95%, rgb(192 130 76 / 13%), transparent 36%),
+    linear-gradient(125deg, #211e1d 0%, #29221f 55%, #382721 100%);
+  color: var(--scene-ink);
+}
+
+:global(html.dark) .scene {
+  border-color: rgb(255 246 231 / 9%);
+  background:
+    radial-gradient(ellipse at 78% 45%, rgb(148 68 48 / 23%), transparent 34%),
+    radial-gradient(ellipse at 18% 95%, rgb(192 130 76 / 10%), transparent 36%),
+    linear-gradient(125deg, #171615 0%, #211c1a 55%, #2d201c 100%);
+}
+
+.sceneGrid {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    linear-gradient(rgb(255 244 226 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 244 226 / 4%) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(90deg, transparent, #000 28%, #000 100%);
+  pointer-events: none;
+}
+
+.sceneGlow {
+  position: absolute;
+  z-index: -1;
+  top: 12%;
+  right: 7%;
+  width: min(47vw, 620px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(218 130 78 / 19%), rgb(194 54 45 / 7%) 45%, transparent 70%);
+  filter: blur(24px);
+  transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0);
+  transition: transform 350ms ease-out;
+}
+
+.sceneHeader {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  color: #ef8c72;
+  font-family: var(--font-jetbrains-mono, "SFMono-Regular", Consolas, monospace);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.eyebrow span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--scene-accent);
+  box-shadow: 0 0 12px rgb(239 99 84 / 65%);
+}
+
+.sceneHeader h2 {
+  margin: 0;
+  font-size: clamp(38px, 6vw, 74px);
+  font-weight: 620;
+  letter-spacing: -0.075em;
+  line-height: 0.96;
+}
+
+.sceneHeader h2 span {
+  color: #d5a477;
+}
+
+.sceneCopy {
+  max-width: 430px;
+  margin: 19px 0 0;
+  color: var(--scene-muted);
+  font-size: clamp(13px, 1.2vw, 15px);
+  line-height: 1.65;
+}
+
+.wordmarkStage {
+  position: relative;
+  display: flex;
+  min-height: clamp(210px, 27vw, 345px);
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0 -2vw;
+}
+
+.wordmark {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  color: transparent;
+  font-size: clamp(74px, 16.4vw, 230px);
+  font-weight: 850;
+  letter-spacing: -0.105em;
+  line-height: 0.78;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-text-stroke: 1px rgb(246 235 219 / 35%);
+  opacity: 0.85;
+  transform-origin: center bottom;
+  transition: opacity 400ms ease, transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scene[data-visible="true"] .wordmark {
+  animation: stampIn 850ms cubic-bezier(0.2, 0.8, 0.25, 1.12) both;
+}
+
+.groundLine {
+  position: absolute;
+  right: 1%;
+  bottom: -9px;
+  left: 1%;
+  height: 1px;
+  overflow: hidden;
+  background: rgb(245 236 222 / 20%);
+}
+
+.groundLine span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #d89966 20%, #ef6354 76%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.scene[data-visible="true"] .groundLine span {
+  animation: drawLine 1.2s 200ms ease-out forwards;
+}
+
+.doodles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.doodles svg {
+  position: absolute;
+  fill: none;
+  stroke: #e6a96e;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  opacity: 0.76;
+}
+
+.doodleStar {
+  top: 23%;
+  left: 21%;
+  width: clamp(18px, 2.5vw, 30px);
+  animation: driftOne 5.5s ease-in-out infinite;
+}
+
+.doodleBolt {
+  top: 38%;
+  right: 15%;
+  width: clamp(17px, 2vw, 24px);
+  fill: rgb(239 99 84 / 19%) !important;
+  stroke: #ef8064 !important;
+  animation: driftTwo 6s ease-in-out infinite;
+}
+
+.doodleCircuit {
+  right: 27%;
+  bottom: 30%;
+  width: clamp(48px, 6vw, 76px);
+  stroke: rgb(233 192 147 / 57%) !important;
+  stroke-dasharray: 3 5;
+  animation: circuitPulse 4.5s ease-in-out infinite;
+}
+
+.robot {
+  position: absolute;
+  z-index: 2;
+  right: clamp(7%, 14vw, 19%);
+  bottom: -10px;
+  display: block;
+  width: clamp(104px, 15vw, 180px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0);
+  transition: transform 350ms ease-out;
+}
+
+.robot:hover {
+  transform: translate3d(var(--drift-x, 0px), calc(var(--drift-y, 0px) - 5px), 0);
+}
+
+.robot:focus-visible {
+  outline: 2px solid #ef8064;
+  outline-offset: 5px;
+  border-radius: 45%;
+}
+
+.robotSvg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 17px 20px rgb(0 0 0 / 28%));
+  animation: robotBob 4.2s ease-in-out infinite;
+}
+
+.robotShadow {
+  position: absolute;
+  right: 7%;
+  bottom: 0;
+  left: 7%;
+  height: 16px;
+  border-radius: 50%;
+  background: rgb(7 6 6 / 45%);
+  filter: blur(8px);
+  transform: scaleX(0.74);
+  animation: shadowBreathe 4.2s ease-in-out infinite;
+}
+
+.speech {
+  position: absolute;
+  z-index: 4;
+  right: clamp(1%, 5vw, 8%);
+  bottom: 54%;
+  width: min(230px, 42%);
+  padding: 13px 15px;
+  border: 1px solid rgb(245 236 222 / 18%);
+  border-radius: 12px 12px 2px 12px;
+  background: #f5ecde;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 22%);
+  color: #302722;
+  font-size: 11px;
+  line-height: 1.5;
+  animation: speechIn 220ms ease-out both;
+}
+
+.speech span {
+  display: block;
+  margin-bottom: 4px;
+  color: #b82d27;
+  font-family: var(--font-jetbrains-mono, "SFMono-Regular", Consolas, monospace);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.actions {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 24px;
+}
+
+.actions > p {
+  margin: 0;
+  color: var(--scene-muted);
+  font-size: 13px;
+}
+
+.actions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px solid rgb(245 236 222 / 24%);
+  border-radius: 3px;
+  color: var(--scene-ink);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.primaryAction {
+  border-color: #c94c40;
+  background: #b82d27;
+  color: #fffaf4;
+}
+
+.primaryAction:hover {
+  border-color: #e34a41;
+  background: #d13b33;
+}
+
+.secondaryAction:hover {
+  border-color: #d5a477;
+  background: rgb(245 236 222 / 8%);
+}
+
+.actions svg {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes stampIn {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(1.03, 0.92);
+  }
+
+  68% {
+    opacity: 0.8;
+    transform: translateY(-2px) scale(0.99, 1.02);
+  }
+
+  100% {
+    opacity: 0.85;
+    transform: none;
+  }
+}
+
+@keyframes drawLine {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes robotBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+@keyframes shadowBreathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scaleX(0.74);
+  }
+
+  50% {
+    opacity: 0.38;
+    transform: scaleX(0.62);
+  }
+}
+
+@keyframes driftOne {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+
+  50% {
+    transform: translate(5px, -8px) rotate(12deg);
+  }
+}
+
+@keyframes driftTwo {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-8deg);
+  }
+
+  50% {
+    transform: translateY(-9px) rotate(8deg);
+  }
+}
+
+@keyframes circuitPulse {
+  0%,
+  100% {
+    opacity: 0.44;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    opacity: 0.86;
+    stroke-dashoffset: 16;
+  }
+}
+
+@keyframes speechIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .scene {
+    margin-bottom: 32px;
+  }
+
+  .wordmarkStage {
+    min-height: clamp(180px, 45vw, 270px);
+    margin-inline: -3vw;
+  }
+
+  .wordmark {
+    font-size: clamp(66px, 16.2vw, 128px);
+  }
+
+  .robot {
+    right: 9%;
+    width: clamp(92px, 21vw, 138px);
+  }
+
+  .speech {
+    right: 0;
+    bottom: 50%;
+    width: min(210px, 58%);
+  }
+
+  .doodleCircuit {
+    right: 32%;
+  }
+}
+
+@media (max-width: 520px) {
+  .scene {
+    padding: 35px 18px 24px;
+  }
+
+  .sceneHeader h2 {
+    font-size: clamp(37px, 10vw, 52px);
+  }
+
+  .sceneCopy {
+    max-width: 310px;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+
+  .wordmarkStage {
+    min-height: 166px;
+    margin: 4px -6px 0;
+  }
+
+  .wordmark {
+    font-size: 16vw;
+    letter-spacing: -0.11em;
+    -webkit-text-stroke-width: 0.7px;
+  }
+
+  .robot {
+    right: 7%;
+    bottom: -4px;
+    width: 91px;
+  }
+
+  .doodleStar {
+    top: 16%;
+    left: 12%;
+  }
+
+  .doodleBolt {
+    top: 24%;
+    right: 12%;
+  }
+
+  .doodleCircuit {
+    right: 31%;
+    bottom: 26%;
+  }
+
+  .speech {
+    right: 0;
+    bottom: 51%;
+    width: min(184px, 65%);
+    padding: 10px 11px;
+    font-size: 10px;
+  }
+
+  .actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 18px;
+  }
+
+  .actions > div {
+    width: 100%;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    min-height: 40px;
+    flex: 1;
+    gap: 6px;
+    padding-inline: 9px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sceneGlow,
+  .robot,
+  .primaryAction,
+  .secondaryAction {
+    transition: none;
+  }
+
+  .scene[data-visible="true"] .wordmark,
+  .groundLine span,
+  .doodleStar,
+  .doodleBolt,
+  .doodleCircuit,
+  .robotSvg,
+  .robotShadow,
+  .speech {
+    animation: none;
+  }
+
+  .scene[data-visible="true"] .groundLine span {
+    transform: scaleX(1);
+  }
+}
