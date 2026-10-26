@@ -27,6 +27,13 @@ function formatEventDate(date: string | null) {
   }).format(parsed);
 }
 
+function isUpcomingEvent(event: FeaturedEvent) {
+  const status = event.status?.toLowerCase().trim();
+  if (status === "past") return false;
+  if (status === "ongoing" || status === "upcoming") return true;
+  return Boolean(event.event_date && event.event_date.slice(0, 10) >= today());
+}
+
 async function getFeaturedEvents(): Promise<FeaturedEvent[]> {
   const { data, error } = await supabase
     .from("events")
@@ -40,14 +47,10 @@ async function getFeaturedEvents(): Promise<FeaturedEvent[]> {
   }
 
   const events = (data ?? []) as FeaturedEvent[];
-  const upcoming = events.filter(
-    (event) =>
-      event.status?.toLowerCase() === "ongoing" ||
-      event.status?.toLowerCase() === "upcoming" ||
-      Boolean(event.event_date && event.event_date.slice(0, 10) >= today()),
-  );
+  const upcoming = events.filter(isUpcomingEvent);
+  const recentPast = events.filter((event) => !isUpcomingEvent(event)).reverse();
 
-  return (upcoming.length ? upcoming : events.slice(-3).reverse()).slice(0, 3);
+  return [...upcoming, ...recentPast].slice(0, 3);
 }
 
 export default async function HomeEventsSection() {
@@ -75,51 +78,53 @@ export default async function HomeEventsSection() {
         {events.length ? (
           <div className={styles.stack}>
             {events.map((event, index) => (
-              <article
-                className={styles.card}
+              <div
+                className={styles.stickyCard}
                 key={event.id}
                 style={{ "--card-index": index } as CSSProperties}
               >
-                <div className={styles.imagePanel}>
-                  {event.cover_image ? (
-                    <Image
-                      src={event.cover_image}
-                      alt={event.title}
-                      fill
-                      sizes="(max-width: 700px) 100vw, 45vw"
-                      unoptimized
-                      className={styles.image}
-                    />
-                  ) : (
-                    <div className={styles.imageFallback} aria-hidden="true">
-                      eY
-                    </div>
-                  )}
-                  <span className={styles.imageIndex}>
-                    0{index + 1} / 0{events.length}
-                  </span>
-                </div>
-
-                <div className={styles.cardContent}>
-                  <div className={styles.cardMeta}>
-                    <span>{event.event_type || "e-Yantra MSIT"}</span>
-                    <span className={styles.metaDot} aria-hidden="true" />
-                    <span>{formatEventDate(event.event_date)}</span>
+                <article className={styles.card}>
+                  <div className={styles.imagePanel}>
+                    {event.cover_image ? (
+                      <Image
+                        src={event.cover_image}
+                        alt={event.title}
+                        fill
+                        sizes="(max-width: 700px) 100vw, 45vw"
+                        unoptimized
+                        className={styles.image}
+                      />
+                    ) : (
+                      <div className={styles.imageFallback} aria-hidden="true">
+                        eY
+                      </div>
+                    )}
+                    <span className={styles.imageIndex}>
+                      0{index + 1} / 0{events.length}
+                    </span>
                   </div>
-                  <h3 className={styles.cardTitle}>{event.title}</h3>
-                  <p className={styles.cardDescription}>
-                    {event.short_description ||
-                      "A chance to learn, experiment, and build with the e-Yantra community."}
-                  </p>
-                  <Link className={styles.cardLink} href="/events">
-                    Discover this event
-                    <Iconify
-                      icon="lucide:arrow-up-right"
-                      className={styles.linkIcon}
-                    />
-                  </Link>
-                </div>
-              </article>
+
+                  <div className={styles.cardContent}>
+                    <div className={styles.cardMeta}>
+                      <span>{event.event_type || "e-Yantra MSIT"}</span>
+                      <span className={styles.metaDot} aria-hidden="true" />
+                      <span>{formatEventDate(event.event_date)}</span>
+                    </div>
+                    <h3 className={styles.cardTitle}>{event.title}</h3>
+                    <p className={styles.cardDescription}>
+                      {event.short_description ||
+                        "A chance to learn, experiment, and build with the e-Yantra community."}
+                    </p>
+                    <Link className={styles.cardLink} href="/events">
+                      Discover this event
+                      <Iconify
+                        icon="lucide:arrow-up-right"
+                        className={styles.linkIcon}
+                      />
+                    </Link>
+                  </div>
+                </article>
+              </div>
             ))}
           </div>
         ) : (

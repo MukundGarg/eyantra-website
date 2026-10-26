@@ -20,8 +20,8 @@ type FeaturedProject = Pick<
   | "year"
 >;
 
-const SWAP_DURATION = 760;
-const SWAP_INTERVAL = 4800;
+const SWAP_DURATION = 520;
+const SWAP_INTERVAL = 2800;
 
 export default function ProjectCardStack({
   projects,

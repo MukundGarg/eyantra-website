@@ -39,6 +39,11 @@ html.dark {
 /* ─── Base ─── */
 html {
     scroll-behavior: smooth;
+    cursor: url('/images/eyantra-cursor.svg') 5 4, auto;
+}
+
+a, button, [role="button"] {
+    cursor: url('/images/eyantra-cursor.svg') 5 4, pointer;
 }
 
 body, header, nav, footer, section, aside, .theme-transition {

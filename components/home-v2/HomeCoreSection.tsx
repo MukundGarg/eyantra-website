@@ -1,58 +1,60 @@
+import Image from "next/image";
 import Iconify from "@/components/Iconify";
 import Link from "next/link";
+import type { TeamMember } from "@/types/index";
+import { supabase } from "@/utils/supabase";
 import styles from "./HomeCoreSection.module.css";
 
-const principles = [
-  {
-    number: "01",
-    icon: "lucide:lightbulb",
-    title: "Learn by making",
-    description:
-      "Turn curiosity into practical skills by working through real engineering challenges.",
-    label: "Curiosity → capability",
-  },
-  {
-    number: "02",
-    icon: "lucide:cpu",
-    title: "Build with purpose",
-    description:
-      "Bring code, circuits, and mechanics together to make ideas work in the real world.",
-    label: "Ideas → working systems",
-  },
-  {
-    number: "03",
-    icon: "lucide:combine",
-    title: "Think across disciplines",
-    description:
-      "The best solutions emerge when software, electronics, and design meet.",
-    label: "Different skills, one build",
-  },
-  {
-    number: "04",
-    icon: "lucide:users-round",
-    title: "Make it together",
-    description:
-      "Share what you know, learn from each other, and make room for every new idea.",
-    label: "Better, together",
-  },
-] as const;
+type CoreMember = Pick<
+  TeamMember,
+  "id" | "name" | "role" | "image_url" | "category"
+>;
 
-function PrincipleCards({ duplicate = false }: { duplicate?: boolean }) {
+function MemberCards({
+  members,
+  duplicate = false,
+}: {
+  members: CoreMember[];
+  duplicate?: boolean;
+}) {
   return (
-    <div className={styles.cardSet} aria-hidden={duplicate || undefined} inert={duplicate}>
-      {principles.map((principle) => (
-        <article className={styles.card} key={principle.number}>
+    <div
+      className={styles.cardSet}
+      aria-hidden={duplicate || undefined}
+      inert={duplicate}
+    >
+      {members.map((member, index) => (
+        <article className={styles.card} key={member.id}>
           <div className={styles.cardTop}>
-            <span className={styles.number}>{principle.number}</span>
-            <span className={styles.iconFrame}>
-              <Iconify icon={principle.icon} className={styles.icon} />
+            <span className={styles.number}>
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className={styles.memberPhoto}>
+              {member.image_url ? (
+                <Image
+                  src={member.image_url}
+                  alt=""
+                  fill
+                  sizes="84px"
+                  unoptimized
+                />
+              ) : (
+                <span aria-hidden="true">
+                  {member.name
+                    .split(/\s+/)
+                    .slice(0, 2)
+                    .map((part) => part[0])
+                    .join("")
+                    .toUpperCase()}
+                </span>
+              )}
             </span>
           </div>
-          <h3>{principle.title}</h3>
-          <p>{principle.description}</p>
+          <h3>{member.name}</h3>
+          <p>{member.role || "Core team member"}</p>
           <span className={styles.cardLabel}>
             <span />
-            {principle.label}
+            e-Yantra MSIT · {member.category === "core" ? "Core" : "Department"}
           </span>
         </article>
       ))}
@@ -60,43 +62,81 @@ function PrincipleCards({ duplicate = false }: { duplicate?: boolean }) {
   );
 }
 
-export default function HomeCoreSection() {
+async function getCoreMembers(): Promise<CoreMember[]> {
+  const { data, error } = await supabase
+    .from("team_members")
+    .select("id, name, role, image_url, category")
+    .in("category", ["core", "departments"])
+    .eq("active", true)
+    .order("display_order", { ascending: true });
+
+  if (error) {
+    console.error("Homepage core team error:", error);
+    return [];
+  }
+
+  return (data ?? []) as CoreMember[];
+}
+
+export default async function HomeCoreSection() {
+  const members = await getCoreMembers();
+
   return (
     <section className={styles.section} aria-labelledby="home-core-title">
       <div className={styles.header}>
         <div className={styles.headingGroup}>
-          <p className={styles.eyebrow}>More than machines</p>
+          <p className={styles.eyebrow}>The people behind the builds</p>
           <h2 id="home-core-title">
             At our <span>core.</span>
           </h2>
         </div>
         <div className={styles.intro}>
           <p>
-            e-Yantra is where engineering becomes something you can try, test,
-            and build together. Start with a question. Leave knowing how to
-            make more things possible.
+            Meet the current core and department members who bring people,
+            ideas, and engineering together at e-Yantra MSIT.
           </p>
-          <Link href="/projects" className={styles.exploreLink}>
-            See what we build
+          <Link href="/team" className={styles.exploreLink}>
+            Meet the whole team
             <Iconify icon="lucide:arrow-up-right" />
           </Link>
         </div>
       </div>
 
-      <div
-        className={styles.marquee}
-        role="region"
-        aria-label="What makes e-Yantra"
-        tabIndex={0}
-      >
-        <div className={styles.track}>
-          <PrincipleCards />
-          <PrincipleCards duplicate />
+      {members.length ? (
+        <>
+          <div
+            className={styles.marquee}
+            role="region"
+            aria-label="Current e-Yantra MSIT core and department team"
+            tabIndex={0}
+          >
+            <div className={styles.track}>
+              <MemberCards members={members} />
+              {Array.from({ length: 5 }, (_, index) => (
+                <MemberCards
+                  key={`duplicate-${index}`}
+                  members={members}
+                  duplicate
+                />
+              ))}
+            </div>
+          </div>
+          <p className={styles.marqueeHint}>
+            The people building e-Yantra MSIT together
+          </p>
+        </>
+      ) : (
+        <div className={styles.emptyState}>
+          <p>Our core team is getting ready to meet you.</p>
+          <Link href="/team">
+            Visit the team page
+            <Iconify icon="lucide:arrow-up-right" />
+          </Link>
         </div>
-      </div>
-      <p className={styles.marqueeHint}>A few things we believe in</p>
+      )}
+
       <span className={styles.sectionIndex} aria-hidden="true">
-        02 / THE FOUNDATION
+        02 / THE PEOPLE
       </span>
     </section>
   );

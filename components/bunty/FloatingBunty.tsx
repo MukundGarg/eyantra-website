@@ -2,6 +2,7 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import Iconify from "@/components/Iconify";
 import {
   sendBuntyMessage,
@@ -15,6 +16,12 @@ type Position = {
   panelSide: "left" | "right";
   panelPosition: "above" | "below";
 };
+
+const buntyPrompts = [
+  "Need a project idea?",
+  "Curious about our next event?",
+  "Ask me about robotics!",
+];
 
 function timestamp() {
   return new Date().toLocaleTimeString([], {
@@ -30,8 +37,10 @@ export default function FloatingBunty() {
   const [messages, setMessages] = useState<BuntyChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [promptIndex, setPromptIndex] = useState(0);
   const [error, setError] = useState("");
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const widgetRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -45,13 +54,12 @@ export default function FloatingBunty() {
   }, [open]);
 
   useEffect(() => {
-    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobileQuery = window.matchMedia("(pointer: coarse)");
 
     const setDefaultPosition = () => {
       setPosition({
-        x: Math.max(16, window.innerWidth - 82),
-        y: Math.max(16, window.innerHeight - 92),
+        x: Math.max(16, window.innerWidth - 120),
+        y: Math.max(16, window.innerHeight - 128),
         panelSide: "right",
         panelPosition: "above",
       });
@@ -60,7 +68,6 @@ export default function FloatingBunty() {
     const moveWithPointer = (event: PointerEvent) => {
       if (
         event.pointerType !== "mouse" ||
-        motionPreference.matches ||
         mobileQuery.matches ||
         openRef.current
       ) {
@@ -68,28 +75,53 @@ export default function FloatingBunty() {
       }
 
       pointerRef.current = { x: event.clientX, y: event.clientY };
+      const widget = widgetRef.current;
+      if (!widget || widget.contains(event.target as Node)) return;
+      const bounds = widget.getBoundingClientRect();
+      const approachZone = 56;
+      if (
+        event.clientX >= bounds.left - approachZone &&
+        event.clientX <= bounds.right + approachZone &&
+        event.clientY >= bounds.top - approachZone &&
+        event.clientY <= bounds.bottom + approachZone
+      ) {
+        return;
+      }
       if (frameRef.current !== null) return;
 
       frameRef.current = window.requestAnimationFrame(() => {
         frameRef.current = null;
         const { x: pointerX, y: pointerY } = pointerRef.current;
-        const buttonSize = 58;
-        const margin = 14;
-        const x =
-          pointerX + buttonSize + 20 < window.innerWidth - margin
-            ? pointerX + 20
-            : Math.max(margin, pointerX - buttonSize - 20);
-        const y =
-          pointerY + buttonSize + 20 < window.innerHeight - margin
-            ? pointerY + 20
-            : Math.max(margin, pointerY - buttonSize - 20);
+        const widgetWidth = 104;
+        const widgetHeight = 104;
+        const margin = 12;
+        const widget = widgetRef.current;
+        if (!widget) return;
 
-        setPosition({
-          x,
-          y,
-          panelSide: x < window.innerWidth / 2 ? "left" : "right",
-          panelPosition: y < 420 ? "below" : "above",
-        });
+        const x = Math.min(
+          Math.max(
+            margin,
+            pointerX + widgetWidth + 22 < window.innerWidth - margin
+              ? pointerX + 22
+              : pointerX - widgetWidth - 22,
+          ),
+          window.innerWidth - widgetWidth - margin,
+        );
+        const y = Math.min(
+          Math.max(
+            margin,
+            pointerY + widgetHeight + 22 < window.innerHeight - margin
+              ? pointerY + 22
+              : pointerY - widgetHeight - 22,
+          ),
+          window.innerHeight - widgetHeight - margin,
+        );
+
+        widget.style.left = `${x}px`;
+        widget.style.top = `${y}px`;
+        widget.dataset.panelSide =
+          x < window.innerWidth / 2 ? "left" : "right";
+        widget.dataset.panelPosition = y < 420 ? "below" : "above";
       });
     };
 
@@ -105,6 +137,17 @@ export default function FloatingBunty() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (open || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      setPromptIndex((current) => (current + 1) % buntyPrompts.length);
+    }, 6500);
+    return () => window.clearInterval(interval);
+  }, [open]);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -195,16 +238,31 @@ export default function FloatingBunty() {
     }
   };
 
-  const positionStyle = position
-    ? { left: `${position.x}px`, top: `${position.y}px` }
-    : undefined;
+  const toggleChat = () => {
+    const widget = widgetRef.current;
+    if (widget) {
+      const { left, top } = widget.getBoundingClientRect();
+      setPosition({
+        x: left,
+        y: top,
+        panelSide: left < window.innerWidth / 2 ? "left" : "right",
+        panelPosition: top < 420 ? "below" : "above",
+      });
+    }
+    setOpen((current) => !current);
+  };
 
   return (
     <div
+      ref={widgetRef}
       className={styles.widget}
       data-panel-side={position?.panelSide ?? "right"}
       data-panel-position={position?.panelPosition ?? "above"}
-      style={positionStyle}
+      style={
+        position
+          ? { left: `${position.x}px`, top: `${position.y}px` }
+          : undefined
+      }
     >
       {open && (
         <section
@@ -321,23 +379,24 @@ export default function FloatingBunty() {
         aria-label={open ? "Close chat with Bunty" : "Chat with Bunty"}
         aria-expanded={open}
         aria-controls="floating-bunty-dialog"
-        onClick={() => setOpen((current) => !current)}
+        onClick={toggleChat}
       >
         <span className={styles.mascotAura} aria-hidden="true" />
-        <span className={styles.mascotHead} aria-hidden="true">
-          <span className={styles.mascotAntenna} />
-          <span className={styles.mascotFace}>
-            <span className={styles.mascotEye} />
-            <span className={styles.mascotEye} />
-            <span className={styles.mascotSmile} />
+        {!open && (
+          <span className={styles.thoughtBubble} aria-live="polite">
+            <span className={styles.thoughtDot} aria-hidden="true" />
+            {buntyPrompts[promptIndex]}
           </span>
-          <span className={styles.mascotEar} />
-          <span className={styles.mascotEar} />
-        </span>
-        <span className={styles.mascotBody} aria-hidden="true">
-          <span />
-        </span>
-        {!open && <span className={styles.chatHint}>Ask Bunty</span>}
+        )}
+        <Image
+          className={styles.mascotImage}
+          src="/images/bunty-companion.png"
+          alt=""
+          width={554}
+          height={554}
+          unoptimized
+          draggable={false}
+        />
       </button>
     </div>
   );

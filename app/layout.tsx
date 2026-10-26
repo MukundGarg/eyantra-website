@@ -47,7 +47,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="selection-red min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-inter relative overflow-x-hidden">
+      <body className="selection-red min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-inter relative overflow-x-clip">
         {/* Global Background */}
         <div className="fixed inset-0 z-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-surface)] via-[var(--bg-primary)] to-[var(--bg-surface-alt)]" />
