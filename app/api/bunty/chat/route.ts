@@ -8,6 +8,48 @@ const MAX_BODY_BYTES = 16 * 1024; // 16 KB
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 15;
 
+// Response caching configuration: cache successful responses for 10 minutes (TTL)
+const CACHE_TTL_MS = 10 * 60 * 1000;
+const MAX_CACHE_SIZE = 500;
+
+interface CacheRecord {
+  reply: string;
+  expiresAt: number;
+}
+
+const responseCache = new Map<string, CacheRecord>();
+
+function normalizePrompt(prompt: string): string {
+  return prompt
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function getCachedReply(prompt: string): string | null {
+  const key = normalizePrompt(prompt);
+  const entry = responseCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    responseCache.delete(key);
+    return null;
+  }
+  return entry.reply;
+}
+
+function setCachedReply(prompt: string, reply: string): void {
+  const key = normalizePrompt(prompt);
+  if (responseCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = responseCache.keys().next().value;
+    if (oldestKey) responseCache.delete(oldestKey);
+  }
+  responseCache.set(key, {
+    reply,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+}
+
 interface RateLimitRecord {
   count: number;
   resetTime: number;
@@ -99,13 +141,19 @@ export async function POST(request: Request) {
     return errorResponse("That message is too long. Please shorten it and try again.", 400);
   }
 
-  // 4. Verify API key
+  // 4. Check cache for previously answered prompt
+  const cached = getCachedReply(prompt);
+  if (cached) {
+    return Response.json({ success: true, reply: cached, cached: true });
+  }
+
+  // 5. Verify API key
   const apiKey = process.env.BUNTY_API_KEY;
   if (!apiKey) {
     return errorResponse("Bunty is not configured yet. Please try again later.", 503);
   }
 
-  // 5. Upstream call with bounded timeout and safe error handling
+  // 6. Upstream call with bounded timeout and safe error handling
   let upstream: Response;
   try {
     upstream = await fetch(BUNTY_API_URL, {
@@ -116,7 +164,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({ prompt: prompt.trim() }),
       cache: "no-store",
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(45_000),
     });
   } catch {
     return errorResponse("Bunty is unavailable right now. Please try again shortly.", 502);
@@ -152,6 +200,9 @@ export async function POST(request: Request) {
     return errorResponse("Bunty could not reply to that message. Please try again.", 502);
   }
 
-  return Response.json({ success: true, reply: (data as { reply: string }).reply.trim() });
+  const finalReply = (data as { reply: string }).reply.trim();
+  setCachedReply(prompt, finalReply);
+
+  return Response.json({ success: true, reply: finalReply });
 }
 
