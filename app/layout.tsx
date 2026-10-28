@@ -6,6 +6,7 @@ import AnimationProvider from "@/components/AnimationProvider";
 import FloatingBunty from "@/components/bunty/FloatingBunty";
 import ThemeProvider from "@/components/ThemeProvider";
 
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -85,7 +86,7 @@ export const metadata: Metadata = {
     creator: "@eyantramsit",
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    google: "p3mRzTCVQKLLP1MZJuA0TuE-xZ_Uj333YMVQ6z5_pjY"
   },
   icons: {
     icon: [
