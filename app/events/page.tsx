@@ -1,10 +1,43 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
 import EventsList from "@/components/EventsList";
 import { supabase } from "@/utils/supabase";
+import { SITE_CONFIG } from "@/lib/seo";
+import { getBreadcrumbSchema, getEventListSchema } from "@/lib/structuredData";
 
 export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Robotics Events & Workshops",
+  description:
+    "Discover upcoming robotics hackathons, hardware bootcamps, and technical workshops organized by e-Yantra MSIT. Register for competitions and hands-on sessions.",
+  alternates: {
+    canonical: "/events",
+  },
+  openGraph: {
+    title: "Robotics Events & Workshops | e-Yantra MSIT",
+    description:
+      "Discover upcoming robotics hackathons, hardware bootcamps, and technical workshops organized by e-Yantra MSIT.",
+    url: `${SITE_CONFIG.canonicalOrigin}/events`,
+    type: "website",
+    images: [
+      {
+        url: SITE_CONFIG.ogImage.url,
+        width: SITE_CONFIG.ogImage.width,
+        height: SITE_CONFIG.ogImage.height,
+        alt: "e-Yantra MSIT Robotics Events & Workshops",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Robotics Events & Workshops | e-Yantra MSIT",
+    description:
+      "Discover upcoming robotics hackathons, hardware bootcamps, and technical workshops organized by e-Yantra MSIT.",
+  },
+};
 
 function normalizeStatus(status: string | null | undefined, dateStr: string | null | undefined): 'upcoming' | 'ongoing' | 'past' {
   const s = (status || '').toLowerCase().trim();
@@ -72,8 +105,33 @@ export default async function EventsPage() {
     variant: normalizeStatus(e.status, e.event_date)
   }));
 
+  const breadcrumbsSchema = getBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Events", path: "/events" },
+  ]);
+  const eventsSchema = getEventListSchema(
+    safeEvents.map(e => ({
+      title: e.title,
+      description: e.short_description || e.description,
+      event_date: e.event_date,
+      event_time: e.event_time,
+      location: e.location,
+      status: e.status,
+      cover_image: e.cover_image,
+      registration_url: e.registration_url,
+    }))
+  );
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventsSchema) }}
+      />
       <Navbar />
 
       <main className="relative z-10 pt-32 pb-20">

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="glow" cx="60%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#d83a32" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#141416" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0a0a0c" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e0e0"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff4d42"/>
+      <stop offset="100%" stop-color="#d83a32"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#292D32" stroke-width="0.75" stroke-opacity="0.35"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0c0d10"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Subtle accent lines -->
+  <line x1="80" y1="80" x2="1120" y2="80" stroke="#d83a32" stroke-width="1" stroke-opacity="0.2"/>
+  <line x1="80" y1="550" x2="1120" y2="550" stroke="#292D32" stroke-width="1" stroke-opacity="0.5"/>
+
+  <!-- Badge -->
+  <g transform="translate(80, 140)">
+    <rect width="320" height="38" rx="19" fill="#1e1e24" stroke="#d83a32" stroke-width="1.2" stroke-opacity="0.6"/>
+    <circle cx="20" cy="19" r="6" fill="#ff4d42"/>
+    <text x="36" y="24" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="14" font-weight="600" fill="#ff7a72" letter-spacing="1">STUDENT ROBOTICS &amp; INNOVATION</text>
+  </g>
+
+  <!-- Main Title -->
+  <text x="80" y="260" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="64" font-weight="800" fill="url(#textGrad)" letter-spacing="-1.5">
+    e-Yantra MSIT
+  </text>
+  <text x="80" y="335" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="44" font-weight="700" fill="url(#redGrad)" letter-spacing="-0.5">
+    Think. Build. Innovate.
+  </text>
+
+  <!-- Subtitle / Description -->
+  <text x="80" y="405" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="22" font-weight="400" fill="#a6aaae">
+    The premier robotics, embedded systems &amp; AI student engineering community
+  </text>
+  <text x="80" y="440" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="20" font-weight="500" fill="#888c92">
+    Maharaja Surajmal Institute of Technology, New Delhi (GGSIPU)
+  </text>
+
+  <!-- Tags / Footer Highlights -->
+  <g transform="translate(80, 480)">
+    <!-- Tag 1 -->
+    <rect x="0" y="0" width="130" height="34" rx="8" fill="#18191f" stroke="#2e3038" stroke-width="1"/>
+    <text x="18" y="22" font-family="monospace" font-size="14" fill="#d0d4d9">⚡ Autonomous</text>
+
+    <!-- Tag 2 -->
+    <rect x="145" y="0" width="120" height="34" rx="8" fill="#18191f" stroke="#2e3038" stroke-width="1"/>
+    <text x="18" y="22" font-family="monospace" font-size="14" fill="#d0d4d9">🤖 Robotics</text>
+
+    <!-- Tag 3 -->
+    <rect x="280" y="0" width="145" height="34" rx="8" fill="#18191f" stroke="#2e3038" stroke-width="1"/>
+    <text x="18" y="22" font-family="monospace" font-size="14" fill="#d0d4d9">⚙️ Embedded IoT</text>
+
+    <!-- Tag 4 -->
+    <rect x="440" y="0" width="105" height="34" rx="8" fill="#18191f" stroke="#2e3038" stroke-width="1"/>
+    <text x="18" y="22" font-family="monospace" font-size="14" fill="#d0d4d9">🧠 AI &amp; ML</text>
+  </g>
+
+  <!-- Right Decorative Geometric Robot Node -->
+  <g transform="translate(940, 290)">
+    <circle cx="0" cy="0" r="160" fill="none" stroke="#d83a32" stroke-width="1" stroke-opacity="0.15" stroke-dasharray="8 8"/>
+    <circle cx="0" cy="0" r="120" fill="none" stroke="#ffffff" stroke-width="1" stroke-opacity="0.1"/>
+    <circle cx="0" cy="0" r="75" fill="#17181e" stroke="#d83a32" stroke-width="2.5"/>
+    <polygon points="0,-45 42,25 -42,25" fill="none" stroke="#ff4d42" stroke-width="2.5"/>
+    <circle cx="0" cy="2" r="14" fill="#ff4d42"/>
+  </g>
+</svg>

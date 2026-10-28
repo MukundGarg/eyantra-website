@@ -1,10 +1,43 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SectionHeading from "@/components/SectionHeading";
 import TeamMemberCard from "@/components/TeamMemberCard";
 import { supabase } from "@/utils/supabase";
+import { SITE_CONFIG } from "@/lib/seo";
+import { getBreadcrumbSchema } from "@/lib/structuredData";
 
 export const revalidate = 60; // Revalidate every minute to keep it fresh without hammering DB
+
+export const metadata: Metadata = {
+  title: "Meet Our Robotics Team",
+  description:
+    "Meet the faculty mentors, core leadership, and student engineers powering e-Yantra MSIT. Explore our hardware, software, research, and outreach divisions.",
+  alternates: {
+    canonical: "/team",
+  },
+  openGraph: {
+    title: "Meet Our Robotics Team | e-Yantra MSIT",
+    description:
+      "Meet the faculty mentors, core leadership, and student engineers powering e-Yantra MSIT.",
+    url: `${SITE_CONFIG.canonicalOrigin}/team`,
+    type: "website",
+    images: [
+      {
+        url: SITE_CONFIG.ogImage.url,
+        width: SITE_CONFIG.ogImage.width,
+        height: SITE_CONFIG.ogImage.height,
+        alt: "e-Yantra MSIT Robotics Team & Mentors",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Meet Our Robotics Team | e-Yantra MSIT",
+    description:
+      "Meet the faculty mentors, core leadership, and student engineers powering e-Yantra MSIT.",
+  },
+};
 
 // Department name formatter
 const formatDeptName = (dept: string) => {
@@ -70,8 +103,17 @@ export default async function TeamPage() {
 
   const isEmpty = safeMembers.length === 0;
 
+  const breadcrumbsSchema = getBreadcrumbSchema([
+    { name: "Home", path: "/" },
+    { name: "Team", path: "/team" },
+  ]);
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsSchema) }}
+      />
       <Navbar />
 
       <main className="relative z-10 pt-32 pb-20">

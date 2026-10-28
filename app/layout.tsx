@@ -16,9 +16,84 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+import { SITE_CONFIG } from "@/lib/seo";
+
 export const metadata: Metadata = {
-  title: "e-Yantra MSIT | Think. Build. Innovate.",
-  description: "Engineering Lab & Robotics Community",
+  metadataBase: new URL(SITE_CONFIG.canonicalOrigin),
+  title: {
+    default: SITE_CONFIG.defaultTitle,
+    template: SITE_CONFIG.titleTemplate,
+  },
+  description: SITE_CONFIG.defaultDescription,
+  applicationName: SITE_CONFIG.name,
+  authors: [{ name: SITE_CONFIG.name, url: SITE_CONFIG.canonicalOrigin }],
+  creator: SITE_CONFIG.name,
+  publisher: SITE_CONFIG.name,
+  keywords: [
+    "e-Yantra MSIT",
+    "MSIT Robotics Society",
+    "Maharaja Surajmal Institute of Technology",
+    "Robotics Delhi",
+    "Student Robotics Projects",
+    "Engineering Innovation",
+    "Embedded Systems MSIT",
+    "Robotics Workshops",
+    "GGSIPU Robotics",
+    "Bunty AI Assistant",
+  ],
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: SITE_CONFIG.canonicalOrigin,
+    siteName: SITE_CONFIG.name,
+    title: SITE_CONFIG.defaultTitle,
+    description: SITE_CONFIG.defaultDescription,
+    images: [
+      {
+        url: SITE_CONFIG.ogImage.url,
+        width: SITE_CONFIG.ogImage.width,
+        height: SITE_CONFIG.ogImage.height,
+        alt: SITE_CONFIG.ogImage.alt,
+        type: SITE_CONFIG.ogImage.type,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_CONFIG.defaultTitle,
+    description: SITE_CONFIG.defaultDescription,
+    images: [SITE_CONFIG.ogImage.url],
+    creator: "@eyantramsit",
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png" },
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png" }],
+  },
 };
 
 export default function RootLayout({
