@@ -2,26 +2,16 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
 import Iconify from "@/components/Iconify";
 import {
   sendBuntyMessage,
   type BuntyChatMessage,
 } from "@/utils/buntyApi";
+import YantraBuddy, { type YantraBuddyState } from "./YantraBuddy";
 import styles from "./FloatingBunty.module.css";
 
-type Position = {
-  x: number;
-  y: number;
-  panelSide: "left" | "right";
-  panelPosition: "above" | "below";
-};
-
-const buntyPrompts = [
-  "Need a project idea?",
-  "Curious about our next event?",
-  "Ask me about robotics!",
-];
+const inactivityDelay = 30_000;
+const drowsyDuration = 3500;
 
 function timestamp() {
   return new Date().toLocaleTimeString([], {
@@ -30,123 +20,165 @@ function timestamp() {
   });
 }
 
+function getBuddyTip(pathname: string) {
+  if (pathname.startsWith("/projects")) {
+    return "Discover our robotics projects.";
+  }
+  if (pathname.startsWith("/events")) {
+    return "Explore our robotics events.";
+  }
+  if (pathname.startsWith("/team")) {
+    return "Meet the team behind e-Yantra.";
+  }
+  return "Welcome! Explore what we're building.";
+}
+
 export default function FloatingBunty() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState<Position | null>(null);
   const [messages, setMessages] = useState<BuntyChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
-  const [promptIndex, setPromptIndex] = useState(0);
   const [error, setError] = useState("");
+  const [mascotState, setMascotState] = useState<YantraBuddyState>("waking");
+  const [tipDismissed, setTipDismissed] = useState(false);
+  const [pageHidden, setPageHidden] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const widgetRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const sendingRef = useRef(false);
-  const openRef = useRef(open);
-  const pointerRef = useRef({ x: 0, y: 0 });
-  const frameRef = useRef<number | null>(null);
+  const stateTimerRef = useRef<number | null>(null);
+  const workingTimerRef = useRef<number | null>(null);
+  const inactivityTimerRef = useRef<number | null>(null);
+  const drowsyTimerRef = useRef<number | null>(null);
+  const chatOpenRef = useRef(false);
+  const baseStateRef = useRef<YantraBuddyState>("idle");
+  const lastActivityAtRef = useRef(0);
+  const isDrowsyRef = useRef(false);
+  const initialWakeTimerRef = useRef<number | null>(null);
+
+  const clearStateTimer = () => {
+    if (stateTimerRef.current !== null) {
+      window.clearTimeout(stateTimerRef.current);
+      stateTimerRef.current = null;
+    }
+  };
+
+  const showReaction = (
+    state: YantraBuddyState,
+    duration: number,
+    returnState: YantraBuddyState = baseStateRef.current,
+    settleDuration = 0,
+  ) => {
+    if (initialWakeTimerRef.current !== null) {
+      window.clearTimeout(initialWakeTimerRef.current);
+      initialWakeTimerRef.current = null;
+    }
+    clearStateTimer();
+    setMascotState(state);
+    stateTimerRef.current = window.setTimeout(() => {
+      setMascotState(returnState);
+      if (settleDuration > 0) {
+        stateTimerRef.current = window.setTimeout(() => {
+          setMascotState(baseStateRef.current);
+          stateTimerRef.current = null;
+        }, settleDuration);
+      } else {
+        stateTimerRef.current = null;
+      }
+    }, duration);
+  };
 
   useEffect(() => {
-    openRef.current = open;
-  }, [open]);
-
-  useEffect(() => {
-    const mobileQuery = window.matchMedia("(pointer: coarse)");
-
-    const setDefaultPosition = () => {
-      setPosition({
-        x: Math.max(16, window.innerWidth - 120),
-        y: Math.max(16, window.innerHeight - 128),
-        panelSide: "right",
-        panelPosition: "above",
-      });
-    };
-
-    const moveWithPointer = (event: PointerEvent) => {
-      if (
-        event.pointerType !== "mouse" ||
-        mobileQuery.matches ||
-        openRef.current
-      ) {
-        return;
-      }
-
-      pointerRef.current = { x: event.clientX, y: event.clientY };
-      const widget = widgetRef.current;
-      if (!widget || widget.contains(event.target as Node)) return;
-      const bounds = widget.getBoundingClientRect();
-      const approachZone = 56;
-      if (
-        event.clientX >= bounds.left - approachZone &&
-        event.clientX <= bounds.right + approachZone &&
-        event.clientY >= bounds.top - approachZone &&
-        event.clientY <= bounds.bottom + approachZone
-      ) {
-        return;
-      }
-      if (frameRef.current !== null) return;
-
-      frameRef.current = window.requestAnimationFrame(() => {
-        frameRef.current = null;
-        const { x: pointerX, y: pointerY } = pointerRef.current;
-        const widgetWidth = 104;
-        const widgetHeight = 104;
-        const margin = 12;
-        const widget = widgetRef.current;
-        if (!widget) return;
-
-        const x = Math.min(
-          Math.max(
-            margin,
-            pointerX + widgetWidth + 22 < window.innerWidth - margin
-              ? pointerX + 22
-              : pointerX - widgetWidth - 22,
-          ),
-          window.innerWidth - widgetWidth - margin,
-        );
-        const y = Math.min(
-          Math.max(
-            margin,
-            pointerY + widgetHeight + 22 < window.innerHeight - margin
-              ? pointerY + 22
-              : pointerY - widgetHeight - 22,
-          ),
-          window.innerHeight - widgetHeight - margin,
-        );
-
-        widget.style.left = `${x}px`;
-        widget.style.top = `${y}px`;
-        widget.dataset.panelSide =
-          x < window.innerWidth / 2 ? "left" : "right";
-        widget.dataset.panelPosition = y < 420 ? "below" : "above";
-      });
-    };
-
-    setDefaultPosition();
-    window.addEventListener("resize", setDefaultPosition, { passive: true });
-    window.addEventListener("pointermove", moveWithPointer, { passive: true });
-
+    setMascotState("waking");
+    initialWakeTimerRef.current = window.setTimeout(() => {
+      setMascotState("idle");
+      initialWakeTimerRef.current = null;
+    }, 900);
     return () => {
-      window.removeEventListener("resize", setDefaultPosition);
-      window.removeEventListener("pointermove", moveWithPointer);
-      if (frameRef.current !== null) {
-        window.cancelAnimationFrame(frameRef.current);
+      if (initialWakeTimerRef.current !== null) {
+        window.clearTimeout(initialWakeTimerRef.current);
       }
     };
   }, []);
 
   useEffect(() => {
-    if (open || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
+    setTipDismissed(false);
+    const timer = window.setTimeout(() => setTipDismissed(true), 7000);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
 
-    const interval = window.setInterval(() => {
-      setPromptIndex((current) => (current + 1) % buntyPrompts.length);
-    }, 6500);
-    return () => window.clearInterval(interval);
+  useEffect(() => {
+    const clearInactivityTimers = () => {
+      if (inactivityTimerRef.current !== null) {
+        window.clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+      if (drowsyTimerRef.current !== null) {
+        window.clearTimeout(drowsyTimerRef.current);
+        drowsyTimerRef.current = null;
+      }
+    };
+
+    const scheduleDrowsiness = () => {
+      clearInactivityTimers();
+      if (open || document.hidden) return;
+      inactivityTimerRef.current = window.setTimeout(() => {
+        isDrowsyRef.current = true;
+        setMascotState("drowsy");
+        drowsyTimerRef.current = window.setTimeout(() => {
+          setMascotState("sleeping");
+          drowsyTimerRef.current = null;
+        }, drowsyDuration);
+        inactivityTimerRef.current = null;
+      }, inactivityDelay);
+    };
+
+    const handleActivity = () => {
+      const now = performance.now();
+      const mascotIsDrowsy = isDrowsyRef.current;
+      if (!mascotIsDrowsy && now - lastActivityAtRef.current < 750) return;
+      lastActivityAtRef.current = now;
+      if (mascotIsDrowsy) {
+        isDrowsyRef.current = false;
+        clearStateTimer();
+        setMascotState("waking");
+        stateTimerRef.current = window.setTimeout(() => {
+          setMascotState(baseStateRef.current);
+          stateTimerRef.current = null;
+        }, 900);
+      }
+      scheduleDrowsiness();
+    };
+
+    const handleVisibilityChange = () => {
+      setPageHidden(document.hidden);
+      if (document.hidden) {
+        clearInactivityTimers();
+        return;
+      }
+      lastActivityAtRef.current = performance.now();
+      scheduleDrowsiness();
+    };
+
+    document.addEventListener("pointermove", handleActivity, { passive: true });
+    document.addEventListener("pointerdown", handleActivity, { passive: true });
+    document.addEventListener("touchstart", handleActivity, { passive: true });
+    document.addEventListener("keydown", handleActivity);
+    document.addEventListener("scroll", handleActivity, { passive: true, capture: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    scheduleDrowsiness();
+
+    return () => {
+      document.removeEventListener("pointermove", handleActivity);
+      document.removeEventListener("pointerdown", handleActivity);
+      document.removeEventListener("touchstart", handleActivity);
+      document.removeEventListener("keydown", handleActivity);
+      document.removeEventListener("scroll", handleActivity, true);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearInactivityTimers();
+    };
   }, [open]);
 
   useEffect(() => {
@@ -162,6 +194,16 @@ export default function FloatingBunty() {
   useEffect(
     () => () => {
       abortRef.current?.abort();
+      clearStateTimer();
+      if (workingTimerRef.current !== null) {
+        window.clearTimeout(workingTimerRef.current);
+      }
+      if (inactivityTimerRef.current !== null) {
+        window.clearTimeout(inactivityTimerRef.current);
+      }
+      if (drowsyTimerRef.current !== null) {
+        window.clearTimeout(drowsyTimerRef.current);
+      }
     },
     [],
   );
@@ -170,7 +212,11 @@ export default function FloatingBunty() {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        chatOpenRef.current = false;
+        baseStateRef.current = "idle";
         setOpen(false);
+        clearStateTimer();
+        setMascotState("idle");
         buttonRef.current?.focus();
       }
     };
@@ -187,6 +233,8 @@ export default function FloatingBunty() {
 
     sendingRef.current = true;
     setThinking(true);
+    clearStateTimer();
+    setMascotState("thinking");
     setError("");
     setInput("");
     setMessages((current) => [
@@ -201,6 +249,10 @@ export default function FloatingBunty() {
 
     const controller = new AbortController();
     abortRef.current = controller;
+    workingTimerRef.current = window.setTimeout(() => {
+      if (sendingRef.current) setMascotState("searching");
+      workingTimerRef.current = null;
+    }, 850);
 
     try {
       const response = await sendBuntyMessage({
@@ -223,6 +275,7 @@ export default function FloatingBunty() {
           timestamp: timestamp(),
         },
       ]);
+      showReaction("celebrate", 650, "happy", 850);
     } catch (requestError) {
       if (controller.signal.aborted) return;
       setError(
@@ -230,7 +283,12 @@ export default function FloatingBunty() {
           ? requestError.message
           : "I couldn’t connect just now. Please try again.",
       );
+      showReaction("confused", 1200);
     } finally {
+      if (workingTimerRef.current !== null) {
+        window.clearTimeout(workingTimerRef.current);
+        workingTimerRef.current = null;
+      }
       if (!controller.signal.aborted) {
         sendingRef.current = false;
         setThinking(false);
@@ -239,30 +297,21 @@ export default function FloatingBunty() {
   };
 
   const toggleChat = () => {
-    const widget = widgetRef.current;
-    if (widget) {
-      const { left, top } = widget.getBoundingClientRect();
-      setPosition({
-        x: left,
-        y: top,
-        panelSide: left < window.innerWidth / 2 ? "left" : "right",
-        panelPosition: top < 420 ? "below" : "above",
-      });
+    const nextOpen = !chatOpenRef.current;
+    chatOpenRef.current = nextOpen;
+    baseStateRef.current = nextOpen ? "listening" : "idle";
+    setOpen(nextOpen);
+    if (!sendingRef.current) {
+      showReaction("playful", 700, baseStateRef.current);
     }
-    setOpen((current) => !current);
   };
 
   return (
     <div
-      ref={widgetRef}
       className={styles.widget}
-      data-panel-side={position?.panelSide ?? "right"}
-      data-panel-position={position?.panelPosition ?? "above"}
-      style={
-        position
-          ? { left: `${position.x}px`, top: `${position.y}px` }
-          : undefined
-      }
+      data-page-hidden={pageHidden}
+      data-panel-side="right"
+      data-panel-position="above"
     >
       {open && (
         <section
@@ -285,7 +334,11 @@ export default function FloatingBunty() {
               className={styles.closeButton}
               type="button"
               onClick={() => {
+                chatOpenRef.current = false;
+                baseStateRef.current = "idle";
                 setOpen(false);
+                clearStateTimer();
+                setMascotState("idle");
                 buttonRef.current?.focus();
               }}
               aria-label="Close Bunty chat"
@@ -376,28 +429,36 @@ export default function FloatingBunty() {
         ref={buttonRef}
         className={styles.mascotButton}
         type="button"
-        aria-label={open ? "Close chat with Bunty" : "Chat with Bunty"}
+        aria-label={open ? "Close chat with Bunty" : "Open Bunty chat with Yantra Buddy"}
         aria-expanded={open}
-        aria-controls="floating-bunty-dialog"
+        aria-controls={open ? "floating-bunty-dialog" : undefined}
+        aria-describedby={!open && !tipDismissed ? "yantra-buddy-tip-text" : undefined}
         onClick={toggleChat}
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse" && !sendingRef.current) {
+            showReaction("curious", 900);
+          }
+        }}
+        onPointerLeave={() => {
+          setMascotState((current) => current === "curious" ? baseStateRef.current : current);
+        }}
       >
         <span className={styles.mascotAura} aria-hidden="true" />
-        {!open && (
-          <span className={styles.thoughtBubble} aria-live="polite">
-            <span className={styles.thoughtDot} aria-hidden="true" />
-            {buntyPrompts[promptIndex]}
-          </span>
-        )}
-        <Image
-          className={styles.mascotImage}
-          src="/images/bunty-companion.png"
-          alt=""
-          width={554}
-          height={554}
-          unoptimized
-          draggable={false}
-        />
+        <YantraBuddy state={mascotState} />
       </button>
+      {!open && !tipDismissed && (
+        <div className={styles.thoughtBubble}>
+          <span id="yantra-buddy-tip-text">{getBuddyTip(pathname)}</span>
+          <button
+            className={styles.bubbleCloseButton}
+            type="button"
+            aria-label="Dismiss Yantra Buddy tip"
+            onClick={() => setTipDismissed(true)}
+          >
+            <Iconify icon="lucide:x" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

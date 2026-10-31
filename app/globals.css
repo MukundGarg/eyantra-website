@@ -1,39 +1,40 @@
 @import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-    --accent-red: #D83A32;
-    --accent-red-strong: #B82D27;
-    --accent-red-glow: rgba(216, 58, 50, 0.15);
-    --bg-primary: #FAFAF8;
-    --bg-surface: #FFFFFF;
-    --bg-surface-alt: #F3F3F0;
-    --text-primary: #111214;
-    --text-secondary: #5F6368;
-    --border: #D9D9D5;
-    --grid-line: rgba(17, 18, 20, 0.035);
-    --star-color: #111214;
-    --shadow-card: 0 4px 20px rgba(17, 18, 20, 0.06);
-    --overlay-subtle: rgba(17, 18, 20, 0.03);
-    --header-blur-bg: rgba(250, 250, 248, 0.85);
+    --accent-red: #B82D27;
+    --accent-red-strong: #9F261F;
+    --accent-red-glow: rgba(184, 45, 39, 0.14);
+    --bg-primary: #F3EEE6;
+    --bg-surface: #F8F3EB;
+    --bg-surface-alt: #EEE8DF;
+    --text-primary: #262321;
+    --text-secondary: #746D66;
+    --border: #D8CFC4;
+    --grid-line: rgba(56, 45, 38, 0.04);
+    --star-color: #262321;
+    --shadow-card: 0 4px 20px rgba(58, 43, 32, 0.07);
+    --overlay-subtle: rgba(56, 45, 38, 0.03);
+    --header-blur-bg: rgba(243, 238, 230, 0.88);
 }
 
 html.dark {
     --accent-red: #E34A41;
     --accent-red-strong: #F05A50;
     --accent-red-glow: rgba(227, 74, 65, 0.2);
-    --bg-primary: #151618;
-    --bg-surface: #1D1F22;
-    --bg-surface-alt: #24262A;
-    --text-primary: #F4F3EF;
-    --text-secondary: #A7AAAF;
-    --border: #34373B;
-    --grid-line: rgba(244, 243, 239, 0.04);
-    --star-color: #F4F3EF;
-    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
-    --overlay-subtle: rgba(255, 255, 255, 0.03);
-    --header-blur-bg: rgba(21, 22, 24, 0.85);
+    --bg-primary: #211E1D;
+    --bg-surface: #28211F;
+    --bg-surface-alt: #302421;
+    --text-primary: #F2ECE2;
+    --text-secondary: #BDB0A4;
+    --border: #443832;
+    --grid-line: rgba(248, 231, 210, 0.05);
+    --star-color: #F2ECE2;
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.38);
+    --overlay-subtle: rgba(248, 231, 210, 0.03);
+    --header-blur-bg: rgba(33, 30, 29, 0.88);
 }
 
 /* ─── Base ─── */

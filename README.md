@@ -105,15 +105,44 @@ The application-side rate limiter is in memory; it is not a globally coordinated
 
 ## Design and interaction
 
-The visual system uses warm white and graphite surfaces, with the e-Yantra red accent and corresponding dark-mode colors. The site combines animated circuit motifs and a 3D lab with simpler content views so visitors can browse the content without the visuals getting in the way.
+The visual system uses the homepage's warm ivory and graphite palette throughout the public pages, with the e-Yantra red accent and corresponding dark-mode colors. The site combines animated circuit motifs and a 3D lab with simpler content views so visitors can browse the content without the visuals getting in the way.
 
 | Area | Implementation |
 | --- | --- |
 | Interactive lab | Three.js with React-driven scene integration |
 | Design system | Tailwind CSS 4, shared CSS variables, light/dark themes |
 | Motion | CSS animations and custom React interactions |
-| Chat character | State-aware Bunty visual and message interface |
+| Chat character | State-aware Bunty chat with the Yantra Buddy SVG mascot |
 | Responsive UI | Shared navigation and adaptable page layouts |
+| Campus map | Lazy-loaded Leaflet map with OpenStreetMap tiles and attribution in the shared footer |
+
+### Yantra Buddy mascot
+
+Yantra Buddy is the original, lightweight SVG mascot in the existing floating Bunty launcher. Its cream shell, charcoal visor, amber eyes, and red antenna follow the robot artwork used elsewhere on the site. The launcher stays fixed in the lower-right corner (110 × 132 px on desktop, 92 × 110 px on small screens); activating it opens the existing, separately labeled Bunty chat. Its contextual Home, Projects, Events, or Team tip is dismissible and auto-hides after seven seconds so it does not linger over page content.
+
+To adjust the character, edit the inline SVG in [`components/bunty/YantraBuddy.tsx`](./components/bunty/YantraBuddy.tsx) and its colors, sizes, and motions in [`components/bunty/YantraBuddy.module.css`](./components/bunty/YantraBuddy.module.css). The global placement, tip copy, and state timing are in [`components/bunty/FloatingBunty.tsx`](./components/bunty/FloatingBunty.tsx) and [`components/bunty/FloatingBunty.module.css`](./components/bunty/FloatingBunty.module.css). The artwork uses the site's theme variables, so light and dark colors follow the existing theme.
+
+| Trigger | Reaction |
+| --- | --- |
+| Page load | Wakes for 0.8 seconds, then idles with a 4.2-second float, 5.2-second breathing cycle, occasional head tilt, antenna motion, and randomized blinks |
+| Pointer hover | Curious pose; returns to the current idle/listening state |
+| Mascot activation | Plays a brief playful reaction, then listens while the Bunty chat is open |
+| Bunty message submission | Thinking while the request is pending; switches to searching only if the real request remains pending after 0.85 seconds |
+| Bunty reply | Celebrates, changes to happy, then returns to idle/listening |
+| Bunty request error | Looks confused, then returns to idle/listening |
+| 30 seconds without pointer, keyboard, touch, or scroll activity | Becomes drowsy, then sleeps after 3.5 seconds; activity wakes it |
+| Page becomes hidden | Pauses CSS and blink animations until visible again |
+| Reduced-motion preference | Displays a still mascot and disables marquee/chat animations; the skills list remains manually scrollable |
+
+No `.avatar.json` export was present in the project. The official [Bible Strong Avatar Lab](https://github.com/smontlouis/bible-strong-avatar-lab) documents the React 19 renderer, and its [`@bible-strong/avatar-react` package](https://github.com/smontlouis/bible-strong-avatar-lab/tree/main/packages/avatar-react) is compatible with this app's React version. However, the renderer and its core dependency are `AGPL-3.0-only`; this repository has no declared project license. Because that license can impose source-availability obligations on a network-hosted derivative, the integration is deferred pending a licensing decision. Yantra Buddy is instead an original SVG/CSS character and uses no third-party avatar runtime or unsupported avatar schema.
+
+The homepage also includes a continuously scrolling skills ticker after the hero. Its labels come from the site's existing technical-domain content; the repeated visual set is hidden from assistive technology, the animation pauses on hover, and reduced-motion users can scroll the single skills list manually. Edit the skill labels in [`components/home-v2/SkillsTicker.tsx`](./components/home-v2/SkillsTicker.tsx) and its presentation in [`components/home-v2/SkillsTicker.module.css`](./components/home-v2/SkillsTicker.module.css).
+
+The homepage core-member cards use full-card photos, pause their marquee on hover or keyboard focus, and link to the full team. The single site footer combines the “Keep making things move” workshop scene with the previous footer’s navigation, contact, address, partnership, and copyright details. Internal route changes reset to the top of the destination page; the official contact email is `eyantramsit@gmail.com`.
+
+### Featured masonry gallery
+
+The Featured section keeps its server-fetched latest event/project updates and presents them in a responsive masonry layout. GSAP animates the cards into view and scales them on hover; keyboard focus also reveals the color treatment, and reduced-motion preference skips the entrance and hover scaling. To adjust the item layout, responsive breakpoints, animation defaults, or card appearance, edit [`components/home-v2/HomeFeaturedGallery.tsx`](./components/home-v2/HomeFeaturedGallery.tsx) and [`components/home-v2/HomeFeaturedGallery.module.css`](./components/home-v2/HomeFeaturedGallery.module.css). The update query and featured-card content stay in [`components/home-v2/HomeFeaturedSection.tsx`](./components/home-v2/HomeFeaturedSection.tsx).
 
 ## Technology and data
 

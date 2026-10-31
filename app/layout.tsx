@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import AnimationProvider from "@/components/AnimationProvider";
 import FloatingBunty from "@/components/bunty/FloatingBunty";
+import RouteScrollReset from "@/components/RouteScrollReset";
 import ThemeProvider from "@/components/ThemeProvider";
 
 
@@ -145,6 +146,7 @@ export default function RootLayout({
 
         <ThemeProvider>
           <AnimationProvider>
+            <RouteScrollReset />
             {children}
             <FloatingBunty />
           </AnimationProvider>

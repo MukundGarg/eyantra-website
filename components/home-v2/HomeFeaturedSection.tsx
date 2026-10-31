@@ -1,8 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import Iconify from "@/components/Iconify";
 import type { Event, Project } from "@/types/index";
 import { supabase } from "@/utils/supabase";
+import HomeFeaturedGallery from "./HomeFeaturedGallery";
 import styles from "./HomeFeaturedSection.module.css";
 
 type RecentUpdate = {
@@ -80,15 +79,6 @@ async function getRecentUpdates(): Promise<RecentUpdate[]> {
     .slice(0, 3);
 }
 
-function formatUpdateDate(date: string) {
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return "Recently added";
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(parsed);
-}
 
 export default async function HomeFeaturedSection() {
   const updates = await getRecentUpdates();
@@ -109,52 +99,19 @@ export default async function HomeFeaturedSection() {
         </header>
 
         {updates.length ? (
-          <div className={styles.grid}>
-            {updates.map((update, index) => (
-              <Link
-                className={styles.card}
-                href={update.href}
-                key={update.id}
-              >
-                <div className={styles.imageFrame}>
-                  {update.image ? (
-                    <Image
-                      src={update.image}
-                      alt=""
-                      fill
-                      sizes="(max-width: 700px) 88vw, (max-width: 1000px) 45vw, 30vw"
-                      unoptimized
-                      className={styles.image}
-                    />
-                  ) : (
-                    <span className={styles.imageFallback} aria-hidden="true">
-                      eY
-                    </span>
-                  )}
-                  <span className={styles.imageIndex}>
-                    0{index + 1} / 0{updates.length}
-                  </span>
-                </div>
-                <div className={styles.cardCopy}>
-                  <div className={styles.meta}>
-                    <span>{update.category}</span>
-                    <time dateTime={update.createdAt}>
-                      {formatUpdateDate(update.createdAt)}
-                    </time>
-                  </div>
-                  <h3>{update.title}</h3>
-                  <p>
-                    {update.description ||
-                      "Discover what the e-Yantra MSIT community has been building."}
-                  </p>
-                  <span className={styles.cardLink}>
-                    {update.href === "/events" ? "Explore event" : "View project"}
-                    <Iconify icon="lucide:arrow-up-right" />
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <HomeFeaturedGallery
+            items={updates.map((update, index) => ({
+              id: update.id,
+              img: update.image,
+              url: update.href,
+              height: [520, 370, 450][index % 3],
+              title: update.title,
+              description: update.description,
+              category: update.category,
+              createdAt: update.createdAt,
+              displayDate: formatUpdateDate(update.createdAt),
+            }))}
+          />
         ) : (
           <div className={styles.emptyState}>
             <p>Fresh updates are on the way.</p>
@@ -170,4 +127,14 @@ export default async function HomeFeaturedSection() {
       </div>
     </section>
   );
+}
+
+function formatUpdateDate(date: string) {
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "Recently added";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
 }

@@ -1,0 +1,96 @@
+.section {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-block: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.viewport {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: skills-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+.section:hover .track,
+.section:focus-within .track {
+  animation-play-state: paused;
+}
+
+.skillSet {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: clamp(1.5rem, 3.8vw, 3.5rem);
+  margin: 0;
+  padding: 1.15rem clamp(1.4rem, 4vw, 3.5rem);
+  list-style: none;
+}
+
+.skillSet li {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(1.5rem, 3.8vw, 3.5rem);
+  color: var(--text-secondary);
+  font-family: var(--font-jetbrains-mono, monospace);
+  font-size: clamp(0.65rem, 0.9vw, 0.75rem);
+  font-weight: 550;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.skillSet li::after {
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: var(--accent-red);
+  box-shadow: 0 0 10px var(--accent-red-glow);
+  content: "";
+}
+
+@keyframes skills-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+    scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
+  }
+
+  .track {
+    animation: none;
+    will-change: auto;
+  }
+
+  .skillSet + .skillSet {
+    display: none;
+  }
+}

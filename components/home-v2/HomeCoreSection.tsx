@@ -24,39 +24,47 @@ function MemberCards({
       inert={duplicate}
     >
       {members.map((member, index) => (
-        <article className={styles.card} key={member.id}>
+        <Link
+          className={styles.card}
+          href="/team"
+          key={member.id}
+          aria-label={`Meet ${member.name}, ${member.role || "core team member"}`}
+        >
+          <div className={styles.memberPhoto} aria-hidden="true">
+            {member.image_url ? (
+              <Image
+                src={member.image_url}
+                alt=""
+                fill
+                sizes="(max-width: 600px) 77vw, 340px"
+                unoptimized
+              />
+            ) : (
+              <span>
+                {member.name
+                  .split(/\s+/)
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join("")
+                  .toUpperCase()}
+              </span>
+            )}
+          </div>
           <div className={styles.cardTop}>
             <span className={styles.number}>
               {String(index + 1).padStart(2, "0")}
             </span>
-            <span className={styles.memberPhoto}>
-              {member.image_url ? (
-                <Image
-                  src={member.image_url}
-                  alt=""
-                  fill
-                  sizes="84px"
-                  unoptimized
-                />
-              ) : (
-                <span aria-hidden="true">
-                  {member.name
-                    .split(/\s+/)
-                    .slice(0, 2)
-                    .map((part) => part[0])
-                    .join("")
-                    .toUpperCase()}
-                </span>
-              )}
+          </div>
+          <div className={styles.memberInfo}>
+            <h3>{member.name}</h3>
+            <p>{member.role || "Core team member"}</p>
+            <span className={styles.cardLabel}>
+              <span />
+              Meet the team · {member.category === "core" ? "Core" : "Department"}
+              <Iconify icon="lucide:arrow-up-right" />
             </span>
           </div>
-          <h3>{member.name}</h3>
-          <p>{member.role || "Core team member"}</p>
-          <span className={styles.cardLabel}>
-            <span />
-            e-Yantra MSIT · {member.category === "core" ? "Core" : "Department"}
-          </span>
-        </article>
+        </Link>
       ))}
     </div>
   );

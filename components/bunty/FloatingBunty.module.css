@@ -4,10 +4,11 @@
   --bunty-accent: #b82d27;
   position: fixed;
   z-index: 1000;
-  width: 104px;
-  height: 104px;
+  width: 110px;
+  height: 132px;
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
   pointer-events: auto;
-  transition: none;
 }
 
 :global(html.dark) .widget {
@@ -16,16 +17,19 @@
   --bunty-accent: #e34a41;
 }
 
+.widget[data-page-hidden="true"] * {
+  animation-play-state: paused !important;
+}
+
 .mascotButton {
   position: absolute;
   right: 0;
   bottom: 0;
   display: flex;
-  width: 104px;
-  height: 104px;
+  width: 110px;
+  height: 132px;
   align-items: center;
-  flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   padding: 0;
   border: 0;
   background: transparent;
@@ -41,6 +45,7 @@
 
 .mascotButton:focus-visible,
 .closeButton:focus-visible,
+.bubbleCloseButton:focus-visible,
 .composer button:focus-visible,
 .suggestion:focus-visible {
   outline: 2px solid var(--bunty-accent);
@@ -49,7 +54,7 @@
 
 .mascotAura {
   position: absolute;
-  top: 14px;
+  top: 18px;
   left: 50%;
   width: 82px;
   height: 82px;
@@ -60,36 +65,24 @@
   animation: aura 3.4s ease-in-out infinite;
 }
 
-.mascotImage {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 98px;
-  height: 98px;
-  object-fit: contain;
-  transform-origin: 50% 88%;
-  animation: bunty-gestures 6.4s ease-in-out infinite;
-  user-select: none;
-}
-
 .thoughtBubble {
   position: absolute;
-  right: 70px;
-  bottom: 72px;
+  right: 74px;
+  bottom: 96px;
   display: flex;
-  min-width: 142px;
-  min-height: 42px;
+  width: max-content;
+  max-width: min(230px, calc(100vw - 120px));
   align-items: center;
-  gap: 7px;
-  padding: 8px 10px;
-  border: 1px solid rgb(56 45 38 / 14%);
+  gap: 5px;
+  padding: 7px 8px 7px 10px;
+  border: 1px solid var(--border);
   border-radius: 12px 12px 12px 3px;
-  background: rgb(255 250 242 / 96%);
-  box-shadow: 0 8px 22px rgb(47 32 24 / 14%);
-  color: #342b25;
+  background: var(--bg-surface);
+  box-shadow: 0 8px 22px rgb(17 18 20 / 14%);
+  color: var(--text-primary);
   font-size: 10px;
-  font-weight: 650;
-  white-space: nowrap;
+  font-weight: 600;
+  line-height: 1.4;
   animation: bubble-appear 320ms ease-out both, bubble-bob 3.5s ease-in-out 320ms infinite;
 }
 
@@ -99,54 +92,40 @@
   bottom: -5px;
   width: 10px;
   height: 10px;
-  border-right: 1px solid rgb(56 45 38 / 14%);
-  border-bottom: 1px solid rgb(56 45 38 / 14%);
-  background: #fffaf2;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
   content: "";
   transform: rotate(45deg);
 }
 
-.widget[data-panel-side="left"] .thoughtBubble {
-  right: auto;
-  left: 70px;
-  border-radius: 12px 12px 3px 12px;
-}
-
-.widget[data-panel-side="left"] .thoughtBubble::after {
-  right: auto;
-  left: -5px;
-  border-right: 0;
-  border-left: 1px solid rgb(56 45 38 / 14%);
-}
-
-.thoughtDot {
-  width: 6px;
-  height: 6px;
+.bubbleCloseButton {
+  display: grid;
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
+  place-items: center;
+  border: 0;
   border-radius: 50%;
-  background: #c73b32;
-  box-shadow: 0 0 9px rgb(199 59 50 / 42%);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
-:global(html.dark) .thoughtBubble {
-  border-color: rgb(248 231 210 / 16%);
-  background: rgb(35 31 29 / 94%);
-  color: #f2ece2;
+.bubbleCloseButton:hover {
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
 }
 
-:global(html.dark) .thoughtBubble::after {
-  border-color: rgb(248 231 210 / 16%);
-  background: #231f1d;
-}
-
-:global(html.dark) .widget[data-panel-side="left"] .thoughtBubble::after {
-  border-color: rgb(248 231 210 / 16%);
+.bubbleCloseButton svg {
+  width: 13px;
+  height: 13px;
 }
 
 .panel {
   position: absolute;
   right: 0;
-  bottom: 100px;
+  bottom: 132px;
   display: flex;
   width: min(360px, calc(100vw - 32px));
   height: min(470px, calc(100dvh - 128px));
@@ -479,34 +458,6 @@
   height: 18px;
 }
 
-@keyframes bunty-gestures {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0);
-  }
-
-  14% {
-    transform: translateY(-4px) rotate(-2deg);
-  }
-
-  28% {
-    transform: translateY(0) rotate(0);
-  }
-
-  34%,
-  40% {
-    transform: translateY(-3px) rotate(5deg);
-  }
-
-  46% {
-    transform: translateY(0) rotate(-1deg);
-  }
-
-  62% {
-    transform: translateY(-3px) rotate(1deg);
-  }
-}
-
 @keyframes bubble-appear {
   from {
     opacity: 0;
@@ -571,32 +522,33 @@
 
 @media (max-width: 600px) {
   .widget {
-    width: 104px;
-    height: 104px;
-    right: 16px;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    left: auto !important;
-    top: auto !important;
-    transition: none;
+    width: 92px;
+    height: 110px;
   }
 
   .mascotButton {
+    width: 92px;
+    height: 110px;
     filter: drop-shadow(0 6px 10px rgb(47 32 24 / 25%));
   }
 
   .thoughtBubble {
-    right: 67px;
-    bottom: 70px;
-    min-width: 132px;
-    min-height: 38px;
-    padding: 7px 9px;
+    right: 60px;
+    bottom: 78px;
+    max-width: min(210px, calc(100vw - 120px));
+    padding: 6px 7px 6px 9px;
     font-size: 9px;
+  }
+
+  .bubbleCloseButton {
+    width: 20px;
+    height: 20px;
   }
 
   .panel {
     position: fixed;
     right: 12px;
-    bottom: calc(108px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
     left: auto;
     width: min(360px, calc(100vw - 24px));
     height: min(470px, calc(100dvh - 124px - env(safe-area-inset-bottom, 0px)));
@@ -605,20 +557,20 @@
 
   .widget[data-panel-position="below"] .panel {
     top: auto;
-    bottom: calc(108px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(118px + env(safe-area-inset-bottom, 0px));
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mascotButton,
   .closeButton,
+  .bubbleCloseButton,
   .composer button,
   .suggestion {
     transition: none;
   }
 
   .mascotAura,
-  .mascotImage,
   .thoughtBubble,
   .panel,
   .typing span {

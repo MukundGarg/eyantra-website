@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import Iconify from "@/components/Iconify";
+import CampusMap from "@/components/CampusMap";
 import styles from "./FooterWorkshopScene.module.css";
 
 export default function FooterWorkshopScene() {
@@ -53,7 +54,7 @@ export default function FooterWorkshopScene() {
   };
 
   return (
-    <section
+    <footer
       ref={sceneRef}
       className={styles.scene}
       data-visible={isVisible}
@@ -174,12 +175,86 @@ export default function FooterWorkshopScene() {
             Explore our projects
             <Iconify icon="lucide:arrow-up-right" />
           </Link>
-          <a className={styles.secondaryAction} href="mailto:contact@eyantramsit.com">
+          <a className={styles.secondaryAction} href="mailto:eyantramsit@gmail.com">
             Get in touch
             <Iconify icon="lucide:arrow-up-right" />
           </a>
         </div>
       </div>
-    </section>
+
+      <div className={styles.footerDetails}>
+        <div className={styles.footerIdentity}>
+          <div className={styles.footerBrand}>
+            <span>
+              <Iconify icon="lucide:cpu" />
+            </span>
+            <strong>e-Yantra MSIT</strong>
+          </div>
+          <p>
+            The student robotics society of Maharaja Surajmal Institute of
+            Technology, dedicated to hands-on embedded systems, autonomous
+            robots, and engineering projects.
+          </p>
+        </div>
+
+        <nav className={styles.footerNavigation} aria-label="Footer navigation">
+          <h3>Navigation</h3>
+          <ul>
+            {[
+              ["01", "Home", "/"],
+              ["02", "Projects", "/projects"],
+              ["03", "Events", "/events"],
+              ["04", "Team", "/team"],
+              ["05", "Bunty", "/bunty"],
+            ].map(([number, label, href]) => (
+              <li key={href}>
+                <Link href={href}>
+                  <span>{number}</span>
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className={styles.footerContact}>
+          <h3>Contact</h3>
+          <a href="mailto:eyantramsit@gmail.com">
+            <Iconify icon="lucide:mail" />
+            eyantramsit@gmail.com
+          </a>
+          <address>
+            <Iconify icon="lucide:map-pin" />
+            <span>
+              Maharaja Surajmal Institute of Technology
+              <br />
+              C-4 Janakpuri, New Delhi - 110058
+            </span>
+          </address>
+          <CampusMap />
+          <a
+            className={styles.mapLink}
+            href="https://www.openstreetmap.org/?mlat=28.6206698&mlon=77.0924931#map=17/28.6206698/77.0924931"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View campus map
+            <Iconify icon="lucide:arrow-up-right" />
+          </a>
+          <p className={styles.footerPartner}>
+            <Iconify icon="lucide:award" />
+            IIT Bombay e-Yantra Initiative Partner Lab
+          </p>
+        </div>
+      </div>
+
+      <div className={styles.footerBottom}>
+        <span>
+          <span aria-hidden="true">●</span> © {new Date().getFullYear()} e-Yantra
+          MSIT. Student robotics society.
+        </span>
+        <span>Affiliated with MSIT &amp; GGSIPU · All rights reserved</span>
+      </div>
+    </footer>
   );
 }

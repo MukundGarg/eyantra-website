@@ -1,0 +1,181 @@
+.gallery {
+  position: relative;
+  width: 100%;
+}
+
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--featured-line);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--featured-bg), white 38%);
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 14%);
+  color: inherit;
+  text-decoration: none;
+  transform-origin: center;
+  will-change: transform, width, height, opacity, filter;
+}
+
+:global(html.dark) .card {
+  background: color-mix(in srgb, var(--featured-bg), white 5%);
+}
+
+.card:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--featured-accent);
+  outline-offset: 4px;
+}
+
+.imageFrame {
+  position: relative;
+  min-height: 0;
+  flex: 1 1 54%;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 65% 30%, rgb(230 169 119 / 48%), transparent 42%),
+    linear-gradient(135deg, #51443c, #272321);
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 550ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.card:hover .image,
+.card:focus-visible .image {
+  transform: scale(1.04);
+}
+
+.imageFallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  place-items: center;
+  color: rgb(255 242 223 / 82%);
+  font-size: clamp(70px, 8vw, 110px);
+  font-weight: 650;
+  letter-spacing: -0.1em;
+}
+
+.colorOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, rgb(216 58 50 / 38%), rgb(225 167 104 / 20%));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 350ms ease;
+}
+
+.card:hover .colorOverlay,
+.card:focus-visible .colorOverlay {
+  opacity: 1;
+}
+
+.imageIndex {
+  position: absolute;
+  z-index: 1;
+  right: 15px;
+  bottom: 13px;
+  color: white;
+  font-family: var(--font-jetbrains-mono, "SFMono-Regular", Consolas, monospace);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.imageIndex span {
+  opacity: 0.7;
+}
+
+.cardCopy {
+  display: flex;
+  min-height: 170px;
+  flex: 0 0 46%;
+  flex-direction: column;
+  padding: clamp(16px, 1.8vw, 23px);
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--featured-accent);
+  font-family: var(--font-jetbrains-mono, "SFMono-Regular", Consolas, monospace);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.meta time {
+  flex: 0 0 auto;
+  color: var(--featured-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cardCopy h3 {
+  margin: 20px 0 8px;
+  font-size: clamp(19px, 1.8vw, 25px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.15;
+}
+
+.cardCopy p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--featured-muted);
+  font-size: 12px;
+  line-height: 1.65;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.cardLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 15px;
+  color: var(--featured-ink);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.cardLink svg {
+  width: 16px;
+  height: 16px;
+  color: var(--featured-accent);
+  transition: transform 180ms ease;
+}
+
+.card:hover .cardLink svg,
+.card:focus-visible .cardLink svg {
+  transform: translate(2px, -2px);
+}
+
+@media (max-width: 600px) {
+  .cardCopy {
+    min-height: 165px;
+    padding: 16px;
+  }
+
+  .cardCopy h3 {
+    margin-top: 14px;
+    font-size: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .colorOverlay,
+  .cardLink svg {
+    transition: none;
+  }
+}
